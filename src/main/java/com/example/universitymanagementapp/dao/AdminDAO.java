@@ -20,7 +20,12 @@ public class AdminDAO{
         return admins;
     }
 
+    public void clearAdmins(){
+        admins.clear();
+    }
+
 
 
 
 }
+

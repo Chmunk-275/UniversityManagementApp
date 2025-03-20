@@ -89,7 +89,7 @@ public class Event {
 
     @Override
     public String toString() {
-        return "Event\neventName=" + eventName + ", eventCode=" + eventCode + ", eventDescription=" + eventDescription + ", eventHeaderImage=" + eventHeaderImage + ", eventLocation=" + eventLocation + ", eventDate=" + eventDateTime + ", eventCost=" + eventCost + ", registeredStudents=" + registeredStudents;
+        return "Event{" + "eventName=" + eventName + ", eventCode=" + eventCode + ", eventDescription=" + eventDescription + ", eventHeaderImage=" + eventHeaderImage + ", eventLocation=" + eventLocation + ", eventDate=" + eventDateTime + ", eventCost=" + eventCost + ", registeredStudents=" + registeredStudents + '}';
     }
 
 

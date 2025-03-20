@@ -19,3 +19,4 @@ public class PasswordHasher {
         return hashPassword(enteredPassword).equals(storedHashedPassword);
     }
 }
+
