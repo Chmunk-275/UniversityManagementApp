@@ -30,6 +30,7 @@ public class UniversityManagementApp extends Application {
     public static EventDAO eventDAO;
     public static AdminDAO adminDAO;
 
+
     // Static block to initialize DAOs before main is called
     static {
         courseDAO = new CourseDAO();
