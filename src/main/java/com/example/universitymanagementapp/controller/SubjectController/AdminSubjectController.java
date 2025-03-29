@@ -192,6 +192,13 @@ public class AdminSubjectController {
             showAlert(Alert.AlertType.ERROR, "Error", "Subject name and code are required.");
             return;
         }
+        for (Subject subject : subjectDAO.getAllSubjects()) {
+            if (subject.getSubjectName().equals(name) || !subject.getSubjectCode().equals(code)) {
+                showAlert(Alert.AlertType.ERROR, "Error", "Subject name or code already exists.");
+                clearForm();
+                return;
+            }
+        }
 
         if (selectedSubject == null) {
             // Add new subject
@@ -207,6 +214,7 @@ public class AdminSubjectController {
         filterSubjects(subjectSearch.getText()); // Refresh the filtered list
         clearForm();
         exporter.exportData(); // Export after adding or updating a subject
+        tabPane.getSelectionModel().select(0);
     }
 
     @FXML
