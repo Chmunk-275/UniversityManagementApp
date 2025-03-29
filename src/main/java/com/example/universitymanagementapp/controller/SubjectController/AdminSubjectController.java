@@ -192,6 +192,7 @@ public class AdminSubjectController {
             showAlert(Alert.AlertType.ERROR, "Error", "Subject name and code are required.");
             return;
         }
+
         for (Subject subject : subjectDAO.getAllSubjects()) {
             if (subject.getSubjectName().equals(name) || !subject.getSubjectCode().equals(code)) {
                 showAlert(Alert.AlertType.ERROR, "Error", "Subject name or code already exists.");
