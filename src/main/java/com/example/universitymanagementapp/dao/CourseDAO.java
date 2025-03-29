@@ -16,8 +16,8 @@ public class CourseDAO {
         courses.add(course);
     }
 
-    public void removeCourse(int courseCode) {
-        courses.removeIf(c -> c.getCourseCode() == courseCode);
+    public void removeCourse(String courseName) {
+        courses.removeIf(c -> c.getCourseName() == courseName);
     }
 
     public CourseDAO() {

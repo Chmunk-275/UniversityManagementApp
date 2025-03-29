@@ -104,7 +104,7 @@ public class CourseAdminController {
     private void openCourseDetailsTab(Course course) {
         // Check if a tab for this course already exists
         for (Tab tab : tabPane.getTabs()) {
-            if (tab.getText().equals("Course " + course.getCourseCode() + " Details")) {
+            if (tab.getText().equals(course.getCourseName() + " Details")) {
                 tabPane.getSelectionModel().select(tab);
                 return;
             }
@@ -206,7 +206,7 @@ public class CourseAdminController {
                             student.getRegisteredSubjects().remove(selected.getSubjectCode());
                         }
                     }
-                    courseDAO.removeCourse(selected.getCourseCode());
+                    courseDAO.removeCourse(selected.getCourseName());
                     loadAllCourses();
                     exporter.exportData(); // Correct: Export after deleting course and updating student enrollments
                 }
@@ -257,6 +257,7 @@ public class CourseAdminController {
             selectedCourse = null;
             enrolledStudentsList.clear();
             exporter.exportData(); // Export after adding or updating a course
+            tabPane.getSelectionModel().select(0);
         } catch (NumberFormatException e) {
             showAlert(Alert.AlertType.ERROR, "Error", "Course code and capacity must be numbers.");
         }

@@ -38,15 +38,6 @@ public class AdminSubjectController {
     public TextField subjectSearch;
 
     @FXML
-    public TableView<Subject> searchResultsTable;
-
-    @FXML
-    public TableColumn<Subject, String> searchSubjectNameColumn;
-
-    @FXML
-    public TableColumn<Subject, String> searchSubjectCodeColumn;
-
-    @FXML
     public TextField subjectNameField;
 
     @FXML
@@ -61,12 +52,17 @@ public class AdminSubjectController {
     @FXML
     public TabPane tabPane;
 
+    // Creating DAOs
     private CourseDAO courseDAO = UniversityManagementApp.courseDAO;
     private SubjectDAO subjectDAO = UniversityManagementApp.subjectDAO;
+
+    // Creating Exporter constructor
     private ExExporter exporter = new ExExporter(courseDAO, UniversityManagementApp.studentDAO,
-            UniversityManagementApp.facultyDAO, subjectDAO, UniversityManagementApp.eventDAO); // Added ExExporter instance
+            UniversityManagementApp.facultyDAO, subjectDAO, UniversityManagementApp.eventDAO);
+
+    // Creating observable lists
     private ObservableList<Subject> allSubjectsList = FXCollections.observableArrayList();
-    private ObservableList<Subject> searchResultsList = FXCollections.observableArrayList();
+    private ObservableList<Subject> filteredSubjectsList = FXCollections.observableArrayList();
     private Subject selectedSubject = null; // For editing
 
     @FXML
@@ -75,18 +71,13 @@ public class AdminSubjectController {
         subjectNameColumn.setCellValueFactory(new PropertyValueFactory<>("subjectName"));
         subjectCodeColumn.setCellValueFactory(new PropertyValueFactory<>("subjectCode"));
 
-        // Configure columns for Search Results table
-        searchSubjectNameColumn.setCellValueFactory(new PropertyValueFactory<>("subjectName"));
-        searchSubjectCodeColumn.setCellValueFactory(new PropertyValueFactory<>("subjectCode"));
-
-        // Set table resize policies
+        // Set table resize policy
         allSubjectsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        searchResultsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         // Load all subjects
         loadAllSubjects();
 
-        // Add listener to subjectSearch TextField for real-time search
+        // Add listener to subjectSearch TextField for real-time filtering
         subjectSearch.textProperty().addListener((observable, oldValue, newValue) -> {
             filterSubjects(newValue);
         });
@@ -101,34 +92,35 @@ public class AdminSubjectController {
     private void loadAllSubjects() {
         allSubjectsList.clear();
         allSubjectsList.addAll(subjectDAO.getAllSubjects());
-        allSubjectsTable.setItems(allSubjectsList);
+        filteredSubjectsList.clear();
+        filteredSubjectsList.addAll(allSubjectsList); // Initially, show all subjects
+        allSubjectsTable.setItems(filteredSubjectsList);
         System.out.println("Loaded all subjects: " + allSubjectsList);
     }
 
     private void filterSubjects(String searchText) {
-        searchResultsList.clear();
+        filteredSubjectsList.clear();
         if (searchText == null || searchText.trim().isEmpty()) {
-            searchResultsTable.setItems(searchResultsList);
-            return;
-        }
-
-        String lowerCaseSearch = searchText.trim().toLowerCase();
-        for (Subject subject : subjectDAO.getAllSubjects()) {
-            if (subject.getSubjectName().toLowerCase().contains(lowerCaseSearch) ||
-                    subject.getSubjectCode().toLowerCase().contains(lowerCaseSearch)) {
-                searchResultsList.add(subject);
+            filteredSubjectsList.addAll(allSubjectsList); // Show all subjects if search is empty
+        } else {
+            String lowerCaseSearch = searchText.trim().toLowerCase();
+            for (Subject subject : allSubjectsList) {
+                if (subject.getSubjectName().toLowerCase().contains(lowerCaseSearch) ||
+                        subject.getSubjectCode().toLowerCase().contains(lowerCaseSearch)) {
+                    filteredSubjectsList.add(subject);
+                }
             }
         }
-        searchResultsTable.setItems(searchResultsList);
-        System.out.println("Search results for '" + searchText + "': " + searchResultsList);
+        allSubjectsTable.setItems(filteredSubjectsList);
+        System.out.println("Filtered subjects for '" + searchText + "': " + filteredSubjectsList);
     }
 
     @FXML
     private void handleAddSubject() {
         clearForm(); // Clear form for new subject
         selectedSubject = null; // Reset selection
-        // Switch to the "Manage Subjects" tab (index 2)
-        tabPane.getSelectionModel().select(2); // This will now work
+        // Switch to the "Manage Subjects" tab (index 1, since "Search" tab is removed)
+        tabPane.getSelectionModel().select(1);
         // Set focus on the subjectNameField
         if (subjectNameField != null) {
             subjectNameField.requestFocus();
@@ -143,8 +135,8 @@ public class AdminSubjectController {
         if (selectedSubject != null) {
             subjectNameField.setText(selectedSubject.getSubjectName());
             subjectCodeField.setText(selectedSubject.getSubjectCode());
-            // Switch to the "Manage Subjects" tab (index 2)
-            tabPane.getSelectionModel().select(2);
+            // Switch to the "Manage Subjects" tab (index 1)
+            tabPane.getSelectionModel().select(1);
         }
     }
 
@@ -184,13 +176,7 @@ public class AdminSubjectController {
                     courseDAO.removeCoursesBySubject(selected.getSubjectCode());
                     subjectDAO.removeSubject(selected.getSubjectName());
                     loadAllSubjects();
-                    String searchText = subjectSearch.getText();
-                    if (searchText != null && !searchText.trim().isEmpty()) {
-                        filterSubjects(searchText);
-                    } else {
-                        searchResultsList.clear();
-                        searchResultsTable.setItems(searchResultsList);
-                    }
+                    filterSubjects(subjectSearch.getText()); // Refresh the filtered list
                     exporter.exportData(); // Export after deleting subject and associated courses
                 }
             });
@@ -218,7 +204,7 @@ public class AdminSubjectController {
         }
 
         loadAllSubjects();
-        filterSubjects(subjectSearch.getText()); // Refresh search too
+        filterSubjects(subjectSearch.getText()); // Refresh the filtered list
         clearForm();
         exporter.exportData(); // Export after adding or updating a subject
     }
