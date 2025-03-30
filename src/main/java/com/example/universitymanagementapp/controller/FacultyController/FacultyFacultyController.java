@@ -1,13 +1,14 @@
 package com.example.universitymanagementapp.controller.FacultyController;
-
+import com.example.universitymanagementapp.model.Admins;
 import com.example.universitymanagementapp.dao.FacultyDAO;
 import com.example.universitymanagementapp.model.Faculty;
+import com.example.universitymanagementapp.model.User;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.HBox;
 
 public class FacultyFacultyController {
 
@@ -15,11 +16,11 @@ public class FacultyFacultyController {
     @FXML
     private TableView<Faculty> allFacultyTable;
     @FXML
-    private TableColumn<Faculty, String> facultyIdColumn; // We'll display username as the ID
+    private TableColumn<Faculty, String> facultyIdColumn;
     @FXML
     private TableColumn<Faculty, String> nameColumn;
     @FXML
-    private TableColumn<Faculty, String> departmentColumn; // Using degree as a substitute for department
+    private TableColumn<Faculty, String> departmentColumn;
     @FXML
     private TableColumn<Faculty, String> emailColumn;
 
@@ -35,50 +36,140 @@ public class FacultyFacultyController {
     @FXML
     private TableColumn<Faculty, String> selectedEmailColumn;
 
+    // Buttons for delete and edit
+    @FXML
+    private Button deleteButton;
+    @FXML
+    private Button editButton;
+
+    // Text fields for editing (optional, for simplicity)
+    @FXML
+    private TextField editNameField;
+    @FXML
+    private TextField editDegreeField;
+    @FXML
+    private TextField editEmailField;
+
     // FacultyDAO instance for data access
     private FacultyDAO facultyDAO;
-
     private FacultyDashboard parentController;
+    private Admins admin; // To use deleteUser method
+
+    // Observable lists for the tables
+    private ObservableList<Faculty> allFaculty;
+    private ObservableList<Faculty> selectedFaculty;
 
     public void setParentController(FacultyDashboard parentController) {
         this.parentController = parentController;
     }
 
+    // Method to set the admin (needed for deleteUser)
+    public void setAdmin(Admins admin) {
+        this.admin = admin;
+    }
+
     @FXML
     public void initialize() {
-        // Instantiate the DAO (this assumes that faculty data is already imported)
+        // Instantiate the DAO
         facultyDAO = new FacultyDAO();
 
-        // Set up cell value factories for "All Faculty" table.
-        // Note: We're using "username" as the unique identifier for faculty.
+        // Set up cell value factories for "All Faculty" table
         facultyIdColumn.setCellValueFactory(new PropertyValueFactory<>("username"));
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-        // Using "degree" to populate the department column for display purposes.
         departmentColumn.setCellValueFactory(new PropertyValueFactory<>("degree"));
         emailColumn.setCellValueFactory(new PropertyValueFactory<>("email"));
 
-        // Set up cell value factories for "Selected Faculty" table.
+        // Set up cell value factories for "Selected Faculty" table
         selectedFacultyIdColumn.setCellValueFactory(new PropertyValueFactory<>("username"));
         selectedNameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         selectedDepartmentColumn.setCellValueFactory(new PropertyValueFactory<>("degree"));
         selectedEmailColumn.setCellValueFactory(new PropertyValueFactory<>("email"));
 
-        // Load all faculty data from the DAO into an observable list.
-        ObservableList<Faculty> allFaculty = FXCollections.observableArrayList(facultyDAO.getAllFaculty());
+        // Load all faculty data from the DAO into an observable list
+        allFaculty = FXCollections.observableArrayList(facultyDAO.getAllFaculty());
         allFacultyTable.setItems(allFaculty);
 
-        // Initialize the selected faculty list (empty at start).
-        ObservableList<Faculty> selectedFaculty = FXCollections.observableArrayList();
+        // Initialize the selected faculty list (empty at start)
+        selectedFaculty = FXCollections.observableArrayList();
         selectedFacultyTable.setItems(selectedFaculty);
 
-        // Optional: Add a listener to add a faculty member to the selected table when clicked.
+        // Add a listener to add a faculty member to the selected table when clicked
         allFacultyTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null && !selectedFaculty.contains(newValue)) {
                 selectedFaculty.add(newValue);
             }
         });
+
+        // Set up button actions
+        deleteButton.setOnAction(event -> handleDelete());
+        editButton.setOnAction(event -> handleEdit());
     }
 
-    // You can add additional methods here to remove items from the selected table,
-    // refresh the data, or handle other UI events.
+    // Handle delete button action
+    private void handleDelete() {
+        Faculty selected = selectedFacultyTable.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            showAlert("Error", "No faculty member selected to delete.");
+            return;
+        }
+
+        // Use the admin's deleteUser method to remove the faculty from the users list
+        if (admin != null && admin.deleteUser(selected.getUsername())) {
+            // Remove from both tables
+            allFaculty.remove(selected);
+            selectedFaculty.remove(selected);
+            showAlert("Success", "Faculty member deleted successfully.");
+        } else {
+            showAlert("Error", "Failed to delete faculty member.");
+        }
+    }
+
+    // Handle edit button action
+    private void handleEdit() {
+        Faculty selected = selectedFacultyTable.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            showAlert("Error", "No faculty member selected to edit.");
+            return;
+        }
+
+        // Get new values from text fields
+        String newName = editNameField.getText();
+        String newDegree = editDegreeField.getText();
+        String newEmail = editEmailField.getText();
+
+        // Validate input
+        if (newName == null || newName.trim().isEmpty() ||
+                newDegree == null || newDegree.trim().isEmpty() ||
+                newEmail == null || newEmail.trim().isEmpty()) {
+            showAlert("Error", "All fields must be filled to edit faculty member.");
+            return;
+        }
+
+        // Update the faculty member's details
+        selected.setName(newName);
+        selected.setDegree(newDegree);
+        selected.setEmail(newEmail);
+
+        // Refresh the tables to reflect changes
+        allFacultyTable.refresh();
+        selectedFacultyTable.refresh();
+        showAlert("Success", "Faculty member updated successfully.");
+
+        // Clear the text fields
+        editNameField.clear();
+        editDegreeField.clear();
+        editEmailField.clear();
+    }
+
+    // Utility method to show alerts
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
 }
+
+
+    // refresh the data, or handle other UI events.
