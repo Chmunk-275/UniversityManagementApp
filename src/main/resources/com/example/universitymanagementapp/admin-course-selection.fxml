@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" stylesheets="@admin-students-management.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.universitymanagementapp.controller.CourseController.CourseAdminController">
+<AnchorPane prefHeight="400.0" prefWidth="600.0" stylesheets="@admin-students-management.css" xmlns="http://javafx.com/javafx/" xmlns:fx="http://javafx.com/fxml/" fx:controller="com.example.universitymanagementapp.controller.CourseController.CourseAdminController">
 
     <children>
         <TabPane fx:id="tabPane" layoutY="48.0" prefHeight="440.0" prefWidth="581.0" styleClass="tab-pane" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="54.0">
@@ -22,7 +22,15 @@
                     <content>
                         <AnchorPane>
                             <children>
-                                <TableView fx:id="allCoursesTable" layoutY="50.0" prefHeight="235.0" prefWidth="560.0" styleClass="table-view" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
+                                <HBox fx:id="allCoursesHBox" spacing="10.0" styleClass="hbox" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="5.0">
+                                    <children>
+                                        <Button fx:id="addButton" onAction="#handleAddCourse" text="Add Course" />
+                                        <Button fx:id="editButton" onAction="#handleEditCourse" text="Edit Course" />
+                                        <Button fx:id="deleteButton" onAction="#handleDeleteCourse" text="Delete Course" />
+                                        <TextField fx:id="courseSearch" promptText="Search by name, subject, or instructor" styleClass="text-field" prefWidth="200.0" />
+                                    </children>
+                                </HBox>
+                                <TableView fx:id="allCoursesTable" styleClass="table-view" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0">
                                     <columns>
                                         <TableColumn fx:id="courseCodeColumn" prefWidth="100" text="Course Code" />
                                         <TableColumn fx:id="courseNameColumn" prefWidth="150" text="Course Name" />
@@ -32,13 +40,6 @@
                                         <TableColumn fx:id="enrollmentColumn" prefWidth="80" text="Enrolled" />
                                     </columns>
                                 </TableView>
-                                <HBox spacing="10.0" styleClass="hbox" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="5.0">
-                                    <children>
-                                        <Button fx:id="addButton" onAction="#handleAddCourse" text="Add Course" />
-                                        <Button fx:id="editButton" onAction="#handleEditCourse" text="Edit Course" />
-                                        <Button fx:id="deleteButton" onAction="#handleDeleteCourse" text="Delete Course" />
-                                    </children>
-                                </HBox>
                             </children>
                         </AnchorPane>
                     </content>
@@ -111,4 +112,3 @@
         <ToolBar layoutX="10.0" layoutY="14.0" prefHeight="40.0" prefWidth="581.0" styleClass="tool-bar" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
     </children>
 </AnchorPane>
-

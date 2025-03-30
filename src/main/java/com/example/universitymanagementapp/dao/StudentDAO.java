@@ -109,6 +109,10 @@ public class StudentDAO {
         }
     }
 
+    public void removeStudentById(String studentId) {
+        students.removeIf(s -> s.getStudentId().equals(studentId));
+    }
+
     public void removeStudent(String studentId) {
         students.removeIf(s -> s.getStudentId().equals(studentId));
     }

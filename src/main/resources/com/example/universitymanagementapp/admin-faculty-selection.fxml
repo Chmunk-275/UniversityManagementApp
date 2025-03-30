@@ -12,7 +12,7 @@
 <?import javafx.scene.text.Text?>
 
 <?import javafx.scene.layout.HBox?>
-<AnchorPane fx:id="rootPane" prefHeight="400.0" prefWidth="600.0" styleClass="anchor-pane" stylesheets="@admin-students-management.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.universitymanagementapp.controller.FacultyController.AdminFacultyController">
+<AnchorPane fx:id="rootPane" prefHeight="400.0" prefWidth="600.0" styleClass="anchor-pane" stylesheets="@admin-students-management.css" xmlns="http://javafx.com/javafx/" xmlns:fx="http://javafx.com/fxml/" fx:controller="com.example.universitymanagementapp.controller.FacultyController.AdminFacultyController">
     <children>
         <!-- Toolbar at the top -->
         <ToolBar layoutX="0.0" layoutY="0.0" prefHeight="39.0" prefWidth="600.0" styleClass="tool-bar" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
@@ -25,12 +25,14 @@
                     <content>
                         <AnchorPane>
                             <children>
-                                <!-- Buttons for Add, Edit, Delete -->
-                                <HBox fx:id="allFacultyHBox" spacing="10.0" styleClass="hbox" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="5.0">
+                                <!-- Buttons for Add, Edit, Assign Courses, Delete, and Search Bar -->
+                                <HBox fx:id="allFacultyHBox" spacing="10.0" styleClass="hbox" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="5.0">
                                     <children>
                                         <Button fx:id="addButton" onAction="#handleAddFaculty" text="Add Faculty" />
                                         <Button fx:id="editButton" onAction="#handleEditFaculty" text="Edit Faculty" />
+                                        <Button fx:id="assignCoursesButton" onAction="#handleAssignCourses" text="Assign Courses" />
                                         <Button fx:id="deleteButton" onAction="#handleDeleteFaculty" text="Delete Faculty" />
+                                        <TextField fx:id="facultySearch" promptText="Search by name or ID" styleClass="text-field" HBox.hgrow="ALWAYS" />
                                     </children>
                                 </HBox>
                                 <!-- TableView for all faculty -->
@@ -46,27 +48,7 @@
                     </content>
                 </Tab>
 
-                <!-- Tab 2: Search -->
-                <Tab closable="false" text="Search">
-                    <content>
-                        <AnchorPane>
-                            <children>
-                                <!-- Search bar -->
-                                <TextField fx:id="facultySearch" promptText="Search by name or ID" styleClass="text-field" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
-                                <!-- TableView for search results -->
-                                <TableView fx:id="searchResultsTable" styleClass="table-view" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
-                                    <columns>
-                                        <TableColumn fx:id="searchNameColumn" text="Name" />
-                                        <TableColumn fx:id="searchFacultyIdColumn" text="Faculty ID" />
-                                        <TableColumn fx:id="searchResearchInterestColumn" text="Research Interest" />
-                                    </columns>
-                                </TableView>
-                            </children>
-                        </AnchorPane>
-                    </content>
-                </Tab>
-
-                <!-- Tab 3: Manage Faculty -->
+                <!-- Tab 2: Manage Faculty -->
                 <Tab closable="false" text="Manage Faculty">
                     <content>
                         <AnchorPane fx:id="manageFacultyPane" styleClass="anchor-pane">
@@ -80,18 +62,6 @@
                                 <TextField fx:id="degreeField" promptText="Degree" styleClass="text-field" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="200.0" />
                                 <TextField fx:id="researchInterestField" promptText="Research Interest" styleClass="text-field" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="240.0" />
                                 <TextField fx:id="officeLocationField" promptText="Office Location" styleClass="text-field" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="280.0" />
-
-                                <!-- Course Assignment Section -->
-                                <Text styleClass="text" text="Assign Courses" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="320.0" />
-                                <ComboBox fx:id="courseComboBox" promptText="Select Course" styleClass="combo-box" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="350.0" />
-                                <Button fx:id="assignButton" onAction="#handleAssignCourse" text="Assign" AnchorPane.leftAnchor="220.0" AnchorPane.topAnchor="350.0" />
-                                <Button fx:id="unassignButton" onAction="#handleUnassignCourse" text="Unassign" AnchorPane.leftAnchor="290.0" AnchorPane.topAnchor="350.0" />
-                                <TableView fx:id="assignedCoursesTable" styleClass="table-view" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="390.0">
-                                    <columns>
-                                        <TableColumn fx:id="assignedCourseCodeColumn" text="Course Code" />
-                                        <TableColumn fx:id="assignedCourseNameColumn" text="Course Name" />
-                                    </columns>
-                                </TableView>
 
                                 <!-- Save and Clear Buttons -->
                                 <Button fx:id="saveButton" onAction="#handleSaveFaculty" text="Save" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" />

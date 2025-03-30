@@ -18,10 +18,13 @@ public class SubjectDAO {
     }
 
     //edit/update subject
-    public void updateSubject(Subject updatedSubject){
-        for (Subject subject : subjects){
-            if (updatedSubject.getSubjectName().equalsIgnoreCase(subject.getSubjectName())){
+    public void updateSubject(String originalSubjectCode, Subject updatedSubject) {
+        for (Subject subject : subjects) {
+            if (subject.getSubjectCode().equalsIgnoreCase(originalSubjectCode)) {
+                // Update the subject's fields
+                subject.setSubjectName(updatedSubject.getSubjectName());
                 subject.setSubjectCode(updatedSubject.getSubjectCode());
+                break; // Exit the loop once the subject is updated
             }
         }
     }

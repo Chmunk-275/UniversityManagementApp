@@ -14,24 +14,28 @@ public class FacultyDAO {
         System.out.println("Faculty added successfully!" + faculty.getUsername());
     }
 
-    // updates info of existing faculty member
-    public void updateFaculty(Faculty updatedFaculty) {
-        for (Faculty faculty : facultyList) {
-            if (faculty.getEmail().equals(updatedFaculty.getEmail())) {
-                faculty.setName(updatedFaculty.getName());
-                faculty.setDegree(updatedFaculty.getDegree());
-                faculty.setResearchInterest(updatedFaculty.getResearchInterest());
-                faculty.setCoursesOffered(updatedFaculty.getCoursesOffered());
-                faculty.setOfficeLocation(updatedFaculty.getOfficeLocation());
-                System.out.println("Faculty updated successfully!");
-                break;
-            }
-        }
+    public void deleteFaculty(Faculty faculty){
+        facultyList.remove(faculty);
+        System.out.println("Faculty deleted successfully!");
     }
 
-    // deletes faculty memeber from faculty list
-    public void deleteFaculty(String email) {
-        facultyList.removeIf(faculty -> faculty.getEmail().equals(email));
+    // updates info of existing faculty member
+    public void updateFaculty(String username, Faculty updatedFaculty) {
+        for (int i = 0; i < facultyList.size(); i++) {
+            Faculty faculty = facultyList.get(i);
+            if (faculty.getUsername().equals(username)) {
+                // Update the faculty member's details
+                facultyList.set(i, updatedFaculty);
+                System.out.println("Faculty with username " + username + " updated successfully!");
+                return;
+            }
+        }
+        System.out.println("Faculty with username " + username + " not found for update.");
+    }
+
+    // deletes faculty memeber by id
+    public void deleteFacultyById(String facultyId) {
+        facultyList.removeIf(faculty -> faculty.getUsername().equals(facultyId));
         System.out.println("Faculty removed successfully!");
     }
 

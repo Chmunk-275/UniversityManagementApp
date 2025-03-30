@@ -1,9 +1,11 @@
 package com.example.universitymanagementapp.controller.SubjectController;
 
 import com.example.universitymanagementapp.dao.CourseDAO;
+import com.example.universitymanagementapp.dao.StudentDAO;
 import com.example.universitymanagementapp.dao.SubjectDAO;
 import com.example.universitymanagementapp.UniversityManagementApp;
 import com.example.universitymanagementapp.model.Course;
+import com.example.universitymanagementapp.model.Student;
 import com.example.universitymanagementapp.model.Subject;
 import com.example.universitymanagementapp.utils.ExExporter;
 import javafx.collections.FXCollections;
@@ -53,6 +55,7 @@ public class AdminSubjectController {
     public TabPane tabPane;
 
     // Creating DAOs
+    private StudentDAO studentDAO = UniversityManagementApp.studentDAO;
     private CourseDAO courseDAO = UniversityManagementApp.courseDAO;
     private SubjectDAO subjectDAO = UniversityManagementApp.subjectDAO;
 
@@ -172,9 +175,35 @@ public class AdminSubjectController {
             confirm.setHeaderText(null);
             confirm.showAndWait().ifPresent(response -> {
                 if (response == ButtonType.OK) {
-                    // Delete the subject and associated courses
+                    // Step 1: Unenroll all students from the associated courses
+                    for (Course course : associatedCourses) {
+                        List<Student> enrolledStudents = studentDAO.getStudentsEnrolledInCourse(course.getCourseCode());
+                        for (Student student : enrolledStudents) {
+                            studentDAO.removeStudentFromCourse(student, course);
+                            System.out.println("Unenrolled student " + student.getStudentId() + " from course " + course.getCourseCode());
+                        }
+                    }
+
+                    // Step 2: Remove the subject from students' registeredSubjects list
+                    String subjectCode = selected.getSubjectCode();
+                    for (Student student : studentDAO.getAllStudents()) {
+                        // Check if the student is still enrolled in any courses with this subject
+                        boolean hasOtherCoursesForSubject = student.getRegisteredCourses().stream()
+                                .anyMatch(course -> course.getSubjectCode().equals(subjectCode));
+                        if (!hasOtherCoursesForSubject) {
+                            // If no other courses for this subject, remove the subject from registeredSubjects
+                            student.getRegisteredSubjects().remove(subjectCode);
+                            System.out.println("Removed subject " + subjectCode + " from student " + student.getStudentId() + "'s registered subjects");
+                            // Update the student in the DAO to persist the change
+                            studentDAO.updateStudent(student);
+                        }
+                    }
+
+                    // Step 3: Delete the subject and associated courses
                     courseDAO.removeCoursesBySubject(selected.getSubjectCode());
                     subjectDAO.removeSubject(selected.getSubjectName());
+
+                    // Refresh the UI
                     loadAllSubjects();
                     filterSubjects(subjectSearch.getText()); // Refresh the filtered list
                     exporter.exportData(); // Export after deleting subject and associated courses
@@ -188,13 +217,20 @@ public class AdminSubjectController {
         String name = subjectNameField.getText().trim();
         String code = subjectCodeField.getText().trim();
 
+        // Validate required fields
         if (name.isEmpty() || code.isEmpty()) {
             showAlert(Alert.AlertType.ERROR, "Error", "Subject name and code are required.");
             return;
         }
 
+        // Check for duplicate subject name or code
         for (Subject subject : subjectDAO.getAllSubjects()) {
-            if (subject.getSubjectName().equals(name) || !subject.getSubjectCode().equals(code)) {
+            // Skip the current subject being edited (if editing)
+            if (selectedSubject != null && subject.getSubjectCode().equals(selectedSubject.getSubjectCode())) {
+                continue;
+            }
+            // Check if the name or code already exists (for another subject)
+            if (subject.getSubjectName().equals(name) || subject.getSubjectCode().equals(code)) {
                 showAlert(Alert.AlertType.ERROR, "Error", "Subject name or code already exists.");
                 clearForm();
                 return;
@@ -207,7 +243,10 @@ public class AdminSubjectController {
             subjectDAO.addSubject(newSubject);
         } else {
             // Update existing subject
-            subjectDAO.updateSubject(new Subject(name, code));
+            String originalSubjectCode = selectedSubject.getSubjectCode(); // Store the original subject code
+            selectedSubject.setSubjectName(name);
+            selectedSubject.setSubjectCode(code);
+            subjectDAO.updateSubject(originalSubjectCode, selectedSubject);
             selectedSubject = null;
         }
 

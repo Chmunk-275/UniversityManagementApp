@@ -87,31 +87,16 @@ public class AdminStudentController {
     private Button editButton;
 
     @FXML
+    private Button enrollTabButton; // Button for navigating to Enroll tab
+
+    @FXML
+    private Button gradeTabButton; // New button for navigating to Grade tab
+
+    @FXML
     private Button deleteButton;
 
     @FXML
     private TextField studentSearch;
-
-    @FXML
-    private TableView<Student> searchResultsTable;
-
-    @FXML
-    private TableColumn<Student, String> searchNameColumn;
-
-    @FXML
-    private TableColumn<Student, String> searchStudentIdColumn;
-
-    @FXML
-    private TableColumn<Student, String> searchEmailColumn;
-
-    @FXML
-    private TableColumn<Student, String> searchPhoneNumberColumn;
-
-    @FXML
-    private TableColumn<Student, Integer> searchEnrolledCoursesColumn;
-
-    @FXML
-    private TableColumn<Student, Integer> searchEnrolledSubjectsColumn;
 
     @FXML
     private TextField nameField;
@@ -158,12 +143,16 @@ public class AdminStudentController {
     @FXML
     private Button clearButton;
 
+    // Create objects of DAO
     private StudentDAO studentDAO = UniversityManagementApp.studentDAO;
     private CourseDAO courseDAO = UniversityManagementApp.courseDAO;
+
+    // Initialize exporter constructor
     private ExExporter exporter = new ExExporter(courseDAO, studentDAO, UniversityManagementApp.facultyDAO,
             UniversityManagementApp.subjectDAO, UniversityManagementApp.eventDAO);
+
+    // Create observable lists for all content
     private ObservableList<Student> allStudentsList = FXCollections.observableArrayList();
-    private ObservableList<Student> searchResultsList = FXCollections.observableArrayList();
     private ObservableList<Course> enrolledCoursesList = FXCollections.observableArrayList();
     private ObservableList<Course> availableCourses = FXCollections.observableArrayList();
     private Student selectedStudent = null;
@@ -178,21 +167,12 @@ public class AdminStudentController {
         enrolledCoursesColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getNumberOfRegisteredCourses()).asObject());
         enrolledSubjectsColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getNumberOfRegisteredSubjects()).asObject());
 
-        // Configure columns for Search Results table
-        searchNameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-        searchStudentIdColumn.setCellValueFactory(new PropertyValueFactory<>("studentId"));
-        searchEmailColumn.setCellValueFactory(new PropertyValueFactory<>("email"));
-        searchPhoneNumberColumn.setCellValueFactory(new PropertyValueFactory<>("phoneNumber"));
-        searchEnrolledCoursesColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getNumberOfRegisteredCourses()).asObject());
-        searchEnrolledSubjectsColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getNumberOfRegisteredSubjects()).asObject());
-
         // Configure columns for Enrolled Courses table
         enrolledCourseCodeColumn.setCellValueFactory(new PropertyValueFactory<>("courseCode"));
         enrolledCourseNameColumn.setCellValueFactory(new PropertyValueFactory<>("courseName"));
 
         // Set table resize policies
         allStudentsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        searchResultsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         enrolledCoursesTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         // Load all students
@@ -203,9 +183,11 @@ public class AdminStudentController {
             filterStudents(newValue);
         });
 
-        // Enable/disable edit/delete buttons based on selection
+        // Enable/disable edit/enroll/grade/delete buttons based on selection
         allStudentsTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             editButton.setDisable(newSelection == null);
+            enrollTabButton.setDisable(newSelection == null);
+            gradeTabButton.setDisable(newSelection == null); // Disable Grade button if no student is selected
             deleteButton.setDisable(newSelection == null);
         });
 
@@ -237,27 +219,42 @@ public class AdminStudentController {
     private void loadAllStudents() {
         allStudentsList.clear();
         allStudentsList.addAll(studentDAO.getAllStudents());
+        // Update tuition for all students based on their current enrollment
+        for (Student student : allStudentsList) {
+            updateStudentTuition(student);
+            studentDAO.updateStudent(student); // Persist the updated tuition
+        }
         allStudentsTable.setItems(allStudentsList);
         System.out.println("Loaded all students: " + allStudentsList);
     }
 
     private void filterStudents(String searchText) {
-        searchResultsList.clear();
         if (searchText == null || searchText.trim().isEmpty()) {
-            searchResultsTable.setItems(searchResultsList);
+            allStudentsTable.setItems(allStudentsList); // Show all students if search is empty
             return;
         }
 
+        ObservableList<Student> filteredList = FXCollections.observableArrayList();
         String lowerCaseSearch = searchText.trim().toLowerCase();
-        for (Student student : studentDAO.getAllStudents()) {
+        for (Student student : allStudentsList) {
             if (student.getName().toLowerCase().contains(lowerCaseSearch) ||
                     student.getStudentId().toLowerCase().contains(lowerCaseSearch) ||
                     student.getEmail().toLowerCase().contains(lowerCaseSearch)) {
-                searchResultsList.add(student);
+                filteredList.add(student);
             }
         }
-        searchResultsTable.setItems(searchResultsList);
-        System.out.println("Search results for '" + searchText + "': " + searchResultsList);
+        allStudentsTable.setItems(filteredList);
+        System.out.println("Filtered students for '" + searchText + "': " + filteredList);
+    }
+
+    private void updateStudentTuition(Student student) {
+        if (student == null) {
+            return;
+        }
+        int numberOfCourses = student.getRegisteredCourses() != null ? student.getRegisteredCourses().size() : 0;
+        int tuition = numberOfCourses * 250; // $250 per course
+        student.setTuition(tuition);
+        System.out.println("Updated tuition for student " + student.getStudentId() + ": $" + tuition + " (" + numberOfCourses + " courses)");
     }
 
     @FXML
@@ -289,9 +286,36 @@ public class AdminStudentController {
             enrolledCoursesList.clear();
             enrolledCoursesList.addAll(selectedStudent.getRegisteredCourses());
             enrolledCoursesTable.setItems(enrolledCoursesList);
-            gradeCourseComboBox.setItems(enrolledCoursesList);
             tabPane.getTabs().stream()
                     .filter(tab -> "Manage Students".equals(tab.getText()))
+                    .findFirst()
+                    .ifPresent(tab -> tabPane.getSelectionModel().select(tab));
+        }
+    }
+
+    @FXML
+    private void handleEnrollTab() {
+        selectedStudent = allStudentsTable.getSelectionModel().getSelectedItem();
+        if (selectedStudent != null) {
+            enrolledCoursesList.clear();
+            enrolledCoursesList.addAll(selectedStudent.getRegisteredCourses());
+            enrolledCoursesTable.setItems(enrolledCoursesList);
+            tabPane.getTabs().stream()
+                    .filter(tab -> "Enroll Students".equals(tab.getText()))
+                    .findFirst()
+                    .ifPresent(tab -> tabPane.getSelectionModel().select(tab));
+        }
+    }
+
+    @FXML
+    private void handleGradeTab() {
+        selectedStudent = allStudentsTable.getSelectionModel().getSelectedItem();
+        if (selectedStudent != null) {
+            enrolledCoursesList.clear();
+            enrolledCoursesList.addAll(selectedStudent.getRegisteredCourses());
+            gradeCourseComboBox.setItems(enrolledCoursesList);
+            tabPane.getTabs().stream()
+                    .filter(tab -> "Manage Grades".equals(tab.getText()))
                     .findFirst()
                     .ifPresent(tab -> tabPane.getSelectionModel().select(tab));
         }
@@ -301,17 +325,46 @@ public class AdminStudentController {
     private void handleDeleteStudent() {
         Student selected = allStudentsTable.getSelectionModel().getSelectedItem();
         if (selected != null) {
-            Alert confirm = new Alert(Alert.AlertType.CONFIRMATION, "Delete student " + selected.getName() + " (" + selected.getStudentId() + ")?");
+            // Build the confirmation message
+            StringBuilder message = new StringBuilder("Delete student " + selected.getName() + " (" + selected.getStudentId() + ")?");
+
+            // Check if the student is enrolled in any courses
+            List<Course> registeredCourses = selected.getRegisteredCourses();
+            if (!registeredCourses.isEmpty()) {
+                message.append("\n\nThis student will also be unenrolled from the following courses:\n");
+                for (Course course : registeredCourses) {
+                    message.append("- ").append(course.getCourseName()).append(" (").append(course.getCourseCode()).append(")\n");
+                }
+            }
+
+            // Show the confirmation dialog with the updated message
+            Alert confirm = new Alert(Alert.AlertType.CONFIRMATION, message.toString());
             confirm.showAndWait().ifPresent(response -> {
                 if (response == ButtonType.OK) {
+                    // Create a copy of the registered courses list to avoid ConcurrentModificationException
+                    List<Course> coursesToUnenroll = new ArrayList<>(selected.getRegisteredCourses());
+
                     // Unenroll the student from all courses
-                    for (Course course : selected.getRegisteredCourses()) {
+                    for (Course course : coursesToUnenroll) {
                         studentDAO.removeStudentFromCourse(selected, course);
                     }
-                    studentDAO.removeStudent(selected.getStudentId());
+
+                    // Update tuition after unenrolling (optional, since the student will be deleted)
+                    updateStudentTuition(selected);
+                    studentDAO.updateStudent(selected);
+
+                    // Remove the student from the system
+                    studentDAO.removeStudentById(selected.getStudentId());
+
+                    // Clear the selection to avoid referencing the deleted student
+                    allStudentsTable.getSelectionModel().clearSelection();
+
+                    // Refresh the UI
                     loadAllStudents();
                     filterStudents(studentSearch.getText());
-                    exporter.exportData(); //export updated data
+
+                    // Export updated data
+                    exporter.exportData();
                 }
             });
         }
@@ -340,6 +393,9 @@ public class AdminStudentController {
                 if (!selectedStudent.getRegisteredSubjects().contains(subjectCode)) {
                     selectedStudent.getRegisteredSubjects().add(subjectCode);
                 }
+                // Update tuition after enrolling in a course
+                updateStudentTuition(selectedStudent);
+                studentDAO.updateStudent(selectedStudent); // Persist the updated student
             }
 
             // Add the course to the enrolled courses list
@@ -357,6 +413,11 @@ public class AdminStudentController {
             }
 
             exporter.exportData(); // Export after enrolling a student in a course
+
+            // Refresh the student list
+            loadAllStudents();
+            filterStudents(studentSearch.getText());
+            tabPane.getSelectionModel().select(0);
         }
     }
 
@@ -381,6 +442,9 @@ public class AdminStudentController {
                 if (!hasOtherCoursesForSubject) {
                     selectedStudent.getRegisteredSubjects().remove(subjectCode);
                 }
+                // Update tuition after unenrolling from a course
+                updateStudentTuition(selectedStudent);
+                studentDAO.updateStudent(selectedStudent); // Persist the updated student
             }
 
             // Remove the course from the enrolled courses list
@@ -396,8 +460,13 @@ public class AdminStudentController {
             if (courseAdminController != null) {
                 courseAdminController.refreshCourses();
             }
-
             exporter.exportData(); // Export after unenrolling a student from a course
+
+            // Refresh the student list
+            loadAllStudents();
+            filterStudents(studentSearch.getText());
+
+            tabPane.getSelectionModel().select(0);
         }
     }
 
@@ -434,6 +503,9 @@ public class AdminStudentController {
             }
             gradeField.clear();
             exporter.exportData(); // Export after updating a grade
+
+            // Navigate back to the "All Students" tab
+            tabPane.getSelectionModel().select(0);
         }
     }
 
@@ -455,6 +527,27 @@ public class AdminStudentController {
             return;
         }
 
+        // Check for duplicate student ID or email
+        boolean isDuplicate = false;
+        for (Student student : allStudentsList) {
+            // Skip the current student being edited (if editing)
+            if (selectedStudent != null && student.getStudentId().equals(selectedStudent.getStudentId())) {
+                continue; // Skip this student, as it's the one we're editing
+            }
+            // Check for duplicates
+            if (student.getStudentId().equals(studentId) || student.getEmail().equals(email)) {
+                isDuplicate = true;
+                break;
+            }
+        }
+
+        if (isDuplicate) {
+            showAlert(Alert.AlertType.ERROR, "Error", "Student ID or Email is already in use by another student.");
+            clearForm();
+            return;
+        }
+
+        // Create or update the student object
         Student student = new Student(name, studentId, email, phoneNumber);
         student.setRegisteredCourses(new ArrayList<>(enrolledCoursesList));
         student.setRegisteredSubjects(new ArrayList<>(selectedStudent != null ? selectedStudent.getRegisteredSubjects() : new ArrayList<>()));
@@ -465,8 +558,8 @@ public class AdminStudentController {
         student.setThesisTitle(thesisTitle); // Set thesis title
 
         if (selectedStudent != null) {
+            // Editing an existing student
             student.setProfilePicture(selectedStudent.getProfilePicture());
-            student.setTuition(selectedStudent.getTuition());
             student.setGrades(selectedStudent.getGrades());
             student.setProgress(selectedStudent.getProgress());
 
@@ -485,12 +578,16 @@ public class AdminStudentController {
                 }
             }
 
+            // Update tuition before saving
+            updateStudentTuition(student);
             studentDAO.updateStudent(student);
         } else {
-            // Enroll in new courses
+            // Adding a new student
             for (Course course : enrolledCoursesList) {
                 studentDAO.enrollStudentInCourse(student, course);
             }
+            // Update tuition before saving
+            updateStudentTuition(student);
             studentDAO.addStudent(student);
         }
 
@@ -513,6 +610,7 @@ public class AdminStudentController {
         }
 
         exporter.exportData(); // Export after saving a student
+        tabPane.getSelectionModel().select(0); // Return to main page
     }
 
     @FXML
@@ -535,6 +633,7 @@ public class AdminStudentController {
         gradeField.clear();
     }
 
+    // Student Details
     private void showStudentDetails(Student student) {
         Stage detailsStage = new Stage();
         detailsStage.setTitle("Student Details: " + student.getName());

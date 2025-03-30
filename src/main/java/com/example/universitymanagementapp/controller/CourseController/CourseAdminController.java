@@ -21,6 +21,7 @@ import java.util.List;
 
 public class CourseAdminController {
 
+    // FXML
     @FXML public TableView<Course> allCoursesTable;
     @FXML public TableColumn<Course, Integer> courseCodeColumn;
     @FXML public TableColumn<Course, String> courseNameColumn;
@@ -31,6 +32,7 @@ public class CourseAdminController {
     @FXML public Button addButton;
     @FXML public Button editButton;
     @FXML public Button deleteButton;
+    @FXML public TextField courseSearch; // Added search field
     @FXML public TextField courseCodeField;
     @FXML public TextField courseNameField;
     @FXML public TextField subjectNameField;
@@ -48,11 +50,17 @@ public class CourseAdminController {
     @FXML public Button saveScheduleButton;
     @FXML public TabPane tabPane;
 
+    // Creating objects of DAO classes
     private CourseDAO courseDAO = UniversityManagementApp.courseDAO;
     private StudentDAO studentDAO = UniversityManagementApp.studentDAO;
+
+    // Exporter constructor
     private ExExporter exporter = new ExExporter(courseDAO, studentDAO, UniversityManagementApp.facultyDAO,
             UniversityManagementApp.subjectDAO, UniversityManagementApp.eventDAO);
+
+    // Creating observable lists for courses and students
     private ObservableList<Course> allCoursesList = FXCollections.observableArrayList();
+    private ObservableList<Course> filteredCoursesList = FXCollections.observableArrayList(); // Added filtered list
     private ObservableList<Student> enrolledStudentsList = FXCollections.observableArrayList();
     private Course selectedCourse = null;
 
@@ -76,6 +84,12 @@ public class CourseAdminController {
 
         // Load all courses
         loadAllCourses();
+
+        // Add listener to courseSearch TextField for real-time filtering
+        courseSearch.textProperty().addListener((observable, oldValue, newValue) -> {
+            filterCourses(newValue);
+        });
+
         allCoursesTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             editButton.setDisable(newSelection == null);
             deleteButton.setDisable(newSelection == null);
@@ -98,20 +112,19 @@ public class CourseAdminController {
                 loadAllCourses();
             }
         });
-
     }
 
     private void openCourseDetailsTab(Course course) {
         // Check if a tab for this course already exists
         for (Tab tab : tabPane.getTabs()) {
-            if (tab.getText().equals(course.getCourseName() + " Details")) {
+            if (tab.getText().equals("Course " + course.getCourseCode() + " Details")) {
                 tabPane.getSelectionModel().select(tab);
                 return;
             }
         }
 
         // Create a new tab
-        Tab courseDetailsTab = new Tab("Course " + course.getCourseCode() + " Details");
+        Tab courseDetailsTab = new Tab(course.getCourseName() + " Details");
         courseDetailsTab.setClosable(true);
 
         // Create content for the tab
@@ -145,15 +158,34 @@ public class CourseAdminController {
         System.out.println("Refreshed courses in CourseAdminController.");
     }
 
-
     private void loadAllCourses() {
         allCoursesList.clear();
         allCoursesList.addAll(courseDAO.getAllCourses());
-        allCoursesTable.setItems(allCoursesList);
+        filteredCoursesList.clear();
+        filteredCoursesList.addAll(allCoursesList); // Initially, show all courses
+        allCoursesTable.setItems(filteredCoursesList);
         System.out.println("Loaded all courses: " + allCoursesList);
         for (Course course : allCoursesList) {
             System.out.println("Course " + course.getCourseCode() + " (" + course.getCourseName() + "): Enrolled = " + course.getCurrentEnrollment());
         }
+    }
+
+    private void filterCourses(String searchText) {
+        filteredCoursesList.clear();
+        if (searchText == null || searchText.trim().isEmpty()) {
+            filteredCoursesList.addAll(allCoursesList); // Show all courses if search is empty
+        } else {
+            String lowerCaseSearch = searchText.trim().toLowerCase();
+            for (Course course : allCoursesList) {
+                if (course.getCourseName().toLowerCase().contains(lowerCaseSearch) ||
+                        course.getSubjectCode().toLowerCase().contains(lowerCaseSearch) ||
+                        course.getInstructor().toLowerCase().contains(lowerCaseSearch)) {
+                    filteredCoursesList.add(course);
+                }
+            }
+        }
+        allCoursesTable.setItems(filteredCoursesList);
+        System.out.println("Filtered courses for '" + searchText + "': " + filteredCoursesList);
     }
 
     private void loadEnrolledStudents() {
@@ -208,6 +240,7 @@ public class CourseAdminController {
                     }
                     courseDAO.removeCourse(selected.getCourseName());
                     loadAllCourses();
+                    filterCourses(courseSearch.getText()); // Refresh the filtered list
                     exporter.exportData(); // Correct: Export after deleting course and updating student enrollments
                 }
             });
@@ -253,11 +286,12 @@ public class CourseAdminController {
             }
 
             loadAllCourses();
+            filterCourses(courseSearch.getText()); // Refresh the filtered list
             clearForm();
             selectedCourse = null;
             enrolledStudentsList.clear();
             exporter.exportData(); // Export after adding or updating a course
-            tabPane.getSelectionModel().select(0);
+            tabPane.getSelectionModel().select(0); // Return to all courses pane
         } catch (NumberFormatException e) {
             showAlert(Alert.AlertType.ERROR, "Error", "Course code and capacity must be numbers.");
         }
@@ -307,6 +341,7 @@ public class CourseAdminController {
             }
             loadEnrolledStudents();
             loadAllCourses();
+            filterCourses(courseSearch.getText()); // Refresh the filtered list
             exporter.exportData(); // Correct: Export after enrolling a student
         });
     }
@@ -325,6 +360,7 @@ public class CourseAdminController {
             }
             loadEnrolledStudents();
             loadAllCourses();
+            filterCourses(courseSearch.getText()); // Refresh the filtered list
             exporter.exportData(); // Correct: Export after unenrolling a student
         }
     }
@@ -346,6 +382,7 @@ public class CourseAdminController {
             }
             courseDAO.updateCourse(selectedCourse);
             loadAllCourses();
+            filterCourses(courseSearch.getText()); // Refresh the filtered list
             exporter.exportData(); // Correct: Export after updating the course schedule
         }
     }
@@ -367,8 +404,6 @@ public class CourseAdminController {
         meetingDaysField.clear();
         finalExamDateField.clear();
     }
-
-
 
     private void showAlert(Alert.AlertType type, String title, String message) {
         Alert alert = new Alert(type);
