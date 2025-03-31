@@ -241,7 +241,8 @@ public class CourseAdminController {
                     courseDAO.removeCourse(selected.getCourseName());
                     loadAllCourses();
                     filterCourses(courseSearch.getText()); // Refresh the filtered list
-                    exporter.exportData(); // Correct: Export after deleting course and updating student enrollments
+                    ExExporter.recordActivity("Course", "Deleted course: " + selected.getCourseName() + " (" + selected.getCourseCode() + ")");
+                    exporter.exportData(); // Export after deleting course and updating student enrollments
                 }
             });
         }
@@ -281,8 +282,10 @@ public class CourseAdminController {
 
             if (selectedCourse == null) {
                 courseDAO.addCourse(course);
+                ExExporter.recordActivity("Course", "Added course: " + course.getCourseName() + " (" + course.getCourseCode() + ")");
             } else {
                 courseDAO.updateCourse(course);
+                ExExporter.recordActivity("Course", "Updated course: " + course.getCourseName() + " (" + course.getCourseCode() + ")");
             }
 
             loadAllCourses();
@@ -342,7 +345,8 @@ public class CourseAdminController {
             loadEnrolledStudents();
             loadAllCourses();
             filterCourses(courseSearch.getText()); // Refresh the filtered list
-            exporter.exportData(); // Correct: Export after enrolling a student
+            ExExporter.recordRegistration(student.getStudentId(), selectedCourse.getCourseName(), selectedCourse.getCourseCode());
+            exporter.exportData(); // Export after enrolling a student
         });
     }
 
@@ -361,7 +365,7 @@ public class CourseAdminController {
             loadEnrolledStudents();
             loadAllCourses();
             filterCourses(courseSearch.getText()); // Refresh the filtered list
-            exporter.exportData(); // Correct: Export after unenrolling a student
+            exporter.exportData(); // Export after unenrolling a student
         }
     }
 
@@ -383,7 +387,9 @@ public class CourseAdminController {
             courseDAO.updateCourse(selectedCourse);
             loadAllCourses();
             filterCourses(courseSearch.getText()); // Refresh the filtered list
+            ExExporter.recordActivity("Course", "Updated course schedule: " + selectedCourse.getCourseName() + " (" + selectedCourse.getMeetingDaysTime() + ")");
             exporter.exportData(); // Correct: Export after updating the course schedule
+            tabPane.getSelectionModel().select(0);
         }
     }
 

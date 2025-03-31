@@ -5,6 +5,7 @@ import com.example.universitymanagementapp.model.Activity;
 import com.example.universitymanagementapp.model.Event;
 import com.example.universitymanagementapp.model.Notification;
 import com.example.universitymanagementapp.model.Registration;
+import com.example.universitymanagementapp.utils.ExExporter;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -31,6 +32,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class AdminDashboard {
+
+    @FXML
+    public TabPane tabPane;
 
     @FXML
     public MenuButton toggleMenuButton;
@@ -90,6 +94,8 @@ public class AdminDashboard {
     @FXML
     private TableColumn<Registration, Integer> registrationCourseColumn;
     @FXML
+    private TableColumn<Registration, String> registrationCourseNameColumn;
+    @FXML
     private TableColumn<Registration, String> registrationDateColumn;
 
     @FXML
@@ -128,17 +134,26 @@ public class AdminDashboard {
             initialDashboardContent = contentPane.getChildren().get(0);
         }
 
-        // Configure table columns
+        // Configure table columns for Recent Activities
         activityTypeColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getType()));
         activityDescriptionColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDescription()));
-        activityDateColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDate().format(DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm"))));
+        activityDateColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getDate().format(DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm")))
+        );
         recentActivitiesTable.setItems(recentActivities);
 
+        // Configure table columns for Recent Registrations
         registrationStudentColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getStudentId()));
-        registrationCourseColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getCourseCode()).asObject());
-        registrationDateColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDate().format(DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm"))));
+        registrationCourseColumn.setCellValueFactory(cellData ->
+                new SimpleIntegerProperty(cellData.getValue().getCourseCode()).asObject()
+        );
+        registrationCourseNameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getCourseName()));
+        registrationDateColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getDate().format(DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm")))
+        );
         recentRegistrationsTable.setItems(recentRegistrations);
 
+        // Configure table columns for Upcoming Events
         eventCodeColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getEventCode()));
         eventNameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getEventName()));
         eventDateColumn.setCellValueFactory(cellData -> {
@@ -152,9 +167,12 @@ public class AdminDashboard {
         eventLocationColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getEventLocation()));
         upcomingEventsTable.setItems(upcomingEvents);
 
+        // Configure table columns for Notifications
         notificationTypeColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getType()));
         notificationMessageColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getMessage()));
-        notificationDateColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDate().format(DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm"))));
+        notificationDateColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getDate().format(DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm")))
+        );
         notificationsTable.setItems(notifications);
 
         // Load data
@@ -166,23 +184,40 @@ public class AdminDashboard {
     }
 
     private void loadSummaryData() {
-        totalStudentsText.setText(String.valueOf(UniversityManagementApp.studentDAO.getAllStudents().size()));
-        totalCoursesText.setText(String.valueOf(UniversityManagementApp.courseDAO.getAllCourses().size()));
-        totalFacultyText.setText(String.valueOf(UniversityManagementApp.facultyDAO.getAllFaculty().size()));
-        totalSubjectsText.setText(String.valueOf(UniversityManagementApp.subjectDAO.getAllSubjects().size()));
-        totalEventsText.setText(String.valueOf(UniversityManagementApp.eventDAO.getAllEvents().size()));
+        // Force refresh from DAOs
+        int studentCount = UniversityManagementApp.studentDAO.getAllStudents().size();
+        int courseCount = UniversityManagementApp.courseDAO.getAllCourses().size();
+        int facultyCount = UniversityManagementApp.facultyDAO.getAllFaculty().size();
+        int subjectCount = UniversityManagementApp.subjectDAO.getAllSubjects().size();
+        int eventCount = UniversityManagementApp.eventDAO.getAllEvents().size();
+
+        totalStudentsText.setText(String.valueOf(studentCount));
+        totalCoursesText.setText(String.valueOf(courseCount));
+        totalFacultyText.setText(String.valueOf(facultyCount));
+        totalSubjectsText.setText(String.valueOf(subjectCount));
+        totalEventsText.setText(String.valueOf(eventCount));
     }
 
     private void loadRecentActivities() {
-        recentActivities.add(new Activity("Course Added", "Added course CS101", LocalDateTime.now().minusDays(1)));
-        recentActivities.add(new Activity("Student Added", "Added student S20250001", LocalDateTime.now().minusDays(2)));
-        recentActivities.add(new Activity("Subject Deleted", "Deleted subject MATH201", LocalDateTime.now().minusDays(3)));
+        recentActivities.clear();
+        // Grab whatever is in ExExporter
+        List<Activity> exportedActivities = ExExporter.getRecentActivities();
+        if (exportedActivities != null && !exportedActivities.isEmpty()) {
+            recentActivities.addAll(exportedActivities);
+        }
+        // If you truly want a fallback row, you could do it here.
+        // But removing it ensures we only show real data.
         recentActivities.sort(Comparator.comparing(Activity::getDate).reversed());
     }
 
     private void loadRecentRegistrations() {
-        recentRegistrations.add(new Registration("S20250001", 101, LocalDateTime.now().minusHours(5)));
-        recentRegistrations.add(new Registration("S20250002", 102, LocalDateTime.now().minusDays(1)));
+        recentRegistrations.clear();
+        // Grab from ExExporter
+        List<Registration> exportedRegistrations = ExExporter.getRecentRegistrations();
+        if (exportedRegistrations != null && !exportedRegistrations.isEmpty()) {
+            recentRegistrations.addAll(exportedRegistrations);
+        }
+        // No fallback row, so if none exist, table is simply empty
         recentRegistrations.sort(Comparator.comparing(Registration::getDate).reversed());
     }
 
@@ -205,8 +240,12 @@ public class AdminDashboard {
     }
 
     private void loadNotifications() {
-        notifications.add(new Notification("Alert", "Course CS101 is at full capacity", LocalDateTime.now().minusHours(2)));
-        notifications.add(new Notification("Warning", "Event E001 is tomorrow", LocalDateTime.now().minusDays(1)));
+        notifications.clear();
+        // Instead of hard-coded notifications, load from ExExporter
+        List<Notification> exportedNotifications = ExExporter.getRecentNotifications();
+        if (exportedNotifications != null && !exportedNotifications.isEmpty()) {
+            notifications.addAll(exportedNotifications);
+        }
         notifications.sort(Comparator.comparing(Notification::getDate).reversed());
     }
 
@@ -260,7 +299,7 @@ public class AdminDashboard {
             // If the current page is the courses tab, reload it
             loadPage("admin-course-selection.fxml");
         }
-        // Optionally, you can also refresh the recent activities and registrations on the dashboard
+        // Optionally, also refresh the dashboard’s recent activities & registrations
         recentActivities.clear();
         recentRegistrations.clear();
         loadRecentActivities();
@@ -296,6 +335,11 @@ public class AdminDashboard {
     @FXML
     public void handleEventSelection(ActionEvent actionEvent) {
         loadPage("admin-events-selection.fxml");
+    }
+
+    @FXML
+    public void handleSettingSelection(ActionEvent actionEvent) {
+        loadPage("admin-settings-selection.fxml");
     }
 
     @FXML

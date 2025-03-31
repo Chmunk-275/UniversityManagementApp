@@ -8,16 +8,24 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 public class ExExporter {
-    private static final String FILE_PATH = "/UMS_Data1.xlsx";
+    private static final String FILE_PATH = "src/main/resources/UMS_Data1.xlsx";
     private CourseDAO courseDAO;
     private StudentDAO studentDAO;
     private FacultyDAO facultyDAO;
     private SubjectDAO subjectDAO;
     private EventDAO eventDAO;
+
+    private static List<Activity> recentActivities = new ArrayList<>();
+    private static List<Registration> recentRegistrations = new ArrayList<>();
+    private static List<Notification> recentNotifications = new ArrayList<>();
+
+    private static LocalDateTime lastExportTime;
 
     public ExExporter(CourseDAO courseDAO, StudentDAO studentDAO, FacultyDAO facultyDAO,
                       SubjectDAO subjectDAO, EventDAO eventDAO) {
@@ -30,6 +38,7 @@ public class ExExporter {
 
     public void exportData() {
         try (Workbook workbook = new XSSFWorkbook()) {
+
             // Create sheets
             writeCourses(workbook.createSheet("Courses"));
             writeStudents(workbook.createSheet("Students"));
@@ -41,10 +50,71 @@ public class ExExporter {
             try (FileOutputStream fileOut = new FileOutputStream(FILE_PATH)) {
                 workbook.write(fileOut);
                 System.out.println("✅ Data successfully exported to Excel!");
+                lastExportTime = LocalDateTime.now();
             }
         } catch (IOException e) {
             System.err.println("Error writing to Excel file: " + e.getMessage());
         }
+        recordChanges();
+    }
+
+    // Getters for the static lists
+    public static List<Activity> getRecentActivities() {
+        return recentActivities;
+    }
+
+    public static List<Registration> getRecentRegistrations() {
+        return recentRegistrations;
+    }
+
+    public static List<Notification> getRecentNotifications() {
+        return recentNotifications;
+    }
+
+    // Record methods for adding to the static lists
+    public static void recordActivity(String type, String description) {
+        Activity activity = new Activity(type, description, LocalDateTime.now());
+        recentActivities.add(activity);
+        // Keep only the most recent 50
+        if (recentActivities.size() > 50) {
+            recentActivities.remove(0);
+        }
+    }
+
+    public static void recordRegistration(String studentId, String courseName, int courseCode) {
+        Registration registration = new Registration(studentId, courseName, courseCode, LocalDateTime.now());
+        recentRegistrations.add(registration);
+        // Keep only the most recent 50
+        if (recentRegistrations.size() > 50) {
+            recentRegistrations.remove(0);
+        }
+    }
+
+    // Record Notification
+    public static void recordNotification(String type, String message) {
+        Notification notification = new Notification(type, message, LocalDateTime.now());
+        recentNotifications.add(notification);
+        // Keep only the most recent 50
+        if (recentNotifications.size() > 50) {
+            recentNotifications.remove(0);
+        }
+    }
+
+    public static LocalDateTime getLastExportTime() {
+        return lastExportTime;
+    }
+
+    public static void setLastExportTime(LocalDateTime lastExportTime) {
+        ExExporter.lastExportTime = lastExportTime;
+    }
+
+    private void recordChanges() {
+        // Currently does nothing, but you can log or track changes here if you wish
+        List<Student> currentStudents = studentDAO.getAllStudents();
+        List<Course> currentCourses = courseDAO.getAllCourses();
+        List<Faculty> currentFaculty = facultyDAO.getAllFaculty();
+        List<Subject> currentSubjects = subjectDAO.getAllSubjects();
+        List<Event> currentEvents = eventDAO.getAllEvents();
     }
 
     private void writeCourses(Sheet sheet) {
@@ -65,6 +135,7 @@ public class ExExporter {
             row.createCell(7).setCellValue(course.getMeetingLocation());
             row.createCell(8).setCellValue(course.getInstructor());
         }
+        recordChanges();
     }
 
     private void writeStudents(Sheet sheet) {
@@ -75,7 +146,7 @@ public class ExExporter {
         int rowNum = 1;
         for (Student student : students) {
             Row row = sheet.createRow(rowNum++);
-            row.createCell(0).setCellValue(student.getStudentId()); // Use studentId directly
+            row.createCell(0).setCellValue(student.getStudentId());
             row.createCell(1).setCellValue(student.getName());
             row.createCell(2).setCellValue(student.getAddress());
             row.createCell(3).setCellValue(student.getPhoneNumber());
@@ -86,8 +157,9 @@ public class ExExporter {
             row.createCell(8).setCellValue(String.join(", ", student.getRegisteredSubjects()));
             row.createCell(9).setCellValue(student.getThesisTitle());
             row.createCell(10).setCellValue(student.getProgress() / 100.0); // Convert back to decimal
-            row.createCell(11).setCellValue(student.getPlaintextPassword()); // Already using plaintext
+            row.createCell(11).setCellValue(student.getPlaintextPassword());
         }
+        recordChanges();
     }
 
     private void writeFaculty(Sheet sheet) {
@@ -104,8 +176,9 @@ public class ExExporter {
             row.createCell(4).setCellValue(f.getEmail());
             row.createCell(5).setCellValue(f.getOfficeLocation());
             row.createCell(6).setCellValue(String.join(", ", f.getCoursesOffered()));
-            row.createCell(7).setCellValue(f.getPlaintextPassword()); // Use plaintext
+            row.createCell(7).setCellValue(f.getPlaintextPassword());
         }
+        recordChanges();
     }
 
     private void writeSubjects(Sheet sheet) {
@@ -117,6 +190,7 @@ public class ExExporter {
             row.createCell(0).setCellValue(subject.getSubjectCode());
             row.createCell(1).setCellValue(subject.getSubjectName());
         }
+        recordChanges();
     }
 
     private void writeEvents(Sheet sheet) {
@@ -138,6 +212,7 @@ public class ExExporter {
             row.createCell(7).setCellValue(event.getEventHeaderImage() != null ? "custom" : "default");
             row.createCell(8).setCellValue(String.join(", ", event.getRegisteredStudents()));
         }
+        recordChanges();
     }
 
     private void createHeader(Sheet sheet, String[] headers) {

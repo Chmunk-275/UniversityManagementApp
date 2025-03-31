@@ -18,6 +18,8 @@ import java.util.List;
 
 public class AdminSubjectController {
 
+    // All changes shown in activity
+
     @FXML
     public TableView<Subject> allSubjectsTable;
 
@@ -206,6 +208,7 @@ public class AdminSubjectController {
                     // Refresh the UI
                     loadAllSubjects();
                     filterSubjects(subjectSearch.getText()); // Refresh the filtered list
+                    ExExporter.recordActivity("Subject", "Subject" + selectedSubject.getSubjectName() + "(" + selectedSubject.getSubjectCode() + ")" + " deleted");
                     exporter.exportData(); // Export after deleting subject and associated courses
                 }
             });
@@ -241,12 +244,14 @@ public class AdminSubjectController {
             // Add new subject
             Subject newSubject = new Subject(name, code);
             subjectDAO.addSubject(newSubject);
+            ExExporter.recordActivity("Subject", "Subject" + name + "(" + code + ")" + " added");
         } else {
             // Update existing subject
             String originalSubjectCode = selectedSubject.getSubjectCode(); // Store the original subject code
             selectedSubject.setSubjectName(name);
             selectedSubject.setSubjectCode(code);
             subjectDAO.updateSubject(originalSubjectCode, selectedSubject);
+            ExExporter.recordActivity("Subject", "Subject" + originalSubjectCode + "(" + name + ")" + " updated to " + code);
             selectedSubject = null;
         }
 

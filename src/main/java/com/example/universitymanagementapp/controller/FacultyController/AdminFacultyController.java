@@ -25,6 +25,9 @@ import java.util.List;
 
 public class AdminFacultyController {
 
+    // Faculty assigned courses and faculty deleted gets shown in notifications
+    // Adding Faculty and editing faculty gets shown in activities
+
     @FXML
     private AnchorPane rootPane;
 
@@ -334,6 +337,7 @@ public class AdminFacultyController {
             // Update the faculty object
             selectedFaculty.setCoursesOffered(newCoursesOffered);
             facultyDAO.updateFaculty(selectedFaculty.getUsername(), selectedFaculty);
+            ExExporter.recordNotification("Faculty", "Faculty " + selectedFaculty.getName() + " has been assigned to the following courses:" + newCoursesOffered.toString());
             exporter.exportData();
             assignStage.close();
         });
@@ -388,6 +392,7 @@ public class AdminFacultyController {
                     facultyDAO.deleteFacultyById(selected.getUsername());
                     loadAllFaculty();
                     filterFaculty(facultySearch.getText());
+                    ExExporter.recordNotification("Faculty", "Faculty " + selected.getName() + " has been deleted.");
                     exporter.exportData();
                 }
             });
@@ -433,8 +438,10 @@ public class AdminFacultyController {
 
         if (selectedFaculty == null) {
             facultyDAO.addFaculty(faculty);
+            ExExporter.recordNotification("Faculty", "New Faculty Member Added: " + faculty.getName());
         } else {
             facultyDAO.updateFaculty(selectedFaculty.getUsername(), faculty);
+            ExExporter.recordActivity("Faculty", "Faculty Member Updated: " + faculty.getName());
             selectedFaculty = null;
         }
 

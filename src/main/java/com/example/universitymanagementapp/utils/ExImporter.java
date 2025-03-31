@@ -16,7 +16,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class ExImporter {
-    private static final String FILE_PATH = "/UMS_Data.xlsx";// Path to your Excel file
+    private static final String FILE_PATH = "src/main/resources/UMS_Data.xlsx";// Path to your Excel file
     private CourseDAO courseService;
     private StudentDAO studentService;
     private FacultyDAO facultyService;
@@ -179,7 +179,7 @@ public class ExImporter {
             Row row = rowIterator.next();
             if (isRowEmpty(row)) break;
 
-            String coursesString = getStringValue(row.getCell(8));
+            String coursesString = getStringValue(row.getCell(6));
             List<String> coursesOffered = new ArrayList<>();
             //split into a list
             if (coursesString != null && !coursesString.isEmpty()) {

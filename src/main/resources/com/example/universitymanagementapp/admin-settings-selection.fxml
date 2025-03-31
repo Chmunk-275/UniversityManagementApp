@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane fx:id="rootPane" prefHeight="400.0" prefWidth="600.0" styleClass="anchor-pane" stylesheets="@admin-students-management.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.universitymanagementapp.controller.AdminController.AdminSettingsController">
+<AnchorPane fx:id="rootPane" prefHeight="400.0" prefWidth="600.0" styleClass="anchor-pane" stylesheets="@admin-students-management.css" xmlns="http://javafx.com/javafx/" xmlns:fx="http://javafx.com/fxml/" fx:controller="com.example.universitymanagementapp.controller.AdminController.AdminSettingsController">
     <children>
         <!-- Toolbar at the top -->
         <ToolBar layoutX="0.0" layoutY="0.0" prefHeight="39.0" prefWidth="600.0" styleClass="tool-bar" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
