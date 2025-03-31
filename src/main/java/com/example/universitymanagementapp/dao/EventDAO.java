@@ -8,49 +8,48 @@ import java.util.ArrayList;
 public class EventDAO {
     private static ArrayList<Event> events = new ArrayList<>();
 
-    //add event
+    // Add event
     public void addEvent(Event event) {
         events.add(event);
-        System.out.println("Event added successfully");
+        System.out.println("Event added successfully: " + event.getEventCode());
     }
 
-    //delete event
-    public void deleteEvent(Event event){
-        events.remove(event);
-        System.out.println("Event deleted successfully");
+    // Delete event by code
+    public void deleteEvent(String eventCode) {
+        events.removeIf(event -> event.getEventCode().equals(eventCode));
+        System.out.println("Event deleted successfully: " + eventCode);
     }
 
-    //edit/update event
-    public void editEvent(Event updatedEvent){
-        for (Event e : events) {
-            if(e.getEventCode().equals(updatedEvent.getEventCode())){
-                e.setEventName(updatedEvent.getEventName());
-                e.setEventDescription(updatedEvent.getEventDescription());
-                e.setEventHeaderImage(updatedEvent.getEventHeaderImage());
-                e.setEventLocation(updatedEvent.getEventLocation());
-                e.setEventDateTime(updatedEvent.getEventDateTime());
-                e.setEventCapacity(updatedEvent.getEventCapacity());
-                e.setEventCost(updatedEvent.getEventCost());
-                e.setRegisteredStudents(updatedEvent.getRegisteredStudents());
+    // Update event
+    public void updateEvent(String oldCode, Event updatedEvent) {
+        for (int i = 0; i < events.size(); i++) {
+            Event e = events.get(i);
+            if (e.getEventCode().equals(oldCode)) {
+                events.set(i, updatedEvent);
+                System.out.println("Event updated successfully: " + oldCode + " -> " + updatedEvent.getEventCode());
+                return;
             }
         }
+        System.out.println("Event not found for update: " + oldCode);
     }
 
-    //find event by name
-    public Event findEventByName(String eventName){
+    // Find event by name
+    public Event findEventByName(String eventName) {
         return events.stream()
                 .filter(event -> event.getEventName().equalsIgnoreCase(eventName))
                 .findFirst()
                 .orElse(null);
     }
 
-    //get all events
-    public List<Event> getAllEvents(){
-        return events;
+    // Get all events
+    public List<Event> getAllEvents() {
+        return new ArrayList<>(events); // Return a copy to prevent external modification
     }
 
-
-    public void clearEvents(){
+    // Clear all events
+    public void clearEvents() {
         events.clear();
+        System.out.println("All events cleared");
     }
+
 }

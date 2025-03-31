@@ -182,3 +182,15 @@
     -fx-border-color: #cccccc;
     -fx-border-radius: 3;
 }
+
+/* Day box styling for calendar dates */
+.day-box {
+    -fx-background-color: #ffffff; /* Default background color (white) */
+    -fx-border-color: #000000; /* Black border */
+    -fx-border-width: 1;
+}
+
+/* Hover effect for day boxes */
+.day-box:hover {
+    -fx-background-color: #d3d3d3; /* Light grey on hover */
+}

@@ -29,6 +29,10 @@ import com.example.universitymanagementapp.controller.AdminController.AdminDashb
 
 public class AdminStudentController {
 
+    // Updating grade gets displayed in notifications
+    // Adding/editing student gets shown in activities
+    // Enrolling gets shown in enrollment section
+
     private CourseAdminController courseAdminController;
 
     public void setCourseAdminController(CourseAdminController controller) {
@@ -254,6 +258,7 @@ public class AdminStudentController {
         int numberOfCourses = student.getRegisteredCourses() != null ? student.getRegisteredCourses().size() : 0;
         int tuition = numberOfCourses * 250; // $250 per course
         student.setTuition(tuition);
+        ExExporter.recordNotification("Student Tuition", "Tuition for " + student.getName() + " (" + student.getStudentId() + ") updated to $" + tuition + " (" + numberOfCourses + " courses)");
         System.out.println("Updated tuition for student " + student.getStudentId() + ": $" + tuition + " (" + numberOfCourses + " courses)");
     }
 
@@ -362,6 +367,9 @@ public class AdminStudentController {
                     // Refresh the UI
                     loadAllStudents();
                     filterStudents(studentSearch.getText());
+
+                    // Record activity
+                    ExExporter.recordActivity("Student", "Student " + selected.getName() + " (" + selected.getStudentId() + ") deleted");
 
                     // Export updated data
                     exporter.exportData();
@@ -502,6 +510,7 @@ public class AdminStudentController {
                 grade.setFinalGrade(finalGrade);
             }
             gradeField.clear();
+            ExExporter.recordNotification("Student", "Student " + selectedStudent.getName() + " (" + selectedStudent.getStudentId() + ") updated grade for " + selectedCourse.getCourseName() + " (" + selectedCourse.getCourseCode() + ")");
             exporter.exportData(); // Export after updating a grade
 
             // Navigate back to the "All Students" tab
@@ -581,6 +590,7 @@ public class AdminStudentController {
             // Update tuition before saving
             updateStudentTuition(student);
             studentDAO.updateStudent(student);
+            ExExporter.recordActivity("Student", "Student " + selectedStudent.getName() + " (" + selectedStudent.getStudentId() + ") updated");
         } else {
             // Adding a new student
             for (Course course : enrolledCoursesList) {
@@ -589,6 +599,7 @@ public class AdminStudentController {
             // Update tuition before saving
             updateStudentTuition(student);
             studentDAO.addStudent(student);
+            ExExporter.recordActivity("Student", "Student " + student.getName() + " (" + student.getStudentId() + ") added");
         }
 
         loadAllStudents();

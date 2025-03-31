@@ -25,6 +25,7 @@
                 <MenuItem fx:id="studentSelection" mnemonicParsing="false" onAction="#handleStudentSelection" text="Students" />
                 <MenuItem fx:id="facultySelection" mnemonicParsing="false" onAction="#handleFacultySelection" text="Faculty" />
                 <MenuItem fx:id="eventSelection" mnemonicParsing="false" onAction="#handleEventSelection" text="Events" />
+                <MenuItem fx:id="settingsSelection" mnemonicParsing="false" onAction="#handleSettingSelection" text="Settings" />
                 <MenuItem fx:id="logout" mnemonicParsing="false" onAction="#handleLogoutAction" text="Logout" />
             </items>
         </MenuButton>
@@ -67,7 +68,7 @@
                                 <TableView fx:id="recentActivitiesTable" prefHeight="150.0" styleClass="table-view">
                                     <columns>
                                         <TableColumn fx:id="activityTypeColumn" prefWidth="150" text="Activity Type" />
-                                        <TableColumn fx:id="activityDescriptionColumn" prefWidth="300" text="Description" />
+                                        <TableColumn fx:id="activityDescriptionColumn" prefWidth="500" text="Description" />
                                         <TableColumn fx:id="activityDateColumn" prefWidth="150" text="Date" />
                                     </columns>
                                 </TableView>
@@ -80,6 +81,7 @@
                                     <columns>
                                         <TableColumn fx:id="registrationStudentColumn" prefWidth="150" text="Student ID" />
                                         <TableColumn fx:id="registrationCourseColumn" prefWidth="150" text="Course Code" />
+                                        <TableColumn fx:id="registrationCourseNameColumn" prefWidth="150" text="Course Name"/>
                                         <TableColumn fx:id="registrationDateColumn" prefWidth="150" text="Date" />
                                     </columns>
                                 </TableView>

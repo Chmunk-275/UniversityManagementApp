@@ -271,8 +271,8 @@ public class FacultyDashboard {
 
     private void loadRecentRegistrations() {
         // Simulate recent registrations (in a real app, this would come from a log or database)
-        recentRegistrations.add(new Registration("S20250001", 101, LocalDateTime.now().minusHours(5)));
-        recentRegistrations.add(new Registration("S20250002", 102, LocalDateTime.now().minusDays(1)));
+        recentRegistrations.add(new Registration("S20250001", "Math", 10, LocalDateTime.now().minusHours(5)));
+        recentRegistrations.add(new Registration("S20250002", "Physics",12, LocalDateTime.now().minusDays(1)));
         recentRegistrations.sort(Comparator.comparing(Registration::getDate).reversed());
     }
 

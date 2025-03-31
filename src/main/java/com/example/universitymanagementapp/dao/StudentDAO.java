@@ -19,6 +19,14 @@ public class StudentDAO {
         students.add(student);
     }
 
+    // Get student by name
+    public Student getStudentByName(String studentName) {
+        return students.stream()
+                .filter(s -> s.getName().equalsIgnoreCase(studentName))
+                .findFirst()
+                .orElse(null);
+    }
+
     public Student getStudentById(String studentId) {
         if (studentId == null) return null;
         String normalizedStudentId = studentId.trim();
@@ -100,6 +108,8 @@ public class StudentDAO {
         }
     }
 
+
+
     public void updateStudent(Student updated) {
         for (int i = 0; i < students.size(); i++) {
             if (students.get(i).getStudentId().equals(updated.getStudentId())) {
@@ -113,9 +123,10 @@ public class StudentDAO {
         students.removeIf(s -> s.getStudentId().equals(studentId));
     }
 
-    public void removeStudent(String studentId) {
-        students.removeIf(s -> s.getStudentId().equals(studentId));
+    public void removeStudentByName(String studentName) {
+        students.removeIf(s -> s.getName().equals(studentName));
     }
+
 
     public void clearStudents() {
         students.clear();
