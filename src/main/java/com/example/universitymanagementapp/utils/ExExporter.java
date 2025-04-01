@@ -225,7 +225,7 @@ public class ExExporter {
             row.createCell(4).setCellValue(event.getEventDateTime() != null ? sdf.format(event.getEventDateTime()) : "");
             row.createCell(5).setCellValue(event.getEventCapacity());
             row.createCell(6).setCellValue(event.getEventCost());
-            row.createCell(7).setCellValue(event.getEventHeaderImagePath() != null ? "custom" : "default");
+            row.createCell(7).setCellValue(event.getEventHeaderImage() != null ? "custom" : "default");
             row.createCell(8).setCellValue(String.join(", ", event.getRegisteredStudents()));
         }
         recordChanges();
