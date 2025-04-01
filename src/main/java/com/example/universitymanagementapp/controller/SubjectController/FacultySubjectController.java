@@ -27,21 +27,11 @@ public class FacultySubjectController {
     @FXML
     public TableColumn<Subject, String> subjectCodeColumn;
 
-    @FXML
-    public TableView<Subject> searchResultsTable;
-
-    @FXML
-    public TableColumn<Subject, String> searchSubjectNameColumn;
-
-    @FXML
-    public TableColumn<Subject, String> searchSubjectCodeColumn;
-
-    private SubjectDAO subjectDAO = UniversityManagementApp.subjectDAO; // Access SubjectDAO from HelloApplication
+    private SubjectDAO subjectDAO = UniversityManagementApp.subjectDAO;
     private ObservableList<Subject> allSubjectsList = FXCollections.observableArrayList();
-    private ObservableList<Subject> searchResultsList = FXCollections.observableArrayList();
+    private ObservableList<Subject> filteredSubjectsList = FXCollections.observableArrayList();
 
     private FacultyDashboard parentController;
-
 
     public void setParentController(FacultyDashboard parentController) {
         this.parentController = parentController;
@@ -53,49 +43,43 @@ public class FacultySubjectController {
         subjectNameColumn.setCellValueFactory(new PropertyValueFactory<>("subjectName"));
         subjectCodeColumn.setCellValueFactory(new PropertyValueFactory<>("subjectCode"));
 
-        // Configure columns for Search Results table
-        searchSubjectNameColumn.setCellValueFactory(new PropertyValueFactory<>("subjectName"));
-        searchSubjectCodeColumn.setCellValueFactory(new PropertyValueFactory<>("subjectCode"));
-
-        // Set table resize policies
+        // Set table resize policy
         allSubjectsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        searchResultsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         // Load all subjects
         loadAllSubjects();
 
-        // Add listener to subjectSearch TextField for real-time search
+        // Add listener to subjectSearch TextField for real-time filtering
         subjectSearch.textProperty().addListener((observable, oldValue, newValue) -> {
             filterSubjects(newValue);
         });
     }
 
-    // Load all subjects into the first tab
+    // Load all subjects into the table
     private void loadAllSubjects() {
         allSubjectsList.clear();
         allSubjectsList.addAll(subjectDAO.getAllSubjects());
-        allSubjectsTable.setItems(allSubjectsList);
+        filteredSubjectsList.clear();
+        filteredSubjectsList.addAll(allSubjectsList);
+        allSubjectsTable.setItems(filteredSubjectsList);
         System.out.println("Loaded all subjects: " + allSubjectsList);
     }
 
-    // Filter subjects based on search input and display in the second tab
+    // Filter subjects in the allSubjectsTable based on search input
     private void filterSubjects(String searchText) {
-        searchResultsList.clear();
+        filteredSubjectsList.clear();
         if (searchText == null || searchText.trim().isEmpty()) {
-            searchResultsTable.setItems(searchResultsList);
-            return;
-        }
-
-        String lowerCaseSearch = searchText.trim().toLowerCase();
-        for (Subject subject : subjectDAO.getAllSubjects()) {
-            if (subject.getSubjectName().toLowerCase().contains(lowerCaseSearch) ||
-                    subject.getSubjectCode().toLowerCase().contains(lowerCaseSearch)) {
-                searchResultsList.add(subject);
+            filteredSubjectsList.addAll(allSubjectsList);
+        } else {
+            String lowerCaseSearch = searchText.trim().toLowerCase();
+            for (Subject subject : allSubjectsList) {
+                if (subject.getSubjectName().toLowerCase().contains(lowerCaseSearch) ||
+                        subject.getSubjectCode().toLowerCase().contains(lowerCaseSearch)) {
+                    filteredSubjectsList.add(subject);
+                }
             }
         }
-        searchResultsTable.setItems(searchResultsList);
-        System.out.println("Search results for '" + searchText + "': " + searchResultsList);
+        allSubjectsTable.setItems(filteredSubjectsList);
+        System.out.println("Filtered subjects for '" + searchText + "': " + filteredSubjectsList);
     }
-
-
 }
