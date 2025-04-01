@@ -16,12 +16,12 @@
         <ToolBar layoutX="0.0" layoutY="0.0" prefHeight="39.0" prefWidth="600.0" styleClass="tool-bar" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
 
         <!-- TabPane for different sections -->
-        <TabPane fx:id="tabPane" styleClass="tab-pane" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0">
+        <TabPane fx:id="tabPane" prefHeight="513.0" prefWidth="600.0" styleClass="tab-pane" AnchorPane.bottomAnchor="-153.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0">
             <tabs>
                 <!-- Tab 1: Admin Profile -->
                 <Tab closable="false" text="Profile">
                     <content>
-                        <AnchorPane>
+                        <AnchorPane prefHeight="182.0" prefWidth="580.0">
                             <children>
                                 <!-- Admin Information Form -->
                                 <Text styleClass="text" text="Admin Information" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
@@ -33,6 +33,12 @@
                                 <PasswordField fx:id="maskedPasswordField" editable="false" promptText="Password" styleClass="text-field" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="120.0" />
                         <Label layoutX="12.0" layoutY="161.0" styleClass="label" text="Location:" />
                         <TextField fx:id="profileLocationField" editable="false" layoutX="100.0" layoutY="159.0" promptText="Location" styleClass="text-field" />
+                        <Label layoutX="12.0" layoutY="200.0" styleClass="label" text="Research" />
+                        <Label layoutX="12.0" layoutY="239.0" styleClass="label" text="Email:" />
+                        <TextField fx:id="profileResearchField" editable="false" layoutX="100.0" layoutY="199.0" prefHeight="29.0" prefWidth="416.0" promptText="Research" styleClass="text-field" />
+                        <TextField fx:id="profileEmailField" editable="false" layoutX="101.0" layoutY="240.0" prefHeight="29.0" prefWidth="416.0" promptText="Email" styleClass="text-field" />
+                        <Label layoutX="12.0" layoutY="281.0" styleClass="label" text="Degree:" />
+                        <TextField fx:id="profileDegreeField" editable="false" layoutX="100.0" layoutY="282.0" prefHeight="29.0" prefWidth="416.0" promptText="Degree" styleClass="text-field" />
                             </children>
                         </AnchorPane>
                     </content>
