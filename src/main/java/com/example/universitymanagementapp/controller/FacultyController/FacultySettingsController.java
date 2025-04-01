@@ -13,6 +13,9 @@ public class FacultySettingsController {
     @FXML private TextField usernameField;
     @FXML private PasswordField maskedPasswordField;
     @FXML private TextField profileLocationField;
+    @FXML private TextField profileResearchField;
+    @FXML private TextField profileEmailField;
+    @FXML private TextField profileDegreeField;
     @FXML private Button saveProfileButton;
     @FXML private Button clearProfileButton;
 
@@ -47,6 +50,10 @@ public class FacultySettingsController {
         maskedPasswordField.setText(loggedInFaculty.getPlaintextPassword());
         profileLocationField.setText(loggedInFaculty.getOfficeLocation());
         currentLocationField.setText(loggedInFaculty.getOfficeLocation());
+        profileResearchField.setText(loggedInFaculty.getResearchInterest());
+        profileEmailField.setText(loggedInFaculty.getEmail());
+        profileDegreeField.setText(loggedInFaculty.getDegree());
+
 
     }
 

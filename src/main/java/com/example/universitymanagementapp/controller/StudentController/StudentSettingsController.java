@@ -4,11 +4,13 @@ import com.example.universitymanagementapp.UniversityManagementApp;
 import com.example.universitymanagementapp.model.Student;
 import com.example.universitymanagementapp.utils.PasswordHasher;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 
 public class StudentSettingsController {
 
-    @FXML private TabPane tabPane;
     @FXML private TextField nameField;
     @FXML private TextField usernameField;
     @FXML private PasswordField maskedPasswordField;
@@ -70,7 +72,6 @@ public class StudentSettingsController {
         UniversityManagementApp.studentDAO.updateStudent(loggedInStudent);
         showAlert(Alert.AlertType.INFORMATION, "Password updated successfully!");
         clearPasswordFields();
-        tabPane.getSelectionModel().select(0);
     }
 
     @FXML

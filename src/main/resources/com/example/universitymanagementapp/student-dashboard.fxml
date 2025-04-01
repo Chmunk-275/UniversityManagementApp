@@ -24,6 +24,7 @@
                 <MenuItem fx:id="eventSelection" mnemonicParsing="false" onAction="#handleEventSelection" text="Events" />
                 <MenuItem fx:id="settings" mnemonicParsing="false" onAction="#handleSettingsSelection" text="Settings" />
                 <MenuItem fx:id="logout" mnemonicParsing="false" onAction="#handleLogoutAction" text="Logout" />
+                <MenuItem fx:id="settings" mnemonicParsing="false" onAction="#handleSettingsSelection" text="Settings" />
             </items>
         </MenuButton>
 
