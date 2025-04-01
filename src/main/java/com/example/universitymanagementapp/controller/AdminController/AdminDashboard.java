@@ -348,7 +348,9 @@ public class AdminDashboard {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/universitymanagementapp/login-page.fxml"));
             Parent loginPage = loader.load();
             Stage stage = (Stage) toggleMenuButton.getScene().getWindow();
-            stage.setScene(new Scene(loginPage));
+            stage.getScene().setRoot(loginPage);
+            stage.setWidth(600);
+            stage.setHeight(400);
             stage.setTitle("Login Page");
             stage.show();
         } catch (IOException e) {
