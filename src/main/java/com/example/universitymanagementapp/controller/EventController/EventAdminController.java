@@ -78,7 +78,7 @@ public class EventAdminController {
     private TextField eventSearch;
 
     @FXML
-    private Tab manageEventsPane;
+    private AnchorPane manageEventsPane;
 
     @FXML
     private TextField codeField;
@@ -306,12 +306,12 @@ public class EventAdminController {
             try {
                 detailImageView.setImage(new Image("file:" + imagePath));
             } catch (Exception e) {
-                detailImageView.setImage(new Image(getClass().getResourceAsStream("/images/default.jpg")));
+                detailImageView.setImage(new Image(getClass().getResourceAsStream("/images/backgroundimage.jpg")));
             }
         } else if (event.getEventHeaderImage() != null) {
             detailImageView.setImage(event.getEventHeaderImage());
         } else {
-            detailImageView.setImage(new Image(getClass().getResourceAsStream("/images/default.jpg")));
+            detailImageView.setImage(new Image(getClass().getResourceAsStream("/images/backgroundimage.jpg")));
         }
         detailImageView.setFitWidth(200);
         detailImageView.setFitHeight(200);
@@ -354,7 +354,7 @@ public class EventAdminController {
     private void handleAddEvent() {
         handleClearForm();
         selectedEvent = null;
-        tabPane.getSelectionModel().select(manageEventsPane);
+        tabPane.getSelectionModel().select(2);
     }
 
     @FXML
@@ -373,7 +373,7 @@ public class EventAdminController {
             capacityField.setText(String.valueOf(selectedEvent.getEventCapacity()));
             costField.setText(selectedEvent.getEventCost());
             currentImagePath = selectedEvent.getEventHeaderImagePath();
-            tabPane.getSelectionModel().select(manageEventsPane);
+            tabPane.getSelectionModel().select(2);
         } else {
             showAlert(Alert.AlertType.WARNING, "No Selection", "Please select an event to edit.");
         }
