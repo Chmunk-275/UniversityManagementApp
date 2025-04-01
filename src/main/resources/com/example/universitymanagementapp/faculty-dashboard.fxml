@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane fx:id="rootPane" style="-fx-background-size: contain; -fx-border-color: black; -fx-border-width: 15;" stylesheets="@admin-students-management.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.universitymanagementapp.controller.FacultyController.FacultyDashboard">
+<AnchorPane fx:id="rootPane" style="-fx-background-size: contain; -fx-border-color: black; -fx-border-width: 15;" stylesheets="@admin-students-management.css" xmlns="http://javafx.com/javafx/" xmlns:fx="http://javafx.com/fxml/" fx:controller="com.example.universitymanagementapp.controller.FacultyController.FacultyDashboard">
     <children>
         <!-- Navigation Menu -->
         <MenuButton fx:id="toggleMenuButton" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" prefHeight="40.666666" prefWidth="72.0" style="-fx-background-color: rgb(173,0,41);" text="☰">
@@ -23,6 +23,7 @@
                 <MenuItem fx:id="studentSelection" mnemonicParsing="false" onAction="#handleStudentSelection" text="Students" />
                 <MenuItem fx:id="facultySelection" mnemonicParsing="false" onAction="#handleFacultySelection" text="Faculty" />
                 <MenuItem fx:id="eventSelection" mnemonicParsing="false" onAction="#handleEventSelection" text="Events" />
+                <MenuItem fx:id="settingsSelection" mnemonicParsing="false" onAction="#handleSettingsSelection" text="Settings" />
                 <MenuItem fx:id="logout" mnemonicParsing="false" onAction="#handleLogoutAction" text="Logout" />
             </items>
         </MenuButton>
@@ -69,6 +70,7 @@
                                     <columns>
                                         <TableColumn fx:id="registrationStudentColumn" prefWidth="150" text="Student ID" />
                                         <TableColumn fx:id="registrationCourseColumn" prefWidth="150" text="Course Code" />
+                                        <TableColumn fx:id="registrationCourseNameColumn" prefWidth="150" text="Course Name" />
                                         <TableColumn fx:id="registrationDateColumn" prefWidth="150" text="Date" />
                                     </columns>
                                 </TableView>

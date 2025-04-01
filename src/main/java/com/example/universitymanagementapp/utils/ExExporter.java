@@ -117,6 +117,22 @@ public class ExExporter {
         List<Event> currentEvents = eventDAO.getAllEvents();
     }
 
+    public static void updateStudentTuition(Student student) {
+        if (student == null) {
+            return;
+        }
+        int numberOfCourses = student.getRegisteredCourses() != null ? student.getRegisteredCourses().size() : 0;
+        int newTuition = numberOfCourses * 250; // $250 per course
+        int oldTuition = student.getTuition(); // Get the current tuition
+
+        // Only update and record a notification if the tuition has changed
+        if (newTuition != oldTuition) {
+            student.setTuition(newTuition);
+            recordNotification("Student Tuition", "Tuition for " + student.getName() + " (" + student.getStudentId() + ") updated to $" + newTuition + " (" + numberOfCourses + " courses)");
+            System.out.println("Updated tuition for student " + student.getStudentId() + ": $" + newTuition + " (" + numberOfCourses + " courses)");
+        }
+    }
+
     private void writeCourses(Sheet sheet) {
         List<Course> courses = courseDAO.getAllCourses();
         createHeader(sheet, new String[]{"Course Code", "Course Name", "Subject Code", "Section ID",
@@ -209,7 +225,7 @@ public class ExExporter {
             row.createCell(4).setCellValue(event.getEventDateTime() != null ? sdf.format(event.getEventDateTime()) : "");
             row.createCell(5).setCellValue(event.getEventCapacity());
             row.createCell(6).setCellValue(event.getEventCost());
-            row.createCell(7).setCellValue(event.getEventHeaderImagePath() != null ? "custom" : "default");
+            row.createCell(7).setCellValue(event.getEventHeaderImage() != null ? "custom" : "default");
             row.createCell(8).setCellValue(String.join(", ", event.getRegisteredStudents()));
         }
         recordChanges();

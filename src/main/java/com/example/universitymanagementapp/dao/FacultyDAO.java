@@ -55,6 +55,26 @@ public class FacultyDAO {
                 .orElse(null);
     }
 
+    // Finds faculty member based on their name
+    public Faculty getFacultyByName(String name) {
+        if (name == null || name.trim().isEmpty()) {
+            return null;
+        }
+        String normalizedName = name.trim().replaceAll("\\s+", " ");
+        return facultyList.stream()
+                .filter(faculty -> faculty.getName() != null && faculty.getName().trim().replaceAll("\\s+", " ").equalsIgnoreCase(normalizedName))
+                .findFirst()
+                .orElse(null);
+    }
+
+    // finds faculty member based on their ID
+    public Faculty getFacultyById(String id) {
+        return facultyList.stream()
+                .filter(faculty -> faculty.getUsername().equals(id))
+                .findFirst()
+                .orElse(null);
+    }
+
     //get logged in faculty
     public static String getLoggedInFaculty(String username) {
         for (Faculty faculty : facultyList) {
@@ -74,4 +94,3 @@ public class FacultyDAO {
         facultyList.clear();
     }
 }
-

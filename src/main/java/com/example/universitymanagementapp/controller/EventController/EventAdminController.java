@@ -10,6 +10,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -19,14 +20,9 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.FileChooser;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -125,9 +121,6 @@ public class EventAdminController {
     @FXML
     private Button unregisterStudentButton;
 
-    @FXML
-    private Button browseImageButton;
-
     // DAO and Exporter
     private StudentDAO studentDAO = UniversityManagementApp.studentDAO;
     private EventDAO eventDAO = UniversityManagementApp.eventDAO;
@@ -142,10 +135,9 @@ public class EventAdminController {
     private int currentYear = LocalDate.now().getYear();
     private int currentMonth = LocalDate.now().getMonthValue();
 
-    private String currentImagePath = null; // Remains String
-
     @FXML
     public void initialize() {
+        // Configure columns for All Events table
         codeColumn.setCellValueFactory(new PropertyValueFactory<>("eventCode"));
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("eventName"));
         dateColumn.setCellValueFactory(cellData -> {
@@ -157,14 +149,20 @@ public class EventAdminController {
         capacityColumn.setCellValueFactory(new PropertyValueFactory<>("eventCapacity"));
         costColumn.setCellValueFactory(new PropertyValueFactory<>("eventCost"));
 
+        // Set table resize policies
         allEventsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
+        // Load all events
         loadAllEvents();
+
+        // Update the month label and populate the calendar
         updateMonthLabel();
         populateCalendar();
 
+        // Add listener to eventSearch TextField for real-time filtering
         eventSearch.textProperty().addListener((observable, oldValue, newValue) -> filterEvents(newValue));
 
+        // Enable/disable buttons based on selection
         allEventsTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             editButton.setDisable(newSelection == null);
             registerStudentButton.setDisable(newSelection == null);
@@ -173,6 +171,7 @@ public class EventAdminController {
             unregisterStudentButton.setDisable(newSelection == null);
         });
 
+        // Set up double-click handler for All Events table
         allEventsTable.setOnMouseClicked((MouseEvent event) -> {
             if (event.getClickCount() == 2) {
                 Event selected = allEventsTable.getSelectionModel().getSelectedItem();
@@ -211,6 +210,7 @@ public class EventAdminController {
                 cal.setTime(event.getEventDateTime());
                 int eventYear = cal.get(Calendar.YEAR);
                 int eventMonth = cal.get(Calendar.MONTH) + 1;
+                int eventDay = cal.get(Calendar.DAY_OF_MONTH);
                 if (eventYear == currentYear && eventMonth == currentMonth) {
                     eventsInMonth.add(event);
                 }
@@ -228,17 +228,28 @@ public class EventAdminController {
             dayLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
             dayBox.getChildren().add(dayLabel);
 
+            List<Event> eventsOnDay = new ArrayList<>();
             for (Event event : eventsInMonth) {
                 cal.setTime(event.getEventDateTime());
                 int eventDay = cal.get(Calendar.DAY_OF_MONTH);
                 if (eventDay == day) {
-                    String displayText = event.getEventName().length() > 15 ? event.getEventCode() : event.getEventName();
-                    Label eventLabel = new Label(displayText);
-                    eventLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: blue;");
-                    Tooltip tooltip = new Tooltip(event.getEventName());
-                    Tooltip.install(eventLabel, tooltip);
-                    eventLabel.setOnMouseClicked(e -> showEventDetails(event));
-                    dayBox.getChildren().add(eventLabel);
+                    eventsOnDay.add(event);
+                }
+            }
+
+            if (!eventsOnDay.isEmpty()) {
+                for (Event event : eventsInMonth) {
+                    cal.setTime(event.getEventDateTime());
+                    int eventDay = cal.get(Calendar.DAY_OF_MONTH);
+                    if (eventDay == day) {
+                        String displayText = event.getEventName().length() > 15 ? event.getEventCode() : event.getEventName();
+                        Label eventLabel = new Label(displayText);
+                        eventLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: blue;");
+                        Tooltip tooltip = new Tooltip(event.getEventName());
+                        Tooltip.install(eventLabel, tooltip);
+                        eventLabel.setOnMouseClicked(e -> showEventDetails(event));
+                        dayBox.getChildren().add(eventLabel);
+                    }
                 }
             }
 
@@ -299,29 +310,29 @@ public class EventAdminController {
 
         VBox vbox = new VBox(10);
         vbox.setPadding(new Insets(10));
+        vbox.setAlignment(Pos.CENTER);
 
-        ImageView detailImageView = new ImageView();
-        String imagePath = event.getEventHeaderImagePath();
-        if (imagePath != null && !imagePath.isEmpty()) {
-            try {
-                detailImageView.setImage(new Image("file:" + imagePath));
-            } catch (Exception e) {
-                detailImageView.setImage(new Image(getClass().getResourceAsStream("/images/backgroundimage.jpg")));
-            }
-        } else if (event.getEventHeaderImage() != null) {
-            detailImageView.setImage(event.getEventHeaderImage());
+        // Event image
+        ImageView eventHeaderImage = new ImageView();
+        if (event.getEventHeaderImage() != null) {
+            eventHeaderImage.setImage(event.getEventHeaderImage());
         } else {
-            detailImageView.setImage(new Image(getClass().getResourceAsStream("/images/backgroundimage.jpg")));
+            try {
+                eventHeaderImage.setImage(new Image(getClass().getResourceAsStream("/images/eventsdefault.jpg")));
+            } catch (Exception e) {
+                System.out.println("Error loading default event image: " + e.getMessage());
+                eventHeaderImage.setImage(null);
+            }
         }
-        detailImageView.setFitWidth(200);
-        detailImageView.setFitHeight(200);
-        detailImageView.setPreserveRatio(true);
+        eventHeaderImage.setFitWidth(200);
+        eventHeaderImage.setFitHeight(150);
+        eventHeaderImage.setPreserveRatio(true);
 
         Label codeLabel = new Label("Code: " + event.getEventCode());
         Label nameLabel = new Label("Name: " + event.getEventName());
         Label descriptionLabel = new Label("Description: " + (event.getEventDescription() != null ? event.getEventDescription() : "Not set"));
         Label locationLabel = new Label("Location: " + event.getEventLocation());
-        Label dateTimeLabel = new Label("Date & Time: " + (event.getEventDateTime() != null ? new SimpleDateFormat("MM/dd/yyyy HH:mm").format(event.getEventDateTime()) : "N/A"));
+        Label dateTimeLabel = new Label("Date & Time: " + (event.getEventDateTime() != null ? new SimpleDateFormat("MM/dd/yyyy HH:mm").format(event.getEventDateTime()) : "Not set"));
         Label capacityLabel = new Label("Capacity: " + event.getEventCapacity());
         Label costLabel = new Label("Cost: " + event.getEventCost());
 
@@ -334,18 +345,23 @@ public class EventAdminController {
         } else {
             for (String studentId : registeredStudents) {
                 Student student = studentDAO.getStudentById(studentId);
-                studentDetails.add(student != null ? student.getName() : studentId);
+                if (student != null) {
+                    studentDetails.add(student.getName());
+                } else {
+                    studentDetails.add(studentId);
+                }
             }
         }
         studentsListView.setItems(studentDetails);
+        studentsListView.setPrefHeight(100);
 
         vbox.getChildren().addAll(
-                detailImageView,
+                eventHeaderImage,
                 codeLabel, nameLabel, descriptionLabel, locationLabel, dateTimeLabel, capacityLabel, costLabel,
                 studentsLabel, studentsListView
         );
 
-        Scene scene = new Scene(vbox, 400, 600);
+        Scene scene = new Scene(vbox, 400, 500);
         detailsStage.setScene(scene);
         detailsStage.show();
     }
@@ -372,42 +388,11 @@ public class EventAdminController {
             }
             capacityField.setText(String.valueOf(selectedEvent.getEventCapacity()));
             costField.setText(selectedEvent.getEventCost());
-            currentImagePath = selectedEvent.getEventHeaderImagePath();
+
             tabPane.getSelectionModel().select(2);
         } else {
             showAlert(Alert.AlertType.WARNING, "No Selection", "Please select an event to edit.");
         }
-    }
-
-    @FXML
-    private void handleBrowseImage() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Select Event Image");
-        fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg")
-        );
-        File selectedFile = fileChooser.showOpenDialog(rootPane.getScene().getWindow());
-        if (selectedFile != null) {
-            try {
-                Path resourceDir = Paths.get("src/main/resources/images");
-                if (!Files.exists(resourceDir)) {
-                    Files.createDirectories(resourceDir);
-                }
-                String fileName = (codeField.getText().isEmpty() ?
-                        "event_" + System.currentTimeMillis() :
-                        codeField.getText() + "_image") + getFileExtension(selectedFile.getName());
-                Path targetPath = resourceDir.resolve(fileName);
-                Files.copy(selectedFile.toPath(), targetPath);
-                currentImagePath = targetPath.toAbsolutePath().toString();
-            } catch (IOException e) {
-                showAlert(Alert.AlertType.ERROR, "Error", "Failed to copy image: " + e.getMessage());
-            }
-        }
-    }
-
-    private String getFileExtension(String fileName) {
-        int dotIndex = fileName.lastIndexOf('.');
-        return (dotIndex == -1) ? "" : fileName.substring(dotIndex);
     }
 
     @FXML
@@ -416,16 +401,21 @@ public class EventAdminController {
             showAlert(Alert.AlertType.WARNING, "No Event Selected", "Please select an event first.");
             return;
         }
+
+        // Create a dialog for registering a student
         Stage dialogStage = new Stage();
         dialogStage.setTitle("Register Student for Event: " + selectedEvent.getEventName());
+
         VBox dialogVBox = new VBox(10);
         dialogVBox.setPadding(new Insets(10));
+
         ComboBox<String> studentComboBox = new ComboBox<>();
         studentComboBox.setPromptText("Select Student");
         List<Student> allStudents = studentDAO.getAllStudents();
         for (Student student : allStudents) {
             studentComboBox.getItems().add(student.getStudentId() + " - " + student.getName());
         }
+
         Button registerButton = new Button("Register");
         registerButton.setOnAction(e -> {
             String selectedStudentString = studentComboBox.getSelectionModel().getSelectedItem();
@@ -433,25 +423,33 @@ public class EventAdminController {
                 showAlert(Alert.AlertType.WARNING, "No Student Selected", "Please select a student to register.");
                 return;
             }
+
             String studentId = selectedStudentString.split(" - ")[0];
+            // Create a mutable copy of the registered students list
             List<String> registeredStudents = new ArrayList<>(selectedEvent.getRegisteredStudents());
+
             if (registeredStudents.contains(studentId)) {
-                showAlert(Alert.AlertType.INFORMATION, "Already Registered", "This student is already registered.");
+                showAlert(Alert.AlertType.INFORMATION, "Already Registered", "This student is already registered for the event.");
                 return;
             }
+
             if (registeredStudents.size() >= selectedEvent.getEventCapacity()) {
                 showAlert(Alert.AlertType.ERROR, "Capacity Exceeded", "The event has reached its maximum capacity.");
                 return;
             }
+
             registeredStudents.add(studentId);
+            // Update the event's registered students list
             selectedEvent.setRegisteredStudents(registeredStudents);
             eventDAO.updateEvent(selectedEvent.getEventCode(), selectedEvent);
-            ExExporter.recordActivity("Event", "Student " + studentId + " registered for event " + selectedEvent.getEventCode());
+            ExExporter.recordActivity("Event","Student " + studentId + " registered for event " + selectedEvent.getEventCode() + " (" + selectedEvent.getEventName() + ").");
             exporter.exportData();
             showAlert(Alert.AlertType.INFORMATION, "Success", "Student " + studentId + " registered successfully.");
             dialogStage.close();
         });
+
         dialogVBox.getChildren().addAll(new Label("Select a student to register:"), studentComboBox, registerButton);
+
         Scene dialogScene = new Scene(dialogVBox, 300, 150);
         dialogStage.setScene(dialogScene);
         dialogStage.show();
@@ -463,20 +461,30 @@ public class EventAdminController {
             showAlert(Alert.AlertType.WARNING, "No Event Selected", "Please select an event first.");
             return;
         }
+
         if (selectedEvent.getRegisteredStudents().isEmpty()) {
-            showAlert(Alert.AlertType.INFORMATION, "No Students", "No students are registered for this event.");
+            showAlert(Alert.AlertType.INFORMATION, "No Students", "There are no students registered for this event.");
             return;
         }
+
+        // Create a dialog for unregistering a student
         Stage dialogStage = new Stage();
         dialogStage.setTitle("Unregister Student from Event: " + selectedEvent.getEventName());
+
         VBox dialogVBox = new VBox(10);
         dialogVBox.setPadding(new Insets(10));
+
         ComboBox<String> studentComboBox = new ComboBox<>();
         studentComboBox.setPromptText("Select Student");
         for (String studentId : selectedEvent.getRegisteredStudents()) {
             Student student = studentDAO.getStudentById(studentId);
-            studentComboBox.getItems().add(student != null ? student.getStudentId() + " - " + student.getName() : studentId);
+            if (student != null) {
+                studentComboBox.getItems().add(student.getStudentId() + " - " + student.getName());
+            } else {
+                studentComboBox.getItems().add(studentId);
+            }
         }
+
         Button unregisterButton = new Button("Unregister");
         unregisterButton.setOnAction(e -> {
             String selectedStudentString = studentComboBox.getSelectionModel().getSelectedItem();
@@ -484,21 +492,28 @@ public class EventAdminController {
                 showAlert(Alert.AlertType.WARNING, "No Student Selected", "Please select a student to unregister.");
                 return;
             }
+
             String studentId = selectedStudentString.split(" - ")[0];
+            // Create a mutable copy of the registered students list
             List<String> registeredStudents = new ArrayList<>(selectedEvent.getRegisteredStudents());
+
             if (!registeredStudents.contains(studentId)) {
-                showAlert(Alert.AlertType.INFORMATION, "Not Registered", "This student is not registered.");
+                showAlert(Alert.AlertType.INFORMATION, "Not Registered", "This student is not registered for the event.");
                 return;
             }
+
             registeredStudents.remove(studentId);
+            // Update the event's registered students list
             selectedEvent.setRegisteredStudents(registeredStudents);
             eventDAO.updateEvent(selectedEvent.getEventCode(), selectedEvent);
-            ExExporter.recordActivity("Event", "Student " + studentId + " unregistered from event " + selectedEvent.getEventCode());
+            ExExporter.recordActivity("Event","Student " + studentId + " unregistered from event " + selectedEvent.getEventCode() + " (" + selectedEvent.getEventName() + ").");
             exporter.exportData();
             showAlert(Alert.AlertType.INFORMATION, "Success", "Student " + studentId + " unregistered successfully.");
             dialogStage.close();
         });
+
         dialogVBox.getChildren().addAll(new Label("Select a student to unregister:"), studentComboBox, unregisterButton);
+
         Scene dialogScene = new Scene(dialogVBox, 300, 150);
         dialogStage.setScene(dialogScene);
         dialogStage.show();
@@ -508,7 +523,7 @@ public class EventAdminController {
     private void handleDeleteEvent() {
         if (selectedEvent != null) {
             Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
-                    "Are you sure you want to delete the event '" + selectedEvent.getEventName() + "'?",
+                    "Are you sure you want to delete the event '" + selectedEvent.getEventName() + "' (" + selectedEvent.getEventCode() + ")?",
                     ButtonType.OK, ButtonType.CANCEL);
             confirm.setTitle("Confirm Deletion");
             confirm.showAndWait().ifPresent(response -> {
@@ -516,7 +531,7 @@ public class EventAdminController {
                     eventDAO.deleteEvent(selectedEvent.getEventCode());
                     loadAllEvents();
                     populateCalendar();
-                    ExExporter.recordActivity("Event", "Event " + selectedEvent.getEventCode() + " deleted.");
+                    ExExporter.recordActivity("Event","Event " + selectedEvent.getEventCode() + " (" + selectedEvent.getEventName() + ") deleted.");
                     exporter.exportData();
                 }
             });
@@ -580,12 +595,11 @@ public class EventAdminController {
             }
         }
 
-        // Pass null for Image, use currentImagePath as String
         Event event = new Event(
                 nameField.getText().trim(),
                 codeField.getText().trim(),
                 descriptionField.getText().trim(),
-                currentImagePath,
+                selectedEvent != null ? selectedEvent.getEventHeaderImage() : new Image(getClass().getResourceAsStream("/images/default.jpg")),
                 locationField.getText().trim(),
                 dateTime,
                 Integer.parseInt(capacityField.getText().trim()),
@@ -595,10 +609,10 @@ public class EventAdminController {
 
         if (selectedEvent == null) {
             eventDAO.addEvent(event);
-            ExExporter.recordActivity("Event", "Event " + event.getEventCode() + " created.");
+            ExExporter.recordActivity("Event","Event " + event.getEventCode() + " (" + event.getEventName() + ") created.");
         } else {
             eventDAO.updateEvent(selectedEvent.getEventCode(), event);
-            ExExporter.recordActivity("Event", "Event " + event.getEventCode() + " updated.");
+            ExExporter.recordActivity("Event","Event " + event.getEventCode() + " (" + event.getEventName() + ") updated.");
             selectedEvent = null;
         }
 
@@ -606,7 +620,7 @@ public class EventAdminController {
         populateCalendar();
         clearForm();
         exporter.exportData();
-        tabPane.getSelectionModel().select(1); // Switch back to "All Events"
+        tabPane.getSelectionModel().select(1);
     }
 
     private void clearForm() {
@@ -618,12 +632,18 @@ public class EventAdminController {
         timeField.clear();
         capacityField.clear();
         costField.clear();
-        currentImagePath = null;
     }
 
     @FXML
     private void handleClearForm() {
-        clearForm();
+        codeField.clear();
+        nameField.clear();
+        descriptionField.clear();
+        locationField.clear();
+        datePicker.setValue(null);
+        timeField.clear();
+        capacityField.clear();
+        costField.clear();
         selectedEvent = null;
     }
 

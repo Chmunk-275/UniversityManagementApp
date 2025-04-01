@@ -336,6 +336,9 @@ public class CourseAdminController {
             if (!student.getRegisteredSubjects().contains(subjectCode)) {
                 student.getRegisteredSubjects().add(subjectCode);
             }
+            // Update the student's tuition
+            ExExporter.updateStudentTuition(student);
+            studentDAO.updateStudent(student); // Persist the updated student
             selectedCourse = courseFromDAO;
             // Debug: Log after enrolling
             System.out.println("After enrolling student " + studentId + ":");

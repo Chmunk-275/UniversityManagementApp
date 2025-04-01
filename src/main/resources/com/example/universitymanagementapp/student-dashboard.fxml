@@ -12,16 +12,17 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane fx:id="rootPane" style="-fx-background-size: contain; -fx-border-color: black; -fx-border-width: 15;" stylesheets="@admin-students-management.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.universitymanagementapp.controller.StudentController.StudentDashboard">
+<AnchorPane fx:id="rootPane" style="-fx-background-size: contain; -fx-border-color: black; -fx-border-width: 15;" stylesheets="@admin-students-management.css" xmlns="http://javafx.com/javafx/" xmlns:fx="http://javafx.com/fxml/" fx:controller="com.example.universitymanagementapp.controller.StudentController.StudentDashboard">
     <children>
         <!-- Navigation Menu -->
         <MenuButton fx:id="toggleMenuButton" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" prefHeight="40.666666" prefWidth="72.0" style="-fx-background-color: rgb(173,0,41);" text="☰">
             <items>
                 <MenuItem fx:id="dashboard" mnemonicParsing="false" onAction="#handleDashboardAction" text="Dashboard" />
-                <MenuItem fx:id="courseSelection" mnemonicParsing="false" onAction="#handleCourseSelection" text="My Courses" />
-                <MenuItem fx:id="eventSelection" mnemonicParsing="false" onAction="#handleEventSelection" text="Events" />
-                <MenuItem fx:id="studentSelection" mnemonicParsing="false" onAction="#handleStudentSelection" text="Students" />
                 <MenuItem fx:id="subjectSelection" mnemonicParsing="false" onAction="#handleSubjectSelection" text="Subjects" />
+                <MenuItem fx:id="courseSelection" mnemonicParsing="false" onAction="#handleCourseSelection" text="My Courses" />
+                <MenuItem fx:id="studentSelection" mnemonicParsing="false" onAction="#handleStudentSelection" text="Students" />
+                <MenuItem fx:id="eventSelection" mnemonicParsing="false" onAction="#handleEventSelection" text="Events" />
+                <MenuItem fx:id="settings" mnemonicParsing="false" onAction="#handleSettingsSelection" text="Settings" />
                 <MenuItem fx:id="logout" mnemonicParsing="false" onAction="#handleLogoutAction" text="Logout" />
             </items>
         </MenuButton>
@@ -38,21 +39,33 @@
                                 <GridPane hgap="10" vgap="5" styleClass="grid-pane">
                                     <Label GridPane.columnIndex="0" GridPane.rowIndex="0" text="Enrolled Courses:" styleClass="label" />
                                     <Text fx:id="enrolledCoursesText" GridPane.columnIndex="1" GridPane.rowIndex="0" styleClass="text" />
-                                    <Label GridPane.columnIndex="0" GridPane.rowIndex="1" text="Total Credits:" styleClass="label" />
+                                    <Label GridPane.columnIndex="0" GridPane.rowIndex="1" text="Average Grade:" styleClass="label" />
                                     <Text fx:id="totalCreditsText" GridPane.columnIndex="1" GridPane.rowIndex="1" styleClass="text" />
                                     <Label GridPane.columnIndex="0" GridPane.rowIndex="2" text="Upcoming Events:" styleClass="label" />
                                     <Text fx:id="upcomingEventsCountText" GridPane.columnIndex="1" GridPane.rowIndex="2" styleClass="text" />
                                 </GridPane>
                             </VBox>
 
-                            <!-- My Enrolled Courses Section -->
+                            <!-- My Courses Section -->
                             <VBox spacing="10">
-                                <Label text="My Enrolled Courses" styleClass="label" />
-                                <TableView fx:id="enrolledCoursesTable" prefHeight="150.0" styleClass="table-view">
+                                <Label text="My Courses" styleClass="label" />
+                                <TableView fx:id="myCoursesTable" prefHeight="150.0" styleClass="table-view">
                                     <columns>
                                         <TableColumn fx:id="courseCodeColumn" prefWidth="150" text="Course Code" />
                                         <TableColumn fx:id="courseNameColumn" prefWidth="200" text="Course Name" />
                                         <TableColumn fx:id="instructorColumn" prefWidth="150" text="Instructor" />
+                                    </columns>
+                                </TableView>
+                            </VBox>
+
+                            <!-- Recent Course Registrations Section (for the logged-in student) -->
+                            <VBox spacing="10">
+                                <Label text="Recent Course Registrations" styleClass="label" />
+                                <TableView fx:id="recentRegistrationsTable" prefHeight="150.0" styleClass="table-view">
+                                    <columns>
+                                        <TableColumn fx:id="registrationCourseCodeColumn" prefWidth="150" text="Course Code" />
+                                        <TableColumn fx:id="registrationCourseNameColumn" prefWidth="200" text="Course Name" />
+                                        <TableColumn fx:id="registrationDateColumn" prefWidth="150" text="Date" />
                                     </columns>
                                 </TableView>
                             </VBox>
@@ -66,18 +79,6 @@
                                         <TableColumn fx:id="eventNameColumn" prefWidth="150" text="Event Name" />
                                         <TableColumn fx:id="eventDateColumn" prefWidth="150" text="Date &amp; Time" />
                                         <TableColumn fx:id="eventLocationColumn" prefWidth="150" text="Location" />
-                                    </columns>
-                                </TableView>
-                            </VBox>
-
-                            <!-- Notifications/Alerts -->
-                            <VBox spacing="10">
-                                <Label text="Notifications &amp; Alerts" styleClass="label" />
-                                <TableView fx:id="notificationsTable" prefHeight="150.0" styleClass="table-view">
-                                    <columns>
-                                        <TableColumn fx:id="notificationTypeColumn" prefWidth="150" text="Type" />
-                                        <TableColumn fx:id="notificationMessageColumn" prefWidth="300" text="Message" />
-                                        <TableColumn fx:id="notificationDateColumn" prefWidth="150" text="Date" />
                                     </columns>
                                 </TableView>
                             </VBox>

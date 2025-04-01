@@ -1,48 +1,121 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" stylesheets="@admin-students-management.css" xmlns="http://javafx.com/javafx/17.0.6" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.universitymanagementapp.controller.EventController.EventFacultyController">
+<?import javafx.scene.chart.BubbleChart?>
+<AnchorPane fx:id="rootPane" prefHeight="400.0" prefWidth="600.0" styleClass="anchor-pane" stylesheets="@admin-students-management.css" xmlns="http://javafx.com/javafx/" xmlns:fx="http://javafx.com/fxml/" fx:controller="com.example.universitymanagementapp.controller.EventController.EventFacultyController">
     <children>
-        <TabPane fx:id="tabPane" styleClass="tab-pane" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="54.0">
+        <!-- Toolbar at the top -->
+        <ToolBar layoutX="0.0" layoutY="0.0" prefHeight="39.0" prefWidth="600.0" styleClass="tool-bar" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+
+        <!-- TabPane for different sections -->
+        <TabPane fx:id="tabPane" styleClass="tab-pane" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0">
             <tabs>
-                <Tab closable="false" text="My Events">
+                <!-- Tab 1: Calendar View -->
+                <Tab closable="false" text="Calendar View">
                     <content>
                         <AnchorPane>
                             <children>
-                                <Label styleClass="label" text="Events You Are Hosting or Registered For:" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
-                                <TableView fx:id="myEventsTable" styleClass="table-view" prefHeight="300.0" prefWidth="560.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="40.0">
+                                <!-- Navigation and Month Label -->
+                                <HBox spacing="10.0" styleClass="hbox" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0">
+                                    <children>
+                                        <Button fx:id="prevMonthButton" onAction="#handlePreviousMonth" text="Previous" />
+                                        <Label fx:id="monthLabel" styleClass="text" text="March 2025" />
+                                        <Button fx:id="nextMonthButton" onAction="#handleNextMonth" text="Next" />
+                                    </children>
+                                </HBox>
+                                <!-- Calendar Grid -->
+                                <GridPane fx:id="calendarGrid" hgap="5" layoutY="51.333333333333336" prefHeight="423.0" prefWidth="560.0" styleClass="grid-pane" vgap="5" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="51.0">
+                                    <!-- Days of the week as headers -->
+                                    <Label styleClass="text" text="Sun" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                                    <Label styleClass="text" text="Mon" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                                    <Label styleClass="text" text="Tue" GridPane.columnIndex="2" GridPane.rowIndex="0" />
+                                    <Label styleClass="text" text="Wed" GridPane.columnIndex="3" GridPane.rowIndex="0" />
+                                    <Label styleClass="text" text="Thu" GridPane.columnIndex="4" GridPane.rowIndex="0" />
+                                    <Label styleClass="text" text="Fri" GridPane.columnIndex="5" GridPane.rowIndex="0" />
+                                    <Label styleClass="text" text="Sat" GridPane.columnIndex="6" GridPane.rowIndex="0" />
+                                    <columnConstraints>
+                                        <ColumnConstraints percentWidth="14.28" /> <!-- 100% / 7 columns -->
+                                        <ColumnConstraints percentWidth="14.28" />
+                                        <ColumnConstraints percentWidth="14.28" />
+                                        <ColumnConstraints percentWidth="14.28" />
+                                        <ColumnConstraints percentWidth="14.28" />
+                                        <ColumnConstraints percentWidth="14.28" />
+                                        <ColumnConstraints percentWidth="14.28" />
+                                    </columnConstraints>
+                                    <rowConstraints>
+                                        <RowConstraints prefHeight="30.0" /> <!-- Header row -->
+                                        <RowConstraints prefHeight="60.0" /> <!-- Row 1 -->
+                                        <RowConstraints prefHeight="60.0" /> <!-- Row 2 -->
+                                        <RowConstraints prefHeight="60.0" /> <!-- Row 3 -->
+                                        <RowConstraints prefHeight="60.0" /> <!-- Row 4 -->
+                                        <RowConstraints prefHeight="60.0" /> <!-- Row 5 -->
+                                        <RowConstraints prefHeight="60.0" /> <!-- Row 6 (if needed) -->
+                                    </rowConstraints>
+                                </GridPane>
+                            </children>
+                        </AnchorPane>
+                    </content>
+                </Tab>
+
+                <!-- Tab 2: All Events -->
+                <Tab closable="false" text="All Events">
+                    <content>
+                        <AnchorPane>
+                            <children>
+                                <!-- Buttons for Add, Edit, Delete, Register, and Search Bar -->
+                                <HBox fx:id="allEventsHBox" spacing="10.0" styleClass="hbox" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="5.0">
+                                    <children>
+                                        <Button fx:id="registerButton" onAction="#handleRegisterFacultyDialog" text="Register" />
+                                        <Button fx:id="unregisterButton" onAction="#handleUnregisterFacultyDialog" text="Unregister" />
+                                        <TextField fx:id="eventSearch" prefWidth="200.0" promptText="Search by name, code, or location" styleClass="text-field" />
+                                    </children>
+                                </HBox>
+                                <!-- TableView for all events -->
+                                <TableView fx:id="allEventsTable" styleClass="table-view" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
                                     <columns>
-                                        <TableColumn fx:id="myEventCodeColumn" prefWidth="80" text="Event Code" />
-                                        <TableColumn fx:id="myEventNameColumn" prefWidth="120" text="Event Name" />
-                                        <TableColumn fx:id="myEventDescriptionColumn" prefWidth="150" text="Description" />
-                                        <TableColumn fx:id="myEventLocationColumn" prefWidth="100" text="Location" />
-                                        <TableColumn fx:id="myEventDateColumn" prefWidth="120" text="Date &amp; Time" />
+                                        <TableColumn fx:id="codeColumn" text="Code" />
+                                        <TableColumn fx:id="nameColumn" text="Name" />
+                                        <TableColumn fx:id="dateColumn" text="Date" />
+                                        <TableColumn fx:id="locationColumn" text="Location" />
+                                        <TableColumn fx:id="capacityColumn" text="Capacity" />
+                                        <TableColumn fx:id="costColumn" text="Cost" />
                                     </columns>
                                 </TableView>
                             </children>
                         </AnchorPane>
                     </content>
                 </Tab>
-                <Tab closable="false" text="Available Events">
+
+                <!-- Tab 3: Manage Events -->
+                <Tab closable="false" text="Your Events">
                     <content>
                         <AnchorPane>
                             <children>
-                                <Label styleClass="label" text="Events Available to Register For:" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
-                                <TableView fx:id="availableEventsTable" styleClass="table-view" prefHeight="300.0" prefWidth="560.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="40.0">
+                                <TableView fx:id="yourEventsTable" styleClass="table-view" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                     <columns>
-                                        <TableColumn fx:id="availableEventCodeColumn" prefWidth="80" text="Event Code" />
-                                        <TableColumn fx:id="availableEventNameColumn" prefWidth="120" text="Event Name" />
-                                        <TableColumn fx:id="availableEventDescriptionColumn" prefWidth="150" text="Description" />
-                                        <TableColumn fx:id="availableEventLocationColumn" prefWidth="100" text="Location" />
-                                        <TableColumn fx:id="availableEventDateColumn" prefWidth="120" text="Date &amp; Time" />
+                                        <TableColumn fx:id="codeColumnYour" text="Code" />
+                                        <TableColumn fx:id="nameColumnYour" text="Name" />
+                                        <TableColumn fx:id="dateColumnYour" text="Date" />
+                                        <TableColumn fx:id="locationColumnYour" text="Location" />
+                                        <TableColumn fx:id="capacityColumnYour" text="Capacity" />
+                                        <TableColumn fx:id="costColumnYour" text="Cost" />
                                     </columns>
                                 </TableView>
                             </children>
@@ -51,10 +124,5 @@
                 </Tab>
             </tabs>
         </TabPane>
-        <ToolBar fx:id="toolBar" styleClass="tool-bar" prefHeight="40.0" prefWidth="600.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-            <items>
-                <Button fx:id="backButton" onAction="#handleBackAction" text="Back" />
-            </items>
-        </ToolBar>
     </children>
 </AnchorPane>

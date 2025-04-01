@@ -9,6 +9,7 @@ import com.example.universitymanagementapp.model.Activity;
 import com.example.universitymanagementapp.model.Event;
 import com.example.universitymanagementapp.model.Notification;
 import com.example.universitymanagementapp.model.Registration;
+import com.example.universitymanagementapp.utils.ExExporter;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -51,12 +52,13 @@ public class FacultyDashboard {
     @FXML
     public MenuItem eventSelection;
     @FXML
+    public MenuItem settingsSelection;
+    @FXML
     public MenuItem logout;
 
     @FXML
-    private AnchorPane contentPane; // This is where pages will load dynamically
+    private AnchorPane contentPane;
 
-    // New fields for the dashboard UI elements
     @FXML
     private Text totalStudentsText;
     @FXML
@@ -84,6 +86,8 @@ public class FacultyDashboard {
     @FXML
     private TableColumn<Registration, Integer> registrationCourseColumn;
     @FXML
+    private TableColumn<Registration, String> registrationCourseNameColumn;
+    @FXML
     private TableColumn<Registration, String> registrationDateColumn;
 
     @FXML
@@ -106,12 +110,11 @@ public class FacultyDashboard {
     @FXML
     private TableColumn<Notification, String> notificationDateColumn;
 
-    private String currentPage = "faculty-dashboard.fxml"; // Track the currently loaded page
-    private String facultyName; // Store faculty name
-    private String facultyUsername; // Store faculty username
-    private Node initialDashboardContent; // Store the initial dashboard content
+    private String currentPage = "faculty-dashboard.fxml";
+    private String facultyName;
+    private String facultyUsername;
+    private Node initialDashboardContent;
 
-    // Data for the tables
     private ObservableList<Activity> recentActivities = FXCollections.observableArrayList();
     private ObservableList<Registration> recentRegistrations = FXCollections.observableArrayList();
     private ObservableList<Event> upcomingEvents = FXCollections.observableArrayList();
@@ -119,68 +122,143 @@ public class FacultyDashboard {
 
     @FXML
     public void initialize() {
-        contentPane.setPickOnBounds(false); // Ensures it does not block clicks
+        contentPane.setPickOnBounds(false);
 
         // Store the initial content of the contentPane (the dashboard UI)
         if (!contentPane.getChildren().isEmpty()) {
             initialDashboardContent = contentPane.getChildren().get(0);
         }
 
-        // Configure table columns
-        if (activityTypeColumn != null) { // Check if the dashboard is loaded
-            activityTypeColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getType()));
-            activityDescriptionColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDescription()));
-            activityDateColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDate().format(DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm"))));
-            recentActivitiesTable.setItems(recentActivities);
+        // Configure table columns for Recent Activities
+        activityTypeColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getType()));
+        activityDescriptionColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDescription()));
+        activityDateColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getDate().format(DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm")))
+        );
+        recentActivitiesTable.setItems(recentActivities);
 
-            registrationStudentColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getStudentId()));
-            registrationCourseColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getCourseCode()).asObject());
-            registrationDateColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDate().format(DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm"))));
-            recentRegistrationsTable.setItems(recentRegistrations);
+        // Configure table columns for Recent Registrations
+        registrationStudentColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getStudentId()));
+        registrationCourseColumn.setCellValueFactory(cellData ->
+                new SimpleIntegerProperty(cellData.getValue().getCourseCode()).asObject()
+        );
+        registrationCourseNameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getCourseName()));
+        registrationDateColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getDate().format(DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm")))
+        );
+        recentRegistrationsTable.setItems(recentRegistrations);
 
-            eventCodeColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getEventCode()));
-            eventNameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getEventName()));
-            eventDateColumn.setCellValueFactory(cellData -> {
-                Date date = cellData.getValue().getEventDateTime();
-                if (date != null) {
-                    SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm");
-                    return new SimpleStringProperty(sdf.format(date));
-                }
-                return new SimpleStringProperty("N/A");
-            });
-            eventLocationColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getEventLocation()));
-            upcomingEventsTable.setItems(upcomingEvents);
+        // Configure table columns for Upcoming Events
+        eventCodeColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getEventCode()));
+        eventNameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getEventName()));
+        eventDateColumn.setCellValueFactory(cellData -> {
+            Date date = cellData.getValue().getEventDateTime();
+            if (date != null) {
+                SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm");
+                return new SimpleStringProperty(sdf.format(date));
+            }
+            return new SimpleStringProperty("N/A");
+        });
+        eventLocationColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getEventLocation()));
+        upcomingEventsTable.setItems(upcomingEvents);
 
-            notificationTypeColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getType()));
-            notificationMessageColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getMessage()));
-            notificationDateColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDate().format(DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm"))));
-            notificationsTable.setItems(notifications);
+        // Configure table columns for Notifications
+        notificationTypeColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getType()));
+        notificationMessageColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getMessage()));
+        notificationDateColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getDate().format(DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm")))
+        );
+        notificationsTable.setItems(notifications);
 
-            // Load data for the dashboard
-            loadSummaryData();
-            loadRecentActivities();
-            loadRecentRegistrations();
-            loadUpcomingEvents();
-            loadNotifications();
-        }
-
-        // No need to call loadPage("faculty-dashboard.fxml") here since the dashboard is already loaded by FXML
-        currentPage = "faculty-dashboard.fxml";
+        // Load data
+        loadSummaryData();
+        loadRecentActivities();
+        loadRecentRegistrations();
+        loadUpcomingEvents();
+        loadNotifications();
     }
 
-    // Method to set faculty name from UserLoginController
     public void setFacultyName(String facultyName) {
         this.facultyName = facultyName;
         System.out.println("Faculty name set in dashboard: " + facultyName);
     }
 
-    // Method to set faculty username from UserLoginController
     public void setFacultyUsername(String facultyUsername) {
         this.facultyUsername = facultyUsername;
         System.out.println("Faculty username set in dashboard: " + facultyUsername);
     }
 
-    // Method to load FXML content into contentPane
+    public String getFacultyUsername() {
+        return facultyUsername;
+    }
+
+    public String getFacultyName() {
+        return facultyName;
+    }
+
+    private void loadSummaryData() {
+        // Force refresh from DAOs
+        int studentCount = UniversityManagementApp.studentDAO.getAllStudents().size();
+        int courseCount = UniversityManagementApp.courseDAO.getAllCourses().size();
+        int facultyCount = UniversityManagementApp.facultyDAO.getAllFaculty().size();
+        int subjectCount = UniversityManagementApp.subjectDAO.getAllSubjects().size();
+        int eventCount = UniversityManagementApp.eventDAO.getAllEvents().size();
+
+        totalStudentsText.setText(String.valueOf(studentCount));
+        totalCoursesText.setText(String.valueOf(courseCount));
+        totalFacultyText.setText(String.valueOf(facultyCount));
+        totalSubjectsText.setText(String.valueOf(subjectCount));
+        totalEventsText.setText(String.valueOf(eventCount));
+    }
+
+    private void loadRecentActivities() {
+        recentActivities.clear();
+        // Grab whatever is in ExExporter
+        List<Activity> exportedActivities = ExExporter.getRecentActivities();
+        if (exportedActivities != null && !exportedActivities.isEmpty()) {
+            recentActivities.addAll(exportedActivities);
+        }
+        recentActivities.sort(Comparator.comparing(Activity::getDate).reversed());
+    }
+
+    private void loadRecentRegistrations() {
+        recentRegistrations.clear();
+        // Grab from ExExporter
+        List<Registration> exportedRegistrations = ExExporter.getRecentRegistrations();
+        if (exportedRegistrations != null && !exportedRegistrations.isEmpty()) {
+            recentRegistrations.addAll(exportedRegistrations);
+        }
+        recentRegistrations.sort(Comparator.comparing(Registration::getDate).reversed());
+    }
+
+    private void loadUpcomingEvents() {
+        List<Event> events = UniversityManagementApp.eventDAO.getAllEvents().stream()
+                .filter(event -> {
+                    LocalDateTime eventDateTime = event.getEventDateTime()
+                            .toInstant()
+                            .atZone(ZoneId.systemDefault())
+                            .toLocalDateTime();
+                    return eventDateTime.isAfter(LocalDateTime.now());
+                })
+                .sorted(Comparator.comparing(event -> event.getEventDateTime()
+                        .toInstant()
+                        .atZone(ZoneId.systemDefault())
+                        .toLocalDateTime()))
+                .limit(5)
+                .collect(Collectors.toList());
+        upcomingEvents.setAll(events);
+    }
+
+    private void loadNotifications() {
+        notifications.clear();
+        // Instead of hard-coded notifications, load from ExExporter
+        List<Notification> exportedNotifications = ExExporter.getRecentNotifications();
+        if (exportedNotifications != null && !exportedNotifications.isEmpty()) {
+            notifications.addAll(exportedNotifications);
+        }
+        notifications.sort(Comparator.comparing(Notification::getDate).reversed());
+    }
+
     private void loadPage(String fxmlFile) {
         // If loading the dashboard, restore the initial content
         if (fxmlFile.equals("faculty-dashboard.fxml")) {
@@ -202,9 +280,9 @@ public class FacultyDashboard {
             return;
         }
 
-        // Prevent reloading the same page
+        // Prevent loading the same page again
         if (fxmlFile.equals(currentPage)) {
-            return; // Do nothing if already on the same page
+            return;
         }
 
         try {
@@ -215,26 +293,32 @@ public class FacultyDashboard {
             if (fxmlFile.equals("faculty-course-selection.fxml")) {
                 CourseFacultyController controller = loader.getController();
                 controller.setLoggedInFacultyName(facultyName);
-                controller.setParentController(this); // Set parent controller
+                controller.setParentController(this);
             }
             // If loading FacultyStudentController, pass the faculty name and username
             else if (fxmlFile.equals("faculty-student-selection.fxml")) {
                 FacultyStudentController controller = loader.getController();
                 controller.setFacultyName(facultyName);
                 controller.setFacultyUsername(facultyUsername);
-                controller.setParentController(this); // Set parent controller
+                controller.setParentController(this);
             }
             // Set parent controller for other subpages
             else if (fxmlFile.equals("faculty-subject-selection.fxml")) {
-                FacultySubjectController controller = loader.getController(); // Replace with actual controller class
+                FacultySubjectController controller = loader.getController();
                 controller.setParentController(this);
             }
             else if (fxmlFile.equals("faculty-faculty-selection.fxml")) {
-                FacultyFacultyController controller = loader.getController(); // Replace with actual controller class
+                FacultyFacultyController controller = loader.getController();
                 controller.setParentController(this);
             }
             else if (fxmlFile.equals("faculty-event-selection.fxml")) {
-                EventFacultyController controller = loader.getController(); // Replace with actual controller class
+                EventFacultyController controller = loader.getController();
+                controller.setFacultyUsername(facultyUsername);
+                controller.setFacultyName(facultyName);
+                controller.setParentController(this);
+            }
+            else if (fxmlFile.equals("faculty-settings-selection.fxml")) {
+                FacultySettingsController controller = loader.getController();
                 controller.setParentController(this);
             }
 
@@ -246,66 +330,30 @@ public class FacultyDashboard {
             AnchorPane.setLeftAnchor(newPage, 0.0);
             AnchorPane.setRightAnchor(newPage, 0.0);
 
-            currentPage = fxmlFile; // Update current page
+            currentPage = fxmlFile;
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Error loading FXML: " + fxmlFile);
         }
     }
 
-    private void loadSummaryData() {
-        totalStudentsText.setText(String.valueOf(UniversityManagementApp.studentDAO.getAllStudents().size()));
-        totalCoursesText.setText(String.valueOf(UniversityManagementApp.courseDAO.getAllCourses().size()));
-        totalFacultyText.setText(String.valueOf(UniversityManagementApp.facultyDAO.getAllFaculty().size()));
-        totalSubjectsText.setText(String.valueOf(UniversityManagementApp.subjectDAO.getAllSubjects().size()));
-        totalEventsText.setText(String.valueOf(UniversityManagementApp.eventDAO.getAllEvents().size()));
-    }
-
-    private void loadRecentActivities() {
-        // Simulate recent activities (in a real app, this would come from a log or database)
-        recentActivities.add(new Activity("Course Added", "Added course CS101", LocalDateTime.now().minusDays(1)));
-        recentActivities.add(new Activity("Student Added", "Added student S20250001", LocalDateTime.now().minusDays(2)));
-        recentActivities.add(new Activity("Subject Deleted", "Deleted subject MATH201", LocalDateTime.now().minusDays(3)));
-        recentActivities.sort(Comparator.comparing(Activity::getDate).reversed());
-    }
-
-    private void loadRecentRegistrations() {
-        // Simulate recent registrations (in a real app, this would come from a log or database)
-        recentRegistrations.add(new Registration("S20250001", "Math", 10, LocalDateTime.now().minusHours(5)));
-        recentRegistrations.add(new Registration("S20250002", "Physics",12, LocalDateTime.now().minusDays(1)));
-        recentRegistrations.sort(Comparator.comparing(Registration::getDate).reversed());
-    }
-
-    private void loadUpcomingEvents() {
-        // Load upcoming events from EventDAO
-        List<Event> events = UniversityManagementApp.eventDAO.getAllEvents().stream()
-                .filter(event -> {
-                    LocalDateTime eventDateTime = event.getEventDateTime()
-                            .toInstant()
-                            .atZone(ZoneId.systemDefault())
-                            .toLocalDateTime();
-                    return eventDateTime.isAfter(LocalDateTime.now());
-                })
-                .sorted(Comparator.comparing(event -> event.getEventDateTime()
-                        .toInstant()
-                        .atZone(ZoneId.systemDefault())
-                        .toLocalDateTime()))
-                .limit(5)
-                .collect(Collectors.toList());
-        upcomingEvents.setAll(events);
-    }
-
-    private void loadNotifications() {
-        // Simulate notifications (in a real app, this would come from a notification system)
-        notifications.add(new Notification("Alert", "Course CS101 is at full capacity", LocalDateTime.now().minusHours(2)));
-        notifications.add(new Notification("Warning", "Event E001 is tomorrow", LocalDateTime.now().minusDays(1)));
-        notifications.sort(Comparator.comparing(Notification::getDate).reversed());
+    // Add this method to refresh the Courses tab
+    public void refreshCoursesTab() {
+        if (currentPage.equals("faculty-course-selection.fxml")) {
+            // If the current page is the courses tab, reload it
+            loadPage("faculty-course-selection.fxml");
+        }
+        // Optionally, also refresh the dashboard’s recent activities & registrations
+        recentActivities.clear();
+        recentRegistrations.clear();
+        loadRecentActivities();
+        loadRecentRegistrations();
     }
 
     @FXML
     public void handleDashboardAction(ActionEvent actionEvent) {
         System.out.println("Dashboard menu item clicked. Restoring dashboard content.");
-        loadPage("faculty-dashboard.fxml"); // Restores the initial dashboard content and refreshes data
+        loadPage("faculty-dashboard.fxml");
     }
 
     @FXML
@@ -315,12 +363,12 @@ public class FacultyDashboard {
 
     @FXML
     public void handleCourseSelection(ActionEvent actionEvent) {
-        loadPage("faculty-course-selection.fxml"); // This will trigger setLoggedInFacultyName
+        loadPage("faculty-course-selection.fxml");
     }
 
     @FXML
     public void handleStudentSelection(ActionEvent actionEvent) {
-        loadPage("faculty-student-selection.fxml"); // This will trigger setFacultyName and setFacultyUsername
+        loadPage("faculty-student-selection.fxml");
     }
 
     @FXML
@@ -334,18 +382,17 @@ public class FacultyDashboard {
     }
 
     @FXML
+    public void handleSettingsSelection(ActionEvent actionEvent) {
+        loadPage("faculty-settings-selection.fxml");
+    }
+
+    @FXML
     public void handleLogoutAction(ActionEvent actionEvent) {
         try {
-            // Load the login page
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/universitymanagementapp/login-page.fxml"));
             Parent loginPage = loader.load();
-
-            // Get the current stage (window)
             Stage stage = (Stage) toggleMenuButton.getScene().getWindow();
-
-            // Create a new scene with the login page
-            Scene scene = new Scene(loginPage, 601, 498);
-            stage.setScene(scene);
+            stage.setScene(new Scene(loginPage));
             stage.setTitle("Login Page");
             stage.show();
         } catch (IOException e) {

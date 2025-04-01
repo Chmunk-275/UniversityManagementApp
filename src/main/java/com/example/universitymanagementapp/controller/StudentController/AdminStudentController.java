@@ -223,11 +223,6 @@ public class AdminStudentController {
     private void loadAllStudents() {
         allStudentsList.clear();
         allStudentsList.addAll(studentDAO.getAllStudents());
-        // Update tuition for all students based on their current enrollment
-        for (Student student : allStudentsList) {
-            updateStudentTuition(student);
-            studentDAO.updateStudent(student); // Persist the updated tuition
-        }
         allStudentsTable.setItems(allStudentsList);
         System.out.println("Loaded all students: " + allStudentsList);
     }
@@ -252,14 +247,7 @@ public class AdminStudentController {
     }
 
     private void updateStudentTuition(Student student) {
-        if (student == null) {
-            return;
-        }
-        int numberOfCourses = student.getRegisteredCourses() != null ? student.getRegisteredCourses().size() : 0;
-        int tuition = numberOfCourses * 250; // $250 per course
-        student.setTuition(tuition);
-        ExExporter.recordNotification("Student Tuition", "Tuition for " + student.getName() + " (" + student.getStudentId() + ") updated to $" + tuition + " (" + numberOfCourses + " courses)");
-        System.out.println("Updated tuition for student " + student.getStudentId() + ": $" + tuition + " (" + numberOfCourses + " courses)");
+        ExExporter.updateStudentTuition(student);
     }
 
     @FXML
@@ -409,6 +397,7 @@ public class AdminStudentController {
             // Add the course to the enrolled courses list
             enrolledCoursesList.add(courseFromDAO);
             gradeCourseComboBox.setItems(enrolledCoursesList);
+            ExExporter.recordRegistration(selectedStudent.getStudentId(), selectedCourse.getCourseName(), selectedCourse.getCourseCode());
 
             // Refresh the available courses list
             availableCourses.clear();
@@ -728,4 +717,3 @@ public class AdminStudentController {
         alert.showAndWait();
     }
 }
-
