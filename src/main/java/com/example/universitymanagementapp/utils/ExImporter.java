@@ -174,7 +174,6 @@ public class ExImporter {
         System.out.println("Reading faculty from Excel...");
         Iterator<Row> rowIterator = sheet.iterator();
         rowIterator.next();// Skip header row
-
         while (rowIterator.hasNext()) {
             Row row = rowIterator.next();
             if (isRowEmpty(row)) break;
@@ -231,7 +230,7 @@ public class ExImporter {
             String headerPicturePath = row.getCell(7).getStringCellValue();
             Image headerPicture;
             if ("default".equalsIgnoreCase(headerPicturePath)){
-                headerPicture = new Image(getClass().getResourceAsStream("/images/default.jpg"));
+                headerPicture = new Image(getClass().getResourceAsStream("/images/eventsdefault.jpg"));
             }else{
                 headerPicture = new Image(headerPicturePath);
             }
@@ -255,7 +254,6 @@ public class ExImporter {
                     registeredStudents
             );
             eventService.addEvent(event);
-            //add to event dao
         }
 
 

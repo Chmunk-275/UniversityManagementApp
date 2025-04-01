@@ -10,10 +10,12 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
@@ -308,6 +310,23 @@ public class EventAdminController {
 
         VBox vbox = new VBox(10);
         vbox.setPadding(new Insets(10));
+        vbox.setAlignment(Pos.CENTER);
+
+        // Event image
+        ImageView eventHeaderImage = new ImageView();
+        if (event.getEventHeaderImage() != null) {
+            eventHeaderImage.setImage(event.getEventHeaderImage());
+        } else {
+            try {
+                eventHeaderImage.setImage(new Image(getClass().getResourceAsStream("/images/eventsdefault.jpg")));
+            } catch (Exception e) {
+                System.out.println("Error loading default event image: " + e.getMessage());
+                eventHeaderImage.setImage(null);
+            }
+        }
+        eventHeaderImage.setFitWidth(200);
+        eventHeaderImage.setFitHeight(150);
+        eventHeaderImage.setPreserveRatio(true);
 
         Label codeLabel = new Label("Code: " + event.getEventCode());
         Label nameLabel = new Label("Name: " + event.getEventName());
@@ -334,13 +353,15 @@ public class EventAdminController {
             }
         }
         studentsListView.setItems(studentDetails);
+        studentsListView.setPrefHeight(100);
 
         vbox.getChildren().addAll(
+                eventHeaderImage,
                 codeLabel, nameLabel, descriptionLabel, locationLabel, dateTimeLabel, capacityLabel, costLabel,
                 studentsLabel, studentsListView
         );
 
-        Scene scene = new Scene(vbox, 400, 450);
+        Scene scene = new Scene(vbox, 400, 500);
         detailsStage.setScene(scene);
         detailsStage.show();
     }

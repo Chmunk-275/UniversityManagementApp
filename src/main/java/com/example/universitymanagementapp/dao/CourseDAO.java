@@ -149,6 +149,7 @@ public class CourseDAO {
         return courseDAO.getCoursesTaught(facultyName);
     }
 
+
     public void removeCoursesBySubject(String subjectCode) {
         courses.removeIf(course -> course.getSubjectCode().equalsIgnoreCase(subjectCode));
     }

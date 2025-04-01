@@ -1,13 +1,20 @@
 package com.example.universitymanagementapp.controller.FacultyController;
 
+import com.example.universitymanagementapp.UniversityManagementApp;
 import com.example.universitymanagementapp.dao.FacultyDAO;
 import com.example.universitymanagementapp.model.Faculty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 public class FacultyFacultyController {
 
@@ -15,28 +22,23 @@ public class FacultyFacultyController {
     @FXML
     private TableView<Faculty> allFacultyTable;
     @FXML
-    private TableColumn<Faculty, String> facultyIdColumn; // We'll display username as the ID
+    private TableColumn<Faculty, String> facultyIdColumn;
     @FXML
     private TableColumn<Faculty, String> nameColumn;
     @FXML
-    private TableColumn<Faculty, String> departmentColumn; // Using degree as a substitute for department
+    private TableColumn<Faculty, String> departmentColumn;
     @FXML
     private TableColumn<Faculty, String> emailColumn;
 
-    // TableView for selected faculty members
+    // Search bar
     @FXML
-    private TableView<Faculty> selectedFacultyTable;
-    @FXML
-    private TableColumn<Faculty, String> selectedFacultyIdColumn;
-    @FXML
-    private TableColumn<Faculty, String> selectedNameColumn;
-    @FXML
-    private TableColumn<Faculty, String> selectedDepartmentColumn;
-    @FXML
-    private TableColumn<Faculty, String> selectedEmailColumn;
+    private TextField searchField;
 
     // FacultyDAO instance for data access
-    private FacultyDAO facultyDAO;
+    private FacultyDAO facultyDAO = UniversityManagementApp.facultyDAO;
+
+    // Observable list to hold the full list of faculty (unfiltered)
+    private ObservableList<Faculty> allFacultyList;
 
     private FacultyDashboard parentController;
 
@@ -49,36 +51,78 @@ public class FacultyFacultyController {
         // Instantiate the DAO (this assumes that faculty data is already imported)
         facultyDAO = new FacultyDAO();
 
-        // Set up cell value factories for "All Faculty" table.
-        // Note: We're using "username" as the unique identifier for faculty.
+        // Set up cell value factories for "All Faculty" table
         facultyIdColumn.setCellValueFactory(new PropertyValueFactory<>("username"));
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-        // Using "degree" to populate the department column for display purposes.
         departmentColumn.setCellValueFactory(new PropertyValueFactory<>("degree"));
         emailColumn.setCellValueFactory(new PropertyValueFactory<>("email"));
 
-        // Set up cell value factories for "Selected Faculty" table.
-        selectedFacultyIdColumn.setCellValueFactory(new PropertyValueFactory<>("username"));
-        selectedNameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-        selectedDepartmentColumn.setCellValueFactory(new PropertyValueFactory<>("degree"));
-        selectedEmailColumn.setCellValueFactory(new PropertyValueFactory<>("email"));
+        // Load all faculty data from the DAO into an observable list
+        allFacultyList = FXCollections.observableArrayList(facultyDAO.getAllFaculty());
+        allFacultyTable.setItems(allFacultyList);
 
-        // Load all faculty data from the DAO into an observable list.
-        ObservableList<Faculty> allFaculty = FXCollections.observableArrayList(facultyDAO.getAllFaculty());
-        allFacultyTable.setItems(allFaculty);
-
-        // Initialize the selected faculty list (empty at start).
-        ObservableList<Faculty> selectedFaculty = FXCollections.observableArrayList();
-        selectedFacultyTable.setItems(selectedFaculty);
-
-        // Optional: Add a listener to add a faculty member to the selected table when clicked.
-        allFacultyTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null && !selectedFaculty.contains(newValue)) {
-                selectedFaculty.add(newValue);
+        // Add double-click event handler to open faculty details
+        allFacultyTable.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) { // Double-click detected
+                Faculty selectedFaculty = allFacultyTable.getSelectionModel().getSelectedItem();
+                if (selectedFaculty != null) {
+                    showFacultyDetails(selectedFaculty);
+                }
             }
+        });
+
+        // Add search functionality
+        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+            filterFacultyList(newValue);
         });
     }
 
-    // You can add additional methods here to remove items from the selected table,
-    // refresh the data, or handle other UI events.
+    // Method to filter the faculty list based on the search input
+    private void filterFacultyList(String searchText) {
+        ObservableList<Faculty> filteredList = FXCollections.observableArrayList();
+
+        // If search text is empty, show all faculty
+        if (searchText == null || searchText.isEmpty()) {
+            allFacultyTable.setItems(allFacultyList);
+            return;
+        }
+
+        // Filter the list based on name or ID (username)
+        String lowerCaseSearchText = searchText.toLowerCase();
+        for (Faculty faculty : allFacultyList) {
+            if (faculty.getName().toLowerCase().contains(lowerCaseSearchText) ||
+                    faculty.getUsername().toLowerCase().contains(lowerCaseSearchText)) {
+                filteredList.add(faculty);
+            }
+        }
+
+        // Update the TableView with the filtered list
+        allFacultyTable.setItems(filteredList);
+    }
+
+    // Method to show faculty details in a new window
+    private void showFacultyDetails(Faculty faculty) {
+
+        Stage detailsStage = new Stage();
+        detailsStage.setTitle("Faculty Details");
+        detailsStage.initModality(Modality.APPLICATION_MODAL);
+
+        // Create a layout for the details
+        VBox detailsLayout = new VBox(10);
+        detailsLayout.setStyle("-fx-padding: 20; -fx-alignment: center;");
+
+        // Add faculty details as text
+        detailsLayout.getChildren().add(new Text("Faculty Details"));
+        detailsLayout.getChildren().add(new Text("ID: " + faculty.getUsername()));
+        detailsLayout.getChildren().add(new Text("Name: " + faculty.getName()));
+        detailsLayout.getChildren().add(new Text("Department: " + faculty.getDegree()));
+        detailsLayout.getChildren().add(new Text("Email: " + faculty.getEmail()));
+
+        // Create a scene and set it on the stage
+        Scene scene = new Scene(detailsLayout, 300, 200);
+        detailsStage.setScene(scene);
+
+        // Show the stage
+        detailsStage.show();
+    }
 }
