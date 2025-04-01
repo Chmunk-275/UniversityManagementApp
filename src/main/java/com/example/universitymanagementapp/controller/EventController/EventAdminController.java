@@ -10,6 +10,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -299,23 +300,23 @@ public class EventAdminController {
 
         VBox vbox = new VBox(10);
         vbox.setPadding(new Insets(10));
+        vbox.setAlignment(Pos.CENTER);
 
-        ImageView detailImageView = new ImageView();
-        String imagePath = event.getEventHeaderImagePath();
-        if (imagePath != null && !imagePath.isEmpty()) {
-            try {
-                detailImageView.setImage(new Image("file:" + imagePath));
-            } catch (Exception e) {
-                detailImageView.setImage(new Image(getClass().getResourceAsStream("/images/backgroundimage.jpg")));
-            }
-        } else if (event.getEventHeaderImage() != null) {
-            detailImageView.setImage(event.getEventHeaderImage());
+        // Event image
+        ImageView eventHeaderImage = new ImageView();
+        if (event.getEventHeaderImage() != null) {
+            eventHeaderImage.setImage(event.getEventHeaderImage());
         } else {
-            detailImageView.setImage(new Image(getClass().getResourceAsStream("/images/backgroundimage.jpg")));
+            try {
+                eventHeaderImage.setImage(new Image(getClass().getResourceAsStream("/images/eventsdefault.jpg")));
+            } catch (Exception e) {
+                System.out.println("Error loading default event image: " + e.getMessage());
+                eventHeaderImage.setImage(null);
+            }
         }
-        detailImageView.setFitWidth(200);
-        detailImageView.setFitHeight(200);
-        detailImageView.setPreserveRatio(true);
+        eventHeaderImage.setFitWidth(200);
+        eventHeaderImage.setFitHeight(150);
+        eventHeaderImage.setPreserveRatio(true);
 
         Label codeLabel = new Label("Code: " + event.getEventCode());
         Label nameLabel = new Label("Name: " + event.getEventName());
@@ -340,7 +341,7 @@ public class EventAdminController {
         studentsListView.setItems(studentDetails);
 
         vbox.getChildren().addAll(
-                detailImageView,
+                eventHeaderImage,
                 codeLabel, nameLabel, descriptionLabel, locationLabel, dateTimeLabel, capacityLabel, costLabel,
                 studentsLabel, studentsListView
         );
