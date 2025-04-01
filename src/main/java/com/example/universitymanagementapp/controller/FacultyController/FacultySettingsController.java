@@ -47,6 +47,7 @@ public class FacultySettingsController {
         maskedPasswordField.setText(loggedInFaculty.getPlaintextPassword());
         profileLocationField.setText(loggedInFaculty.getOfficeLocation());
         currentLocationField.setText(loggedInFaculty.getOfficeLocation());
+
     }
 
     // === Profile Tab ===
