@@ -647,7 +647,7 @@ public class AdminStudentController {
             profilePicture.setImage(student.getProfilePicture());
         } else {
             try {
-                profilePicture.setImage(new Image("default_profile.png"));
+                profilePicture.setImage(new Image(getClass().getResourceAsStream("/image/default.jpg")));
             } catch (Exception e) {
                 // Handle missing default image
                 profilePicture.setImage(null);
