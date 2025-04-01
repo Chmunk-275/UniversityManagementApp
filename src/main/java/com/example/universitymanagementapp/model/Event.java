@@ -10,6 +10,7 @@ public class Event {
     private String eventCode;
     private String eventDescription;
     private Image eventHeaderImage;
+    private String eventHeaderImagePath;
     private String eventLocation;
     private Date eventDateTime;
     private int eventCapacity;
@@ -19,7 +20,7 @@ public class Event {
     public Event(){};
 
     public Event(String eventName, String eventCode, String eventDescription
-            , Image eventHeaderImage, String eventLocation, Date eventDateTime, int eventCapacity, String eventCost, List<String> registeredStudents){
+            , String eventHeaderImagePath, String eventLocation, Date eventDateTime, int eventCapacity, String eventCost, List<String> registeredStudents){
         this.eventName = eventName;
         this.eventCode = eventCode;
         this.eventDescription = eventDescription;
@@ -55,6 +56,12 @@ public class Event {
     }
     public void setEventHeaderImage(Image eventHeaderImage) {
         this.eventHeaderImage = eventHeaderImage;
+    }
+    public String getEventHeaderImagePath() {
+        return eventHeaderImagePath;
+    }
+    public void setEventHeaderImagePath(String eventHeaderImagePath) {
+        this.eventHeaderImagePath = eventHeaderImagePath;
     }
     public String getEventLocation() {
         return eventLocation;

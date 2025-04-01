@@ -12,6 +12,8 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -229,11 +231,16 @@ public class ExImporter {
             if (isRowEmpty(row)) break;
 
             String headerPicturePath = row.getCell(7).getStringCellValue();
-            Image headerPicture;
-            if ("default".equalsIgnoreCase(headerPicturePath)){
-                headerPicture = new Image(getClass().getResourceAsStream("/images/default.jpg"));
-            }else{
-                headerPicture = new Image(headerPicturePath);
+
+            InputStream headerPicture = null;
+            if ("default".equalsIgnoreCase(headerPicturePath)) {
+                headerPicture = getClass().getResourceAsStream("/images/default.jpg");
+            } else {
+                try {
+                    headerPicture = Files.newInputStream(Paths.get(headerPicturePath));
+                } catch (IOException e) {
+                    headerPicture = getClass().getResourceAsStream("/images/default.jpg");
+                }
             }
 
             String studentsString = row.getCell(8).getStringCellValue();
@@ -247,7 +254,7 @@ public class ExImporter {
                     row.getCell(1).getStringCellValue(), //name
                     row.getCell(0).getStringCellValue(), //code
                     row.getCell(2).getStringCellValue(), //description
-                    headerPicture,
+                    headerPicturePath,
                     row.getCell(3).getStringCellValue(), //location
                     row.getCell(4).getDateCellValue(), //date and time
                     (int)row.getCell(5).getNumericCellValue(), //capacity
