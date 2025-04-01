@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/" xmlns:fx="http://javafx.com/fxml/" fx:controller="com.example.universitymanagementapp.auth.UserLoginController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.universitymanagementapp.auth.UserLoginController">
     <children>
         <ImageView fitHeight="498.0" fitWidth="601.0" pickOnBounds="true" preserveRatio="true">
             <image>
@@ -24,7 +24,8 @@
                 </ImageView>
                 <PasswordField fx:id="userPasswordField" layoutX="74.0" layoutY="137.0" promptText="Enter Password" />
                 <TextField fx:id="usernameField" layoutX="74.0" layoutY="100.0" promptText="Enter Username" />
-                <Button fx:id="userLoginButton" layoutX="123.0" layoutY="177.0" mnemonicParsing="false" onAction="#handleUserLogin" style="-fx-background-color: rgb(173,0,41);" text="Login" />
+                <Button fx:id="userLoginButton" layoutX="157.0" layoutY="178.0" mnemonicParsing="false" onAction="#handleUserLogin" style="-fx-background-color: rgb(173,0,41);" text="Login" />
+                <Button fx:id="userLoginBackButton" layoutX="95.0" layoutY="178.0" mnemonicParsing="false" onAction="#handleUserBack" style="-fx-background-color: rgb(229, 160, 24);" text="Back" />
             </children>
         </Pane>
     </children>
