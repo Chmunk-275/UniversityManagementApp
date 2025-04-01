@@ -1,0 +1,75 @@
+*   [33mc30cb44[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m Merge branch 'jas99-does-not-work'
+[31m|[m[32m\[m  
+[31m|[m * [33ma329069[m[33m ([m[1;31morigin/jas99-does-not-work[m[33m, [m[1;32mjas99-does-not-work[m[33m)[m added profile faculty additions
+[31m|[m * [33m1a4a44e[m added profile faculty additions
+[31m|[m * [33me66d947[m Faculty edit settings for Faculty User Login
+[31m|[m * [33m5cb9e49[m Faculty edit settings for Faculty User Login
+[31m|[m * [33m1ffd60c[m Faculty edit settings for Faculty User Login
+[31m|[m * [33m7403f61[m[33m ([m[1;31morigin/jas99x[m[33m, [m[1;32mjas99x[m[33m)[m Faculty edit settings for Faculty User Login
+* [32m|[m   [33m7cee46d[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Merge pull request #7 from Chmunk-275/adrian/general
+[33m|[m[34m\[m [32m\[m  
+[33m|[m * [32m|[m [33m0c7feb4[m[33m ([m[1;31morigin/adrian/general[m[33m)[m added student settings
+[33m|[m * [32m|[m   [33me48bd1a[m Merge branch 'main' into adrian/general
+[33m|[m [35m|[m[33m\[m [32m\[m  
+[33m|[m [35m|[m[33m/[m [32m/[m  
+[33m|[m[33m/[m[35m|[m [32m|[m   
+* [35m|[m [32m|[m   [33m7eccb8c[m Merge pull request #5 from Chmunk-275/muhib/facultyeventsmanagement
+[1;31m|[m[1;32m\[m [35m\[m [32m\[m  
+[1;31m|[m * [35m|[m [32m|[m [33m5477405[m[33m ([m[1;31morigin/muhib/facultyeventsmanagement[m[33m)[m Updated event admin controller for image browsing and displaying.
+[1;31m|[m * [35m|[m [32m|[m [33m9e75c44[m Updated event admin controller for image browsing and displaying.
+[1;31m|[m * [35m|[m [32m|[m [33m4285b59[m showEventDetails now has images.
+* [1;32m|[m [35m|[m [32m|[m   [33mc3b0d97[m Merge remote-tracking branch 'origin/main'
+[1;33m|[m[1;34m\[m [1;32m\[m [35m\[m [32m\[m  
+* [1;34m|[m [1;32m|[m [35m|[m [32m|[m [33m0e4e557[m added search functionality to faculty.faculty and also added a edit and delete button for later functionality if time
+* [1;34m|[m [1;32m|[m [35m|[m [32m|[m   [33m5c329c5[m Merge remote-tracking branch 'origin/main'
+[1;35m|[m[1;36m\[m [1;34m\[m [1;32m\[m [35m\[m [32m\[m  
+* [1;36m\[m [1;34m\[m [1;32m\[m [35m\[m [32m\[m   [33m9c5d298[m Merge remote-tracking branch 'origin/main'
+[31m|[m[1;32m\[m [1;36m\[m [1;34m\[m [1;32m\[m [35m\[m [32m\[m  
+[31m|[m [1;32m|[m [1;36m|[m[1;32m_[m[1;34m|[m[1;32m/[m [35m/[m [32m/[m  
+[31m|[m [1;32m|[m[1;32m/[m[1;36m|[m [1;34m|[m [35m|[m [32m|[m   
+* [1;32m|[m [1;36m|[m [1;34m|[m [35m|[m [32m|[m [33m207e8af[m (delete/edit functionality for faculty) and fixed compilation error, FXML parsing issue
+[32m|[m [1;32m|[m [1;36m|[m [1;34m|[m * [32m|[m [33m0030f6e[m[33m ([m[1;32mmuhibsucks[m[33m, [m[1;32madrian/general[m[33m)[m added student settings
+[32m|[m [1;32m|[m [1;36m|[m [1;34m|[m * [32m|[m [33m0d66b18[m update
+[32m|[m [1;32m|[m [1;36m|[m [1;34m|[m * [32m|[m [33maa6f229[m Merge branch 'jas99x' of https://github.com/Chmunk-275/UniversityManagementApp into adrian/admin_and_faculty_events
+[32m|[m [1;32m|[m [1;36m|[m [1;34m|[m [33m|[m[32m\[m[32m|[m 
+[32m|[m [1;32m|[m [1;36m|[m [1;34m|[m [33m|[m * [33m28dfb99[m Faculty edit settings for Faculty User Login
+[32m|[m [1;32m|[m [1;36m|[m [1;34m|[m * [34m|[m [33m16a6b1f[m Merge branch 'jas99x' of https://github.com/Chmunk-275/UniversityManagementApp into adrian/admin_and_faculty_events
+[32m|[m [1;32m|[m [1;36m|[m [1;34m|[m[1;34m/[m[34m|[m [34m|[m 
+[32m|[m [1;32m|[m [1;36m|[m [1;34m|[m [34m|[m[34m/[m  
+[32m|[m [1;32m|[m [1;36m|[m [1;34m|[m * [33m83dd8a9[m Faculty edit settings for Faculty User Login
+[32m|[m [1;32m|[m [1;36m|[m[1;32m_[m[1;34m|[m[1;32m/[m  
+[32m|[m [1;32m|[m[1;32m/[m[1;36m|[m [1;34m|[m   
+[32m|[m [1;32m|[m [1;36m|[m * [33m77f14af[m Search feature update
+[32m|[m [1;32m|[m [1;36m|[m * [33m1cacc21[m Search feature update
+[32m|[m [1;32m|[m [1;36m|[m[1;36m/[m  
+[32m|[m [1;32m|[m * [33m7f21d0b[m Course Faculty update
+[32m|[m [1;32m|[m[1;32m/[m  
+[32m|[m * [33ma00d44e[m Admin complete
+[32m|[m[32m/[m  
+* [33mba157e9[m All admin functionality complete except events
+* [33mcb95965[m Updated save course function
+* [33m7ccd8a1[m Updated save course function
+* [33ma894edf[m Updated save course function
+* [33md8a01dc[m Updated the search for subjects. Fixed the delete function for courses
+* [33m2f176d1[m updated fxml
+* [33mb24359c[m updated importer added exporter
+* [33mce33b3a[m updated models
+* [33m7b3c8e6[m updated DAO
+* [33m0de52c5[m updated controllers
+* [33m6fcd0fa[m admin change
+* [33mb2a7ba6[m updated delete method for Admins and admindao is extended to the admins model giving access to those functions etc.
+*   [33m03807fd[m Merge pull request #3 from Chmunk-275/master
+[1;31m|[m[1;32m\[m  
+* [1;32m\[m   [33m59494fb[m Merge pull request #2 from Chmunk-275/master
+[1;33m|[m[1;34m\[m [1;32m\[m  
+* [1;34m\[m [1;32m\[m   [33med6a54d[m Merge pull request #1 from Chmunk-275/master
+[1;35m|[m[1;36m\[m [1;34m\[m [1;32m\[m  
+[1;35m|[m [1;36m|[m [1;34m|[m [1;32m|[m * [33m4f9b7a9[m[33m ([m[1;31morigin/master[m[33m, [m[1;32mmaster[m[33m)[m you may need to get image files downloaded locally and upload them via scene builder. You may need to download UMS_Datasheet and create a absolute path reference to your local storage for exporter and importer
+[1;35m|[m [1;36m|[m [1;34m|[m [1;32m|[m[1;32m/[m  
+[1;35m|[m [1;36m|[m [1;34m|[m * [33m438db32[m admin, admin dao, user authentication
+[1;35m|[m [1;36m|[m [1;34m|[m[1;34m/[m  
+[1;35m|[m [1;36m|[m * [33m6ce41a9[m Updates. Everyone will have to download the images to their own pc, delete the <image><Image url""/></image> sections in fxml and upload images via scenebuilder
+[1;35m|[m [1;36m|[m[1;36m/[m  
+[1;35m|[m * [33m7537a5b[m Updates and added files
+[1;35m|[m[1;35m/[m  
+* [33m931b6f9[m Initial commit
