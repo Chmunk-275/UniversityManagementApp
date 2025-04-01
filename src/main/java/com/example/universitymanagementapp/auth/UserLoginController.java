@@ -27,11 +27,28 @@ public class UserLoginController {
     public Button userLoginButton;
 
     @FXML
+    public Button userLoginBackButton;
+
+    @FXML
     public TextField usernameField;
 
     @FXML
     public PasswordField userPasswordField;
 
+    @FXML
+    public void handleUserBack(ActionEvent actionEvent) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/universitymanagementapp/login-page.fxml"));
+            Parent loginPage = loader.load();
+            Stage stage = (Stage) userLoginBackButton.getScene().getWindow();
+            stage.getScene().setRoot(loginPage);
+            stage.setTitle("Login Page");
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Error loading login page: " + e.getMessage());
+        }
+    }
 
     @FXML
     public void handleUserLogin(ActionEvent event) {
