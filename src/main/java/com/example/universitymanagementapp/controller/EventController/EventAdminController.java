@@ -1,31 +1,47 @@
 package com.example.universitymanagementapp.controller.EventController;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.format.TextStyle;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+
 import com.example.universitymanagementapp.UniversityManagementApp;
-import com.example.universitymanagementapp.model.Event;
-import com.example.universitymanagementapp.model.Student;
 import com.example.universitymanagementapp.dao.EventDAO;
 import com.example.universitymanagementapp.dao.StudentDAO;
+import com.example.universitymanagementapp.model.Event;
+import com.example.universitymanagementapp.model.Student;
 import com.example.universitymanagementapp.utils.ExExporter;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
-
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.YearMonth;
-import java.time.format.TextStyle;
-import java.util.*;
 
 public class EventAdminController {
 
@@ -308,6 +324,21 @@ public class EventAdminController {
 
         VBox vbox = new VBox(10);
         vbox.setPadding(new Insets(10));
+
+        // Event image
+        ImageView eventHeaderImage = new ImageView();
+        if (event.getEventHeaderImage() != null) {
+            eventHeaderImage.setImage(event.getEventHeaderImage());
+        } else {
+            try {
+                eventHeaderImage.setImage(new Image("/images/backgroundimage.jpg"));
+            } catch (Exception e) {
+                // Handle missing default image
+                eventHeaderImage.setImage(null);
+            }
+        }
+        eventHeaderImage.setFitWidth(100);
+        eventHeaderImage.setFitHeight(100);
 
         Label codeLabel = new Label("Code: " + event.getEventCode());
         Label nameLabel = new Label("Name: " + event.getEventName());
