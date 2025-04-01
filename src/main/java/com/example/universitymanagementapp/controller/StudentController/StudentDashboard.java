@@ -297,6 +297,10 @@ public class StudentDashboard {
                 EventStudentController controller = loader.getController();
                 controller.setStudentUsername(studentId);
                 controller.setStudentName(studentName);
+            } else if (fxmlFile.equals("student-settings-selection.fxml")) {
+                StudentSettingsController controller = loader.getController();
+                controller.setParentController(this);
+                controller.setStudentId(studentId);
             }
 
             contentPane.getChildren().clear();
@@ -337,6 +341,11 @@ public class StudentDashboard {
     @FXML
     public void handleEventSelection(ActionEvent actionEvent) {
         loadPage("student-event-selection.fxml");
+    }
+
+    @FXML
+    public void handleSettingsSelection(ActionEvent actionEvent) {
+        loadPage("student-settings-selection.fxml");
     }
 
     @FXML
