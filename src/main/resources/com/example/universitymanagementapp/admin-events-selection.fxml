@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Tab?>
@@ -18,11 +17,10 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Text?>
 
-<?import javafx.scene.chart.BubbleChart?>
-<AnchorPane fx:id="rootPane" prefHeight="400.0" prefWidth="600.0" styleClass="anchor-pane" stylesheets="@admin-students-management.css" xmlns="http://javafx.com/javafx/" xmlns:fx="http://javafx.com/fxml/" fx:controller="com.example.universitymanagementapp.controller.EventController.EventAdminController">
+<AnchorPane fx:id="rootPane" prefHeight="556.0" prefWidth="600.0" styleClass="anchor-pane" stylesheets="@admin-students-management.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.universitymanagementapp.controller.EventController.EventAdminController">
     <children>
         <!-- Toolbar at the top -->
-        <ToolBar layoutX="0.0" layoutY="0.0" prefHeight="39.0" prefWidth="600.0" styleClass="tool-bar" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+        <ToolBar layoutX="-81.0" layoutY="-164.0" prefHeight="39.0" prefWidth="681.0" styleClass="tool-bar" AnchorPane.leftAnchor="-81.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="-164.0" />
 
         <!-- TabPane for different sections -->
         <TabPane fx:id="tabPane" styleClass="tab-pane" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0">
@@ -123,8 +121,9 @@
                                 <TextField fx:id="costField" promptText="Cost" styleClass="text-field" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="310.0" />
 
                                 <!-- Save and Clear Buttons -->
-                                <Button fx:id="saveButton" onAction="#handleSaveEvent" text="Save" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" />
-                                <Button fx:id="clearButton" onAction="#handleClearForm" text="Clear" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="80.0" />
+                                <Button fx:id="saveButton" layoutX="10.0" layoutY="339.0" onAction="#handleSaveEvent" text="Save" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="339.0" />
+                                <Button fx:id="clearButton" layoutX="76.0" layoutY="339.0" onAction="#handleClearForm" text="Clear" AnchorPane.leftAnchor="76.0" AnchorPane.topAnchor="339.0" />
+                                <Button fx:id="browseImageButton" layoutX="143.0" layoutY="339.0" onAction="#handleBrowseImage" text="Browse Image" AnchorPane.leftAnchor="143.0" AnchorPane.topAnchor="339.0" />
                             </children>
                         </AnchorPane>
                     </content>
