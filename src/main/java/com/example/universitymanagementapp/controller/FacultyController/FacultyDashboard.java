@@ -35,6 +35,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class FacultyDashboard {
+    public String getFacultyUsername() {
+        return facultyUsername;
+    }
 
     @FXML
     public MenuButton toggleMenuButton;
@@ -52,6 +55,9 @@ public class FacultyDashboard {
     public MenuItem eventSelection;
     @FXML
     public MenuItem logout;
+
+    @FXML
+    public MenuItem settingsSelection;
 
     @FXML
     private AnchorPane contentPane; // This is where pages will load dynamically
@@ -180,15 +186,18 @@ public class FacultyDashboard {
         System.out.println("Faculty username set in dashboard: " + facultyUsername);
     }
 
-    // Method to load FXML content into contentPane
     private void loadPage(String fxmlFile) {
-        // If loading the dashboard, restore the initial content
+        // Prevent reloading the same page
+        if (fxmlFile.equals(currentPage)) return;
+
+        // Special handling for the dashboard page
         if (fxmlFile.equals("faculty-dashboard.fxml")) {
             if (initialDashboardContent != null) {
                 contentPane.getChildren().clear();
                 contentPane.getChildren().add(initialDashboardContent);
-                currentPage = "faculty-dashboard.fxml";
-                // Refresh the dashboard data
+                currentPage = fxmlFile;
+
+                // Refresh dashboard data
                 recentActivities.clear();
                 recentRegistrations.clear();
                 upcomingEvents.clear();
@@ -202,56 +211,59 @@ public class FacultyDashboard {
             return;
         }
 
-        // Prevent reloading the same page
-        if (fxmlFile.equals(currentPage)) {
-            return; // Do nothing if already on the same page
-        }
-
         try {
+            // ✅ This is the important part — correct FXML path
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/universitymanagementapp/" + fxmlFile));
             Parent newPage = loader.load();
 
-            // If loading CourseFacultyController, pass the faculty name
-            if (fxmlFile.equals("faculty-course-selection.fxml")) {
-                CourseFacultyController controller = loader.getController();
-                controller.setLoggedInFacultyName(facultyName);
-                controller.setParentController(this); // Set parent controller
-            }
-            // If loading FacultyStudentController, pass the faculty name and username
-            else if (fxmlFile.equals("faculty-student-selection.fxml")) {
-                FacultyStudentController controller = loader.getController();
-                controller.setFacultyName(facultyName);
-                controller.setFacultyUsername(facultyUsername);
-                controller.setParentController(this); // Set parent controller
-            }
-            // Set parent controller for other subpages
-            else if (fxmlFile.equals("faculty-subject-selection.fxml")) {
-                FacultySubjectController controller = loader.getController(); // Replace with actual controller class
-                controller.setParentController(this);
-            }
-            else if (fxmlFile.equals("faculty-faculty-selection.fxml")) {
-                FacultyFacultyController controller = loader.getController(); // Replace with actual controller class
-                controller.setParentController(this);
-            }
-            else if (fxmlFile.equals("faculty-event-selection.fxml")) {
-                EventFacultyController controller = loader.getController(); // Replace with actual controller class
-                controller.setParentController(this);
+            // Controller wiring for specific pages
+            switch (fxmlFile) {
+                case "faculty-course-selection.fxml" -> {
+                    CourseFacultyController controller = loader.getController();
+                    controller.setLoggedInFacultyName(facultyName);
+                    controller.setParentController(this);
+                }
+                case "faculty-student-selection.fxml" -> {
+                    FacultyStudentController controller = loader.getController();
+                    controller.setFacultyName(facultyName);
+                    controller.setFacultyUsername(facultyUsername);
+                    controller.setParentController(this);
+                }
+                case "faculty-subject-selection.fxml" -> {
+                    FacultySubjectController controller = loader.getController();
+                    controller.setParentController(this);
+                }
+                case "faculty-faculty-selection.fxml" -> {
+                    FacultyFacultyController controller = loader.getController();
+                    controller.setParentController(this);
+                }
+                case "faculty-event-selection.fxml" -> {
+                    EventFacultyController controller = loader.getController();
+                    controller.setParentController(this);
+                }
+                case "FacultySettingsController.fxml" -> {
+                    FacultySettingsController controller = loader.getController();
+                    controller.setParentController(this);
+                }
             }
 
+
+            // Load the new page into the main pane
             contentPane.getChildren().clear();
             contentPane.getChildren().add(newPage);
-
             AnchorPane.setTopAnchor(newPage, 0.0);
             AnchorPane.setBottomAnchor(newPage, 0.0);
             AnchorPane.setLeftAnchor(newPage, 0.0);
             AnchorPane.setRightAnchor(newPage, 0.0);
 
-            currentPage = fxmlFile; // Update current page
+            currentPage = fxmlFile;
+
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Error loading FXML: " + fxmlFile);
         }
     }
+
 
     private void loadSummaryData() {
         totalStudentsText.setText(String.valueOf(UniversityManagementApp.studentDAO.getAllStudents().size()));
@@ -321,6 +333,11 @@ public class FacultyDashboard {
     @FXML
     public void handleStudentSelection(ActionEvent actionEvent) {
         loadPage("faculty-student-selection.fxml"); // This will trigger setFacultyName and setFacultyUsername
+    }
+
+    @FXML
+    public void handleSettingsSelection(ActionEvent actionEvent) {
+        loadPage("FacultySettingsController.fxml");
     }
 
     @FXML
