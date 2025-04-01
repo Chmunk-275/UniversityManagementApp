@@ -4,8 +4,10 @@
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" stylesheets="@admin-students-management.css" xmlns="http://javafx.com/javafx/" xmlns:fx="http://javafx.com/fxml/" fx:controller="com.example.universitymanagementapp.controller.CourseController.CourseFacultyController">
     <children>
@@ -15,16 +17,25 @@
                 <!-- Tab 1: All Courses -->
                 <Tab closable="false" text="All Courses">
                     <content>
-                        <TableView fx:id="allCoursesTable">
-                            <columns>
-                                <TableColumn fx:id="courseCodeColumn" prefWidth="80.0" text="Code" />
-                                <TableColumn fx:id="subjectCodeColumn" prefWidth="100.0" text="Subject" />
-                                <TableColumn fx:id="courseNameColumn" prefWidth="150.0" text="Course Name" />
-                                <TableColumn fx:id="instructorColumn" prefWidth="100.0" text="Instructor" />
-                                <TableColumn fx:id="capacityColumn" prefWidth="60.0" text="Capacity" />
-                                <TableColumn fx:id="enrollmentColumn" prefWidth="70.0" text="Enrolled" />
-                            </columns>
-                        </TableView>
+                        <AnchorPane>
+                            <children>
+                                <HBox fx:id="allCoursesHBox" spacing="10.0" styleClass="hbox" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="5.0">
+                                    <children>
+                                        <TextField fx:id="courseSearch" promptText="Search by name, subject, or instructor" styleClass="text-field" prefWidth="350.0" />
+                                    </children>
+                                </HBox>
+                                <TableView fx:id="allCoursesTable" styleClass="table-view" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
+                                    <columns>
+                                        <TableColumn fx:id="courseCodeColumn" prefWidth="80.0" text="Code" />
+                                        <TableColumn fx:id="subjectCodeColumn" prefWidth="100.0" text="Subject" />
+                                        <TableColumn fx:id="courseNameColumn" prefWidth="150.0" text="Course Name" />
+                                        <TableColumn fx:id="instructorColumn" prefWidth="100.0" text="Instructor" />
+                                        <TableColumn fx:id="capacityColumn" prefWidth="60.0" text="Capacity" />
+                                        <TableColumn fx:id="enrollmentColumn" prefWidth="70.0" text="Enrolled" />
+                                    </columns>
+                                </TableView>
+                            </children>
+                        </AnchorPane>
                     </content>
                 </Tab>
                 <!-- Tab 2: My Courses -->
@@ -46,4 +57,3 @@
         </TabPane>
     </children>
 </AnchorPane>
-

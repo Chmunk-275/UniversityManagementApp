@@ -36,7 +36,7 @@
                                     </children>
                                 </HBox>
                                 <!-- TableView for all faculty -->
-                                <TableView fx:id="allFacultyTable" styleClass="table-view" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0">
+                                <TableView fx:id="allFacultyTable" styleClass="table-view" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
                                     <columns>
                                         <TableColumn fx:id="nameColumn" text="Name" />
                                         <TableColumn fx:id="facultyIdColumn" text="Faculty ID" />
