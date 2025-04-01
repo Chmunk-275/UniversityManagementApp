@@ -14,6 +14,8 @@ import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.util.List;
 
+
+
 public class CourseFacultyController {
 
     @FXML
