@@ -32,6 +32,8 @@ public class StudentDashboard {
     public MenuItem eventSelection;
     @FXML
     public MenuItem logout;
+    @FXML
+    public MenuItem settings;
 
     @FXML
     public AnchorPane contentPane; // For dynamic content loading
@@ -106,6 +108,12 @@ public class StudentDashboard {
                 controller.setStudentUsername(studentId);
                 controller.setStudentName(studentName);
             }
+            else if (fxmlFile.equals("student-settings.fxml")) {
+                StudentSettingsController controller = loader.getController();
+                controller.setParentController(this);
+                controller.setStudentId(studentId);
+            }
+
 
             contentPane.getChildren().clear();
             contentPane.getChildren().add(newPage);
@@ -161,6 +169,11 @@ public class StudentDashboard {
             System.out.println("Error loading login page: " + e.getMessage());
         }
     }
+    @FXML
+    public void handleSettingsSelection(ActionEvent actionEvent) {
+        loadPage("student-settings.fxml");
+    }
+
 
     public void handleNotificationSelection(ActionEvent actionEvent) {
 

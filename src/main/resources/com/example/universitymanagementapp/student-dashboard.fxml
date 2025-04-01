@@ -23,6 +23,7 @@
                 <MenuItem fx:id="studentSelection" mnemonicParsing="false" onAction="#handleStudentSelection" text="Students" />
                 <MenuItem fx:id="subjectSelection" mnemonicParsing="false" onAction="#handleSubjectSelection" text="Subjects" />
                 <MenuItem fx:id="logout" mnemonicParsing="false" onAction="#handleLogoutAction" text="Logout" />
+                <MenuItem fx:id="settings" mnemonicParsing="false" onAction="#handleSettingsSelection" text="Settings" />
             </items>
         </MenuButton>
 
