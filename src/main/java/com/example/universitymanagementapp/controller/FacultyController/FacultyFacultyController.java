@@ -1,10 +1,13 @@
 package com.example.universitymanagementapp.controller.FacultyController;
+
 import com.example.universitymanagementapp.model.Admins;
 import com.example.universitymanagementapp.dao.FacultyDAO;
 import com.example.universitymanagementapp.model.Faculty;
 import com.example.universitymanagementapp.model.User;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -50,6 +53,10 @@ public class FacultyFacultyController {
     @FXML
     private TextField editEmailField;
 
+    // Search bar TextField
+    @FXML
+    private TextField facultySearch;
+
     // FacultyDAO instance for data access
     private FacultyDAO facultyDAO;
     private FacultyDashboard parentController;
@@ -87,7 +94,36 @@ public class FacultyFacultyController {
 
         // Load all faculty data from the DAO into an observable list
         allFaculty = FXCollections.observableArrayList(facultyDAO.getAllFaculty());
-        allFacultyTable.setItems(allFaculty);
+
+        // Create a FilteredList to enable searching
+        FilteredList<Faculty> filteredFaculty = new FilteredList<>(allFaculty, p -> true);
+
+        // Add a listener to the facultySearch TextField to filter the list dynamically
+        facultySearch.textProperty().addListener((observable, oldValue, newValue) -> {
+            filteredFaculty.setPredicate(faculty -> {
+                // If the search field is empty, show all faculty
+                if (newValue == null || newValue.trim().isEmpty()) {
+                    return true;
+                }
+
+                String lowerCaseFilter = newValue.toLowerCase();
+
+                // Check if any field matches the search term
+                if (faculty.getUsername() != null && faculty.getUsername().toLowerCase().contains(lowerCaseFilter)) {
+                    return true;
+                } else if (faculty.getName() != null && faculty.getName().toLowerCase().contains(lowerCaseFilter)) {
+                    return true;
+                } else if (faculty.getDegree() != null && faculty.getDegree().toLowerCase().contains(lowerCaseFilter)) {
+                    return true;
+                } else if (faculty.getEmail() != null && faculty.getEmail().toLowerCase().contains(lowerCaseFilter)) {
+                    return true;
+                }
+                return false; // No match
+            });
+        });
+
+        // Set the filtered list as the items for the allFacultyTable
+        allFacultyTable.setItems(filteredFaculty);
 
         // Initialize the selected faculty list (empty at start)
         selectedFaculty = FXCollections.observableArrayList();
@@ -169,7 +205,25 @@ public class FacultyFacultyController {
         alert.setContentText(message);
         alert.showAndWait();
     }
+
+    public void handleSaveFaculty() {
+        // Logic to save the edited faculty details
+        String name = editNameField.getText();
+        String degree = editDegreeField.getText();
+        String email = editEmailField.getText();
+        // Update the selected faculty in the data model and refresh the TableViews
+    }
+
+    public void handleClearForm() {
+        editNameField.clear();
+        editDegreeField.clear();
+        editEmailField.clear();
+    }
+
+    public void handleDeleteFaculty(ActionEvent actionEvent) {
+    }
+
+    public void handleEditFaculty(ActionEvent actionEvent) {
+    }
+
 }
-
-
-    // refresh the data, or handle other UI events.
