@@ -39,6 +39,12 @@ public class CourseDAO {
     public void updateCourse(Course updatedCourse) {
         for (Course course : courses) {
             if (course.getCourseCode() == updatedCourse.getCourseCode()) {
+                String oldInstructor = course.getInstructor();
+                String newInstructor = updatedCourse.getInstructor();
+                if (!oldInstructor.equals(newInstructor)) {
+                    System.out.println("Updating instructor for course " + course.getCourseCode() + " (" + course.getCourseName() + "): " +
+                            "Old Instructor: " + oldInstructor + ", New Instructor: " + newInstructor);
+                }
                 course.setSubjectCode(updatedCourse.getSubjectCode());
                 course.setCourseName(updatedCourse.getCourseName());
                 course.setInstructor(updatedCourse.getInstructor());
@@ -135,6 +141,9 @@ public class CourseDAO {
 
     public List<Course> getAllCourses() {
         System.out.println("Total courses in CourseDAO: " + courses.size());
+        for (Course course : courses) {
+            System.out.println("Course: " + course.getCourseName() + ", Instructor: " + course.getInstructor());
+        }
         return new ArrayList<>(courses);
     }
 

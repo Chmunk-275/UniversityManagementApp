@@ -141,6 +141,10 @@ public class AdminDashboard {
                 new SimpleStringProperty(cellData.getValue().getDate().format(DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm")))
         );
         recentActivitiesTable.setItems(recentActivities);
+        // Bind column widths to table width
+        activityTypeColumn.prefWidthProperty().bind(recentActivitiesTable.widthProperty().multiply(0.2)); // 20%
+        activityDescriptionColumn.prefWidthProperty().bind(recentActivitiesTable.widthProperty().multiply(0.6)); // 60%
+        activityDateColumn.prefWidthProperty().bind(recentActivitiesTable.widthProperty().multiply(0.2)); // 20%
 
         // Configure table columns for Recent Registrations
         registrationStudentColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getStudentId()));
@@ -152,6 +156,11 @@ public class AdminDashboard {
                 new SimpleStringProperty(cellData.getValue().getDate().format(DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm")))
         );
         recentRegistrationsTable.setItems(recentRegistrations);
+        // Bind column widths to table width
+        registrationStudentColumn.prefWidthProperty().bind(recentRegistrationsTable.widthProperty().multiply(0.25)); // 25%
+        registrationCourseColumn.prefWidthProperty().bind(recentRegistrationsTable.widthProperty().multiply(0.25)); // 25%
+        registrationCourseNameColumn.prefWidthProperty().bind(recentRegistrationsTable.widthProperty().multiply(0.25)); // 25%
+        registrationDateColumn.prefWidthProperty().bind(recentRegistrationsTable.widthProperty().multiply(0.25)); // 25%
 
         // Configure table columns for Upcoming Events
         eventCodeColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getEventCode()));
@@ -166,6 +175,11 @@ public class AdminDashboard {
         });
         eventLocationColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getEventLocation()));
         upcomingEventsTable.setItems(upcomingEvents);
+        // Bind column widths to table width
+        eventCodeColumn.prefWidthProperty().bind(upcomingEventsTable.widthProperty().multiply(0.25)); // 25%
+        eventNameColumn.prefWidthProperty().bind(upcomingEventsTable.widthProperty().multiply(0.25)); // 25%
+        eventDateColumn.prefWidthProperty().bind(upcomingEventsTable.widthProperty().multiply(0.25)); // 25%
+        eventLocationColumn.prefWidthProperty().bind(upcomingEventsTable.widthProperty().multiply(0.25)); // 25%
 
         // Configure table columns for Notifications
         notificationTypeColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getType()));
@@ -174,6 +188,10 @@ public class AdminDashboard {
                 new SimpleStringProperty(cellData.getValue().getDate().format(DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm")))
         );
         notificationsTable.setItems(notifications);
+        // Bind column widths to table width
+        notificationTypeColumn.prefWidthProperty().bind(notificationsTable.widthProperty().multiply(0.2)); // 20%
+        notificationMessageColumn.prefWidthProperty().bind(notificationsTable.widthProperty().multiply(0.6)); // 60%
+        notificationDateColumn.prefWidthProperty().bind(notificationsTable.widthProperty().multiply(0.2)); // 20%
 
         // Load data
         loadSummaryData();
@@ -181,6 +199,9 @@ public class AdminDashboard {
         loadRecentRegistrations();
         loadUpcomingEvents();
         loadNotifications();
+
+        // Force a layout pass to ensure components adjust to the window size
+        contentPane.layout();
     }
 
     private void loadSummaryData() {
@@ -348,8 +369,12 @@ public class AdminDashboard {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/universitymanagementapp/login-page.fxml"));
             Parent loginPage = loader.load();
             Stage stage = (Stage) toggleMenuButton.getScene().getWindow();
-            stage.setScene(new Scene(loginPage));
+            Scene scene = new Scene(loginPage, 601, 498); // Set the scene size explicitly
+            stage.setScene(scene);
             stage.setTitle("Login Page");
+            stage.setWidth(601); // Ensure the stage size remains consistent
+            stage.setHeight(498);
+            stage.setMaximized(false);
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();

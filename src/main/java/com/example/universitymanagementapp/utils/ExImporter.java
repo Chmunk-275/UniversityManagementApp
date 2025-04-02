@@ -71,11 +71,15 @@ public class ExImporter {
         while (rowIterator.hasNext()) {
             Row row = rowIterator.next();
             if (isRowEmpty(row)) break;
+
+            String instructorName = getStringValue(row.getCell(8)); // Instructor name from Excel
+            System.out.println("Importing course: " + getStringValue(row.getCell(1)) + ", Instructor: " + instructorName);
+
             Course course = new Course(
                     getStringValue(row.getCell(2)), // Subject Code
                     getStringValue(row.getCell(1)), // Course Name
                     (int) getNumericValue(row.getCell(0)), // Course Code
-                    getStringValue(row.getCell(8)), // Instructor
+                    instructorName, // Instructor name
                     (int) getNumericValue(row.getCell(4)), // Capacity
                     0, // currentEnrollment (will be set after loading enrolledStudents)
                     getStringValue(row.getCell(3)), // Section ID
