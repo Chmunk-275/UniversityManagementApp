@@ -1,47 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane fx:id="rootPane" prefHeight="400.0" prefWidth="600.0" styleClass="anchor-pane"
-            stylesheets="@admin-students-management.css"
-            xmlns="http://javafx.com/javafx/23.0.1"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.example.universitymanagementapp.controller.FacultyController.FacultySettingsController">
+<AnchorPane fx:id="rootPane" prefHeight="400.0" prefWidth="600.0" styleClass="anchor-pane" stylesheets="@admin-students-management.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.universitymanagementapp.controller.FacultyController.FacultySettingsController">
 
     <children>
         <!-- Toolbar at the top -->
-        <ToolBar layoutX="0.0" layoutY="0.0" prefHeight="39.0" prefWidth="600.0"
-                 styleClass="tool-bar" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
+        <ToolBar layoutX="0.0" layoutY="0.0" prefHeight="39.0" prefWidth="600.0" styleClass="tool-bar" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
 
         <!-- TabPane for different sections -->
-        <TabPane fx:id="tabPane" prefHeight="513.0" prefWidth="600.0" styleClass="tab-pane"
-                 AnchorPane.topAnchor="40.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+        <TabPane fx:id="tabPane" prefHeight="513.0" prefWidth="600.0" styleClass="tab-pane" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0">
             <tabs>
                 <!-- Tab 1: Admin Profile -->
                 <Tab closable="false" text="Profile">
                     <content>
                         <AnchorPane prefHeight="182.0" prefWidth="580.0">
                             <children>
-                                <Text styleClass="text" text="Admin Information" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0"/>
-                                <Label styleClass="label" text="Name:" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="40.0"/>
-                                <TextField fx:id="nameField" editable="false" promptText="Name" styleClass="text-field"
-                                           AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="40.0"/>
-                                <Label styleClass="label" text="Username:" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="80.0"/>
-                                <TextField fx:id="usernameField" editable="false" promptText="Username" styleClass="text-field"
-                                           AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="80.0"/>
-                                <Label styleClass="label" text="Password:" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="120.0"/>
-                                <PasswordField fx:id="maskedPasswordField" editable="false" promptText="Password" styleClass="text-field"
-                                               AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="120.0"/>
-                                <Label layoutX="12.0" layoutY="161.0" styleClass="label" text="Location:"/>
-                                <TextField fx:id="profileLocationField" editable="false" layoutX="100.0" layoutY="159.0" promptText="Location" styleClass="text-field"/>
-                                <Label layoutX="12.0" layoutY="200.0" styleClass="label" text="Research"/>
-                                <TextField fx:id="profileResearchField" editable="false" layoutX="100.0" layoutY="199.0" prefHeight="29.0" prefWidth="416.0" promptText="Research" styleClass="text-field"/>
-                                <Label layoutX="12.0" layoutY="239.0" styleClass="label" text="Email:"/>
-                                <TextField fx:id="profileEmailField" editable="false" layoutX="101.0" layoutY="240.0" prefHeight="29.0" prefWidth="416.0" promptText="Email" styleClass="text-field"/>
-                                <Label layoutX="12.0" layoutY="281.0" styleClass="label" text="Degree:"/>
-                                <TextField fx:id="profileDegreeField" editable="false" layoutX="100.0" layoutY="282.0" prefHeight="29.0" prefWidth="416.0" promptText="Degree" styleClass="text-field"/>
+                                <Text styleClass="text" text="Admin Information" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
+                                <!-- Profile Picture -->
+                                <ImageView fx:id="profilePictureView" fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="40.0" />
+                                <!-- Shift other fields to the right -->
+                                <Label styleClass="label" text="Name:" AnchorPane.leftAnchor="120.0" AnchorPane.topAnchor="40.0" />
+                                <TextField fx:id="nameField" editable="false" promptText="Name" styleClass="text-field" AnchorPane.leftAnchor="210.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="40.0" />
+                                <Label styleClass="label" text="Username:" AnchorPane.leftAnchor="120.0" AnchorPane.topAnchor="80.0" />
+                                <TextField fx:id="usernameField" editable="false" promptText="Username" styleClass="text-field" AnchorPane.leftAnchor="210.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="80.0" />
+                                <Label styleClass="label" text="Password:" AnchorPane.leftAnchor="120.0" AnchorPane.topAnchor="120.0" />
+                                <PasswordField fx:id="maskedPasswordField" editable="false" promptText="Password" styleClass="text-field" AnchorPane.leftAnchor="210.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="120.0" />
+                                <Label styleClass="label" text="Location:" AnchorPane.leftAnchor="120.0" AnchorPane.topAnchor="160.0" />
+                                <TextField fx:id="profileLocationField" editable="false" promptText="Location" styleClass="text-field" AnchorPane.leftAnchor="210.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="160.0" />
+                                <Label styleClass="label" text="Research:" AnchorPane.leftAnchor="120.0" AnchorPane.topAnchor="200.0" />
+                                <TextField fx:id="profileResearchField" editable="false" promptText="Research" styleClass="text-field" AnchorPane.leftAnchor="210.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="200.0" />
+                                <Label styleClass="label" text="Email:" AnchorPane.leftAnchor="120.0" AnchorPane.topAnchor="240.0" />
+                                <TextField fx:id="profileEmailField" editable="false" promptText="Email" styleClass="text-field" AnchorPane.leftAnchor="210.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="240.0" />
+                                <Label styleClass="label" text="Degree:" AnchorPane.leftAnchor="120.0" AnchorPane.topAnchor="280.0" />
+                                <TextField fx:id="profileDegreeField" editable="false" promptText="Degree" styleClass="text-field" AnchorPane.leftAnchor="210.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="280.0" />
                             </children>
                         </AnchorPane>
                     </content>
@@ -52,20 +53,15 @@
                     <content>
                         <AnchorPane>
                             <children>
-                                <Text styleClass="text" text="Change Password" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0"/>
-                                <Label styleClass="label" text="Current Password:" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="40.0"/>
-                                <PasswordField fx:id="currentPasswordField" promptText="Current Password" styleClass="text-field"
-                                               AnchorPane.leftAnchor="150.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="40.0"/>
-                                <Label styleClass="label" text="New Password:" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="80.0"/>
-                                <PasswordField fx:id="newPasswordField" promptText="New Password" styleClass="text-field"
-                                               AnchorPane.leftAnchor="150.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="80.0"/>
-                                <Label styleClass="label" text="Confirm Password:" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="120.0"/>
-                                <PasswordField fx:id="confirmPasswordField" promptText="Confirm Password" styleClass="text-field"
-                                               AnchorPane.leftAnchor="150.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="120.0"/>
-                                <Button fx:id="changePasswordButton" onAction="#handleChangePassword" text="Change Password"
-                                        AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0"/>
-                                <Button fx:id="clearPasswordButton" onAction="#handleClearPassword" text="Clear"
-                                        AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="150.0"/>
+                                <Text styleClass="text" text="Change Password" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
+                                <Label styleClass="label" text="Current Password:" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="40.0" />
+                                <PasswordField fx:id="currentPasswordField" promptText="Current Password" styleClass="text-field" AnchorPane.leftAnchor="150.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="40.0" />
+                                <Label styleClass="label" text="New Password:" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="80.0" />
+                                <PasswordField fx:id="newPasswordField" promptText="New Password" styleClass="text-field" AnchorPane.leftAnchor="150.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="80.0" />
+                                <Label styleClass="label" text="Confirm Password:" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="120.0" />
+                                <PasswordField fx:id="confirmPasswordField" promptText="Confirm Password" styleClass="text-field" AnchorPane.leftAnchor="150.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="120.0" />
+                                <Button fx:id="changePasswordButton" onAction="#handleChangePassword" text="Change Password" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" />
+                                <Button fx:id="clearPasswordButton" onAction="#handleClearPassword" text="Clear" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="150.0" />
                             </children>
                         </AnchorPane>
                     </content>
@@ -76,20 +72,33 @@
                     <content>
                         <AnchorPane>
                             <children>
-                                <Text styleClass="text" text="Change Location" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0"/>
-                                <Label styleClass="label" text="Current Location:" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="40.0"/>
-                                <TextField fx:id="currentLocationField" editable="false" promptText="Currunt Location" styleClass="text-field"
-                                           AnchorPane.leftAnchor="150.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="40.0"/>
-                                <Label styleClass="label" text="New Location:" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="80.0"/>
-                                <TextField fx:id="newLocationField" promptText="New Location" styleClass="text-field"
-                                           AnchorPane.leftAnchor="150.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="80.0"/>
-                                <Label styleClass="label" text="Confirm Location:" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="120.0"/>
-                                <TextField fx:id="confirmLocationField" promptText="Confirm Location" styleClass="text-field"
-                                           AnchorPane.leftAnchor="150.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="120.0"/>
-                                <Button fx:id="changeLocationButton" onAction="#handleChangeLocation" text="Change Location"
-                                        AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0"/>
-                                <Button fx:id="clearLocationButton" onAction="#handleClearPassword" text="Clear"
-                                        AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="150.0"/>
+                                <Text styleClass="text" text="Change Location" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
+                                <Label styleClass="label" text="Current Location:" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="40.0" />
+                                <TextField fx:id="currentLocationField" editable="false" promptText="Current Location" styleClass="text-field" AnchorPane.leftAnchor="150.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="40.0" />
+                                <Label styleClass="label" text="New Location:" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="80.0" />
+                                <TextField fx:id="newLocationField" promptText="New Location" styleClass="text-field" AnchorPane.leftAnchor="150.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="80.0" />
+                                <Label styleClass="label" text="Confirm Location:" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="120.0" />
+                                <TextField fx:id="confirmLocationField" promptText="Confirm Location" styleClass="text-field" AnchorPane.leftAnchor="150.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="120.0" />
+                                <Button fx:id="changeLocationButton" onAction="#handleChangeLocation" text="Change Location" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" />
+                                <Button fx:id="clearLocationButton" onAction="#handleClearLocation" text="Clear" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="150.0" />
+                            </children>
+                        </AnchorPane>
+                    </content>
+                </Tab>
+
+                <!-- Tab 4: Change Profile Picture -->
+                <Tab closable="false" text="Change Profile Picture">
+                    <content>
+                        <AnchorPane>
+                            <children>
+                                <Text styleClass="text" text="Change Profile Picture" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
+                                <Label styleClass="label" text="Current Picture:" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="40.0" />
+                                <ImageView fx:id="currentProfilePictureView" fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="150.0" AnchorPane.topAnchor="40.0" />
+                                <Label styleClass="label" text="New Picture:" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="150.0" />
+                                <TextField fx:id="newProfilePicturePathField" editable="false" promptText="Select a new picture" styleClass="text-field" AnchorPane.leftAnchor="150.0" AnchorPane.rightAnchor="150.0" AnchorPane.topAnchor="150.0" />
+                                <Button fx:id="browsePictureButton" layoutX="150.0" layoutY="187.0" onAction="#handleBrowsePicture" text="Browse" AnchorPane.leftAnchor="150.0" AnchorPane.topAnchor="187.0" />
+                                <Button fx:id="changeProfilePictureButton" onAction="#handleChangeProfilePicture" text="Change Picture" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" />
+                                <Button fx:id="clearProfilePictureButton" onAction="#handleClearProfilePicture" text="Clear" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="150.0" />
                             </children>
                         </AnchorPane>
                     </content>

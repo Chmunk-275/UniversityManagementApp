@@ -2,6 +2,7 @@ package com.example.universitymanagementapp.controller.StudentController;
 
 import com.example.universitymanagementapp.UniversityManagementApp;
 import com.example.universitymanagementapp.model.Student;
+import com.example.universitymanagementapp.utils.ExExporter;
 import com.example.universitymanagementapp.utils.PasswordHasher;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -40,6 +41,8 @@ public class StudentSettingsController {
     private StudentDashboard parentController;
     private String studentId;
     private String selectedImagePath; // Temporary storage for the selected image path
+
+    ExExporter exporter = new ExExporter(UniversityManagementApp.courseDAO, UniversityManagementApp.studentDAO, UniversityManagementApp.facultyDAO, UniversityManagementApp.subjectDAO, UniversityManagementApp.eventDAO);
 
     public void setParentController(StudentDashboard controller) {
         this.parentController = controller;
@@ -109,6 +112,7 @@ public class StudentSettingsController {
         passwordStatusLabel.setText("Password updated successfully!");
         passwordStatusLabel.setStyle("-fx-text-fill: green;");
         clearPasswordFields();
+        exporter.exportData();
         tabPane.getSelectionModel().select(0);
     }
 
@@ -134,6 +138,7 @@ public class StudentSettingsController {
         File selectedFile = fileChooser.showOpenDialog(tabPane.getScene().getWindow());
         if (selectedFile != null) {
             try {
+                // Ensure the path is stored as a file URI
                 selectedImagePath = selectedFile.toURI().toString();
                 Image newImage = new Image(selectedImagePath);
                 currentProfilePictureView.setImage(newImage);
@@ -166,7 +171,7 @@ public class StudentSettingsController {
             if (parentController != null) {
                 parentController.refreshProfileTab();
             }
-
+            exporter.exportData();
             selectedImagePath = null; // Clear the temporary path
             tabPane.getSelectionModel().select(0); // Return to Profile tab
         } catch (Exception e) {
@@ -191,6 +196,7 @@ public class StudentSettingsController {
                 parentController.refreshProfileTab();
             }
 
+            exporter.exportData();
             selectedImagePath = null; // Clear the temporary path
             tabPane.getSelectionModel().select(0); // Return to Profile tab
         } catch (Exception e) {

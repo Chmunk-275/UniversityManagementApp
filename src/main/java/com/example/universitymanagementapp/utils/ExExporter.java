@@ -169,7 +169,8 @@ public class ExExporter {
             row.createCell(4).setCellValue(student.getEmail());
             row.createCell(5).setCellValue(student.getAcademicLevel());
             row.createCell(6).setCellValue(student.getCurrentSemester());
-            row.createCell(7).setCellValue(student.getProfilePicture() != null ? "custom" : "default");
+            // Write the actual profile picture path instead of "custom" or "default"
+            row.createCell(7).setCellValue(student.getProfilePicturePath() != null ? student.getProfilePicturePath() : "default");
             row.createCell(8).setCellValue(String.join(", ", student.getRegisteredSubjects()));
             row.createCell(9).setCellValue(student.getThesisTitle());
             row.createCell(10).setCellValue(student.getProgress() / 100.0); // Convert back to decimal
@@ -193,6 +194,7 @@ public class ExExporter {
             row.createCell(5).setCellValue(f.getOfficeLocation());
             row.createCell(6).setCellValue(String.join(", ", f.getCoursesOffered()));
             row.createCell(7).setCellValue(f.getPlaintextPassword());
+            row.createCell(8).setCellValue(f.getProfilePicturePath() != null ? f.getProfilePicturePath() : "default");
         }
         recordChanges();
     }

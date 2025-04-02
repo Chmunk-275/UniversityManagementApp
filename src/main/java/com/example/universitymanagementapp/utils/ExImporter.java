@@ -123,12 +123,20 @@ public class ExImporter {
             List<Course> registeredCourses = new ArrayList<>();
             Map<Integer, Grade> grades = new HashMap<>();
 
+            // Read the profile picture path from the 8th cell (column H, index 7)
             String profilePicturePath = getStringValue(row.getCell(7));
             Image profilePicture;
-            if ("default".equalsIgnoreCase(profilePicturePath)) {
+            if (profilePicturePath == null || profilePicturePath.trim().isEmpty() || "default".equalsIgnoreCase(profilePicturePath)) {
+                profilePicturePath = "default";
                 profilePicture = new Image(getClass().getResourceAsStream("/images/default.jpg"));
             } else {
-                profilePicture = new Image(profilePicturePath);
+                try {
+                    profilePicture = new Image(profilePicturePath);
+                } catch (Exception e) {
+                    System.out.println("Invalid profile picture path for student " + getStringValue(row.getCell(0)) + ": " + profilePicturePath + ". Using default image.");
+                    profilePicturePath = "default";
+                    profilePicture = new Image(getClass().getResourceAsStream("/images/default.jpg"));
+                }
             }
 
             String subjectsString = getStringValue(row.getCell(8));
@@ -179,6 +187,22 @@ public class ExImporter {
                 coursesOffered = Arrays.asList(coursesString.split("\\s*,\\s*"));
             }
 
+            // Read the profile picture path from the 8th cell
+            String profilePicturePath = getStringValue(row.getCell(8));
+            Image profilePicture;
+            if (profilePicturePath == null || profilePicturePath.trim().isEmpty() || "default".equalsIgnoreCase(profilePicturePath)) {
+                profilePicturePath = "default";
+                profilePicture = new Image(getClass().getResourceAsStream("/images/default.jpg"));
+            } else {
+                try {
+                    profilePicture = new Image(profilePicturePath);
+                } catch (Exception e) {
+                    System.out.println("Invalid profile picture path for faculty " + getStringValue(row.getCell(0)) + ": " + profilePicturePath + ". Using default image.");
+                    profilePicturePath = "default";
+                    profilePicture = new Image(getClass().getResourceAsStream("/images/default.jpg"));
+                }
+            }
+
             Faculty faculty = new Faculty(
                     getStringValue(row.getCell(0)), // username
                     getStringValue(row.getCell(7)), // password
@@ -187,7 +211,9 @@ public class ExImporter {
                     getStringValue(row.getCell(2)), // degree
                     getStringValue(row.getCell(3)), // research interest
                     coursesOffered,
-                    getStringValue(row.getCell(5))  // office location
+                    getStringValue(row.getCell(5)), // office location
+                    profilePicture, // profile picture
+                    profilePicturePath // profile picture path
             );
             facultyService.addFaculty(faculty);
         }

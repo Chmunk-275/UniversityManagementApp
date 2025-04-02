@@ -1,19 +1,21 @@
 package com.example.universitymanagementapp.model;
 
+import javafx.scene.image.Image;
 import java.util.List;
 
-// attributes
-public class Faculty extends User{
+public class Faculty extends User {
     private String name;
     private String email;
     private String degree;
     private String researchInterest;
     private List<String> coursesOffered;
     private String officeLocation;
+    private Image profilePicture; // Add profile picture field
+    private String profilePicturePath; // Add profile picture path field
 
-    // constructor
+    // Constructor
     public Faculty(String username, String password, String name, String email, String degree, String researchInterest,
-                   List<String> coursesOffered, String officeLocation) {
+                   List<String> coursesOffered, String officeLocation, Image profilePicture, String profilePicturePath) {
         super(username, password, "Faculty");
         this.name = name;
         this.email = email;
@@ -21,9 +23,11 @@ public class Faculty extends User{
         this.researchInterest = researchInterest;
         this.coursesOffered = coursesOffered;
         this.officeLocation = officeLocation;
+        this.profilePicture = profilePicture;
+        this.profilePicturePath = profilePicturePath;
     }
 
-    // getters & setters
+    // Getters & Setters
     public String getName() {
         return name;
     }
@@ -72,6 +76,22 @@ public class Faculty extends User{
         this.officeLocation = officeLocation;
     }
 
+    public Image getProfilePicture() {
+        return profilePicture;
+    }
+
+    public void setProfilePicture(Image profilePicture) {
+        this.profilePicture = profilePicture;
+    }
+
+    public String getProfilePicturePath() {
+        return profilePicturePath;
+    }
+
+    public void setProfilePicturePath(String profilePicturePath) {
+        this.profilePicturePath = profilePicturePath;
+    }
+
     @Override
     public String toString() {
         return "Faculty\n" +
@@ -82,8 +102,7 @@ public class Faculty extends User{
                 "degree='" + degree + "\n" +
                 "researchInterest='" + researchInterest + "\n" +
                 "coursesOffered=" + coursesOffered + "\n" +
-                "officeLocation='" + officeLocation + "\n";
+                "officeLocation='" + officeLocation + "\n" +
+                "profilePicturePath='" + profilePicturePath + "\n";
     }
-
 }
-
