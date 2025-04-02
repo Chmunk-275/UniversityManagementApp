@@ -55,7 +55,6 @@
         </TabPane>
         <ToolBar fx:id="toolBar" styleClass="tool-bar" prefHeight="40.0" prefWidth="600.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <items>
-                <Button fx:id="backButton" onAction="#handleBackAction" text="Back" />
             </items>
         </ToolBar>
     </children>

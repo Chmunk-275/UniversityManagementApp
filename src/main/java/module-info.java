@@ -12,6 +12,7 @@ module com.example.universitymanagementapp {
     requires com.almasb.fxgl.all;
     requires jdk.jfr;
     requires org.apache.poi.ooxml;
+    requires commons.math3;
 
     opens com.example.universitymanagementapp to javafx.fxml;
     exports com.example.universitymanagementapp;

@@ -92,7 +92,7 @@
                             <!-- Notifications/Alerts -->
                             <VBox spacing="10">
                                 <Label text="Notifications &amp; Alerts" styleClass="label" />
-                                <TableView fx:id="notificationsTable" prefHeight="150.0" styleClass="table-view">
+                                <TableView fx:id="notificationsTable" prefHeight="450.0" styleClass="table-view">
                                     <columns>
                                         <TableColumn fx:id="notificationTypeColumn" prefWidth="150" text="Type" />
                                         <TableColumn fx:id="notificationMessageColumn" prefWidth="300" text="Message" />

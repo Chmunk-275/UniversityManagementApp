@@ -11,12 +11,13 @@ public class Student extends User {
     private String name;
     private String studentId;
     private Image profilePicture;
+    private String profilePicturePath; // New field to store the image path
     private String address;
     private String phoneNumber;
     private int tuitionFees;
     private List<Course> registeredCourses;
     private String email;
-    private Map<Integer, Grade> grades; // Changed to Map
+    private Map<Integer, Grade> grades;
     private String currentSemester;
     private List<String> registeredSubjects;
     private String academicLevel;
@@ -27,16 +28,18 @@ public class Student extends User {
         this.registeredCourses = new ArrayList<>();
         this.grades = new HashMap<>();
         this.registeredSubjects = new ArrayList<>();
+        this.profilePicturePath = "default"; // Default value
     }
 
-    public Student(String username, String hashedPassword, String name, String studentId, Image profilePicture, String address, String phoneNumber,
-                   int tuitionFees, List<Course> registeredCourses, String email, Map<Integer, Grade> grades,
-                   String currentSemester, List<String> registeredSubjects, String academicLevel, String thesisTitle,
-                   double progress) {
+    public Student(String username, String hashedPassword, String name, String studentId, Image profilePicture, String profilePicturePath,
+                   String address, String phoneNumber, int tuitionFees, List<Course> registeredCourses, String email,
+                   Map<Integer, Grade> grades, String currentSemester, List<String> registeredSubjects,
+                   String academicLevel, String thesisTitle, double progress) {
         super(username, hashedPassword, "student");
         this.name = name;
         this.studentId = studentId;
         this.profilePicture = profilePicture;
+        this.profilePicturePath = profilePicturePath != null ? profilePicturePath : "default";
         this.address = address;
         this.phoneNumber = phoneNumber;
         this.tuitionFees = tuitionFees;
@@ -58,6 +61,7 @@ public class Student extends User {
         this.registeredCourses = new ArrayList<>();
         this.grades = new HashMap<>();
         this.registeredSubjects = new ArrayList<>();
+        this.profilePicturePath = "default"; // Default value
     }
 
     // Getters & setters
@@ -83,6 +87,14 @@ public class Student extends User {
 
     public void setProfilePicture(Image profilePicture) {
         this.profilePicture = profilePicture;
+    }
+
+    public String getProfilePicturePath() {
+        return profilePicturePath;
+    }
+
+    public void setProfilePicturePath(String profilePicturePath) {
+        this.profilePicturePath = profilePicturePath != null ? profilePicturePath : "default";
     }
 
     public String getAddress() {
@@ -185,11 +197,10 @@ public class Student extends User {
     @Override
     public String toString() {
         return "Student\nName: " + name + "\nStudent ID: " + studentId + "\nProfile Picture: " + profilePicture
-                + "\nAddress: " + address + "\nPhone Number: " + phoneNumber + "\nTuition Fees: " + tuitionFees
+                + "\nProfile Picture Path: " + profilePicturePath + "\nAddress: " + address
+                + "\nPhone Number: " + phoneNumber + "\nTuition Fees: " + tuitionFees
                 + "\nRegistered Courses: " + registeredCourses + "\nEmail: " + email + "\nGrades: " + grades
                 + "\nCurrent Semester: " + currentSemester + "\nRegistered Subjects: " + registeredSubjects
                 + "\nAcademic Level: " + academicLevel + "\nThesis Title: " + thesisTitle + "\nProgress: " + progress + "%";
     }
 }
-
-

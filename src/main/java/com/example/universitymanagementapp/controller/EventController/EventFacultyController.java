@@ -5,6 +5,7 @@ import com.example.universitymanagementapp.controller.FacultyController.FacultyD
 import com.example.universitymanagementapp.dao.EventDAO;
 import com.example.universitymanagementapp.model.Event;
 import com.example.universitymanagementapp.model.Faculty;
+import com.example.universitymanagementapp.utils.ExExporter;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -34,6 +35,8 @@ import java.util.List;
 import java.util.Locale;
 
 public class EventFacultyController {
+
+    // Faculty registering and unregistering from events is an activity not Notification
 
     @FXML
     private TabPane tabPane;
@@ -107,6 +110,8 @@ public class EventFacultyController {
     private FacultyDashboard parentController;
 
     private EventDAO eventDAO = UniversityManagementApp.eventDAO; // Assume this exists
+    private ExExporter exporter = new ExExporter(UniversityManagementApp.courseDAO, UniversityManagementApp.studentDAO,
+            UniversityManagementApp.facultyDAO, UniversityManagementApp.subjectDAO, eventDAO);
     private ObservableList<Event> allEventsList = FXCollections.observableArrayList();
     private ObservableList<Event> registeredEventsList = FXCollections.observableArrayList();
     private Event selectedEvent = null;
@@ -330,7 +335,10 @@ public class EventFacultyController {
         selectedEvent.setRegisteredStudents(registeredFaculty);
         eventDAO.updateEvent(selectedEvent.getEventCode(), selectedEvent);
         loadRegisteredEvents();
+        ExExporter.recordActivity("Event", "Faculty " + facultyName + " registered for event " + selectedEvent.getEventName() + " (" + selectedEvent.getEventCode() + ")");
+        exporter.exportData();
         showAlert(Alert.AlertType.INFORMATION, "Success", "You have been registered for " + selectedEvent.getEventName());
+        tabPane.getSelectionModel().select(2);
     }
 
     @FXML
@@ -357,7 +365,10 @@ public class EventFacultyController {
         selectedEvent.setRegisteredStudents(registeredFaculty);
         eventDAO.updateEvent(selectedEvent.getEventCode(), selectedEvent);
         loadRegisteredEvents();
+        ExExporter.recordActivity("Event", "Faculty " + facultyName + " unregistered from event " + selectedEvent.getEventName() + " (" + selectedEvent.getEventCode() + ")");
+        exporter.exportData();
         showAlert(Alert.AlertType.INFORMATION, "Success", "You have been unregistered from " + selectedEvent.getEventName());
+        tabPane.getSelectionModel().select(2);
     }
 
     private void handleDoubleClick(MouseEvent event) {

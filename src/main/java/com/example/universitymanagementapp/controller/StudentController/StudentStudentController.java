@@ -14,6 +14,8 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 import java.util.List;
 import java.util.Map;
@@ -26,6 +28,7 @@ public class StudentStudentController {
     @FXML private Label emailLabel;
     @FXML private Label phoneLabel;
     @FXML private Label addressLabel;
+    @FXML private ImageView profilePictureView; // Added for profile picture
 
     // Academic Information tab
     @FXML private Label academicLevelLabel;
@@ -127,6 +130,21 @@ public class StudentStudentController {
         phoneLabel.setText(student.getPhoneNumber() != null ? student.getPhoneNumber() : "N/A");
         addressLabel.setText(student.getAddress() != null ? student.getAddress() : "N/A");
 
+        // Load profile picture
+        if (student.getProfilePicture() != null) {
+            profilePictureView.setImage(student.getProfilePicture());
+            System.out.println("Loaded profile picture for student: " + student.getName());
+        } else {
+            System.out.println("Profile picture is null for student: " + student.getName() + ". Loading default image.");
+            try {
+                profilePictureView.setImage(new Image(getClass().getResourceAsStream("/images/default.jpg")));
+                System.out.println("Default profile picture loaded successfully.");
+            } catch (Exception e) {
+                System.out.println("Error loading default profile picture: " + e.getMessage());
+                profilePictureView.setImage(null);
+            }
+        }
+
         // Academic Information tab
         academicLevelLabel.setText(student.getAcademicLevel() != null ? student.getAcademicLevel() : "N/A");
         currentSemesterLabel.setText(student.getCurrentSemester() != null ? student.getCurrentSemester() : "N/A");
@@ -158,7 +176,7 @@ public class StudentStudentController {
     private String calculateTuitionFees(Student student) {
         List<Course> courses = student.getRegisteredCourses();
         if (courses != null && !courses.isEmpty()) {
-            double fee = courses.size() * 500.0;
+            double fee = courses.size() * 250.0;
             return String.format("$%.2f", fee);
         }
         return "$0.00";

@@ -348,6 +348,31 @@ public class StudentDashboard {
         loadPage("student-settings-selection.fxml");
     }
 
+    public void refreshProfileTab() {
+        // Check if the current page is the student profile page
+        if (currentPage.equals("student-student-selection.fxml")) {
+            try {
+                // Reload the student profile page into the contentPane
+                FXMLLoader profileLoader = new FXMLLoader(getClass().getResource("/com/example/universitymanagementapp/student-student-selection.fxml"));
+                Parent profilePage = profileLoader.load();
+                StudentStudentController controller = profileLoader.getController();
+                controller.setStudentId(studentId);
+
+                contentPane.getChildren().clear();
+                contentPane.getChildren().add(profilePage);
+
+                AnchorPane.setTopAnchor(profilePage, 0.0);
+                AnchorPane.setBottomAnchor(profilePage, 0.0);
+                AnchorPane.setLeftAnchor(profilePage, 0.0);
+                AnchorPane.setRightAnchor(profilePage, 0.0);
+
+                currentPage = "student-student-selection.fxml";
+            } catch (IOException e) {
+                System.out.println("Error refreshing profile page: " + e.getMessage());
+            }
+        }
+    }
+
     @FXML
     public void handleLogoutAction(ActionEvent actionEvent) {
         try {

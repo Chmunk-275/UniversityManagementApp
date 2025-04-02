@@ -31,6 +31,8 @@ import java.util.*;
 
 public class EventAdminController {
 
+    // registering and unregistering a student from events gets sent as notification
+
     @FXML
     private AnchorPane rootPane;
 
@@ -442,7 +444,7 @@ public class EventAdminController {
             // Update the event's registered students list
             selectedEvent.setRegisteredStudents(registeredStudents);
             eventDAO.updateEvent(selectedEvent.getEventCode(), selectedEvent);
-            ExExporter.recordActivity("Event","Student " + studentId + " registered for event " + selectedEvent.getEventCode() + " (" + selectedEvent.getEventName() + ").");
+            ExExporter.recordNotification("Event","Student " + studentId + " registered for event " + selectedEvent.getEventCode() + " (" + selectedEvent.getEventName() + ").");
             exporter.exportData();
             showAlert(Alert.AlertType.INFORMATION, "Success", "Student " + studentId + " registered successfully.");
             dialogStage.close();
@@ -506,7 +508,7 @@ public class EventAdminController {
             // Update the event's registered students list
             selectedEvent.setRegisteredStudents(registeredStudents);
             eventDAO.updateEvent(selectedEvent.getEventCode(), selectedEvent);
-            ExExporter.recordActivity("Event","Student " + studentId + " unregistered from event " + selectedEvent.getEventCode() + " (" + selectedEvent.getEventName() + ").");
+            ExExporter.recordNotification("Event","Student " + studentId + " unregistered from event " + selectedEvent.getEventCode() + " (" + selectedEvent.getEventName() + ").");
             exporter.exportData();
             showAlert(Alert.AlertType.INFORMATION, "Success", "Student " + studentId + " unregistered successfully.");
             dialogStage.close();
@@ -599,7 +601,7 @@ public class EventAdminController {
                 nameField.getText().trim(),
                 codeField.getText().trim(),
                 descriptionField.getText().trim(),
-                selectedEvent != null ? selectedEvent.getEventHeaderImage() : new Image(getClass().getResourceAsStream("/images/default.jpg")),
+                selectedEvent != null ? selectedEvent.getEventHeaderImage() : new Image(getClass().getResourceAsStream("/images/eventsdefault.jpg")),
                 locationField.getText().trim(),
                 dateTime,
                 Integer.parseInt(capacityField.getText().trim()),

@@ -195,24 +195,6 @@ public class FacultyStudentController {
         System.out.println("Populated grades table for faculty " + facultyName + ": " + gradeData);
     }
 
-    @FXML
-    public void handleBackAction(ActionEvent event) {
-        try {
-            // Navigate back to the faculty dashboard
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/universitymanagementapplication/faculty-dashboard.fxml"));
-            Parent root = loader.load();
-            FacultyDashboard dashboardController = loader.getController();
-            dashboardController.setFacultyName(facultyName); // Pass the name back
-            dashboardController.setFacultyUsername(facultyUsername); // Pass the username back
-            Stage stage = (Stage) backButton.getScene().getWindow();
-            stage.setTitle("Faculty Dashboard");
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     // Data model for Students table
     public static class StudentInfo {
         private final String studentId;
