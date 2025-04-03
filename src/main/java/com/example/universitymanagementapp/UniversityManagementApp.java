@@ -51,8 +51,12 @@ public class UniversityManagementApp extends Application {
         stage.setResizable(true);
         stage.setMinHeight(400);
         stage.setMinWidth(600);
+        stage.setWidth(601);
+        stage.setHeight(498);
         stage.setScene(scene);
+        stage.centerOnScreen();
         stage.show();
+        stage.sizeToScene();
     }
 
     public static void main(String[] args) {

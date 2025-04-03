@@ -244,14 +244,14 @@ public class AdminSubjectController {
             // Add new subject
             Subject newSubject = new Subject(name, code);
             subjectDAO.addSubject(newSubject);
-            ExExporter.recordActivity("Subject", "Subject" + name + "(" + code + ")" + " added");
+            ExExporter.recordActivity("Subject", "Subject " + name + "(" + code + ")" + " added");
         } else {
             // Update existing subject
             String originalSubjectCode = selectedSubject.getSubjectCode(); // Store the original subject code
             selectedSubject.setSubjectName(name);
             selectedSubject.setSubjectCode(code);
             subjectDAO.updateSubject(originalSubjectCode, selectedSubject);
-            ExExporter.recordActivity("Subject", "Subject" + originalSubjectCode + "(" + name + ")" + " updated to " + code);
+            ExExporter.recordActivity("Subject", "Subject " + originalSubjectCode + "(" + name + ")" + " updated to " + code);
             selectedSubject = null;
         }
 

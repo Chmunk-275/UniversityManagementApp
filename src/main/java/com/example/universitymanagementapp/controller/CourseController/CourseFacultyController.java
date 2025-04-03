@@ -5,6 +5,8 @@ import com.example.universitymanagementapp.dao.CourseDAO;
 import com.example.universitymanagementapp.dao.FacultyDAO;
 import com.example.universitymanagementapp.model.Course;
 import com.example.universitymanagementapp.UniversityManagementApp;
+import com.example.universitymanagementapp.model.Faculty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -82,7 +84,24 @@ public class CourseFacultyController {
         courseCodeColumn.setCellValueFactory(new PropertyValueFactory<>("courseCode"));
         subjectCodeColumn.setCellValueFactory(new PropertyValueFactory<>("subjectCode"));
         courseNameColumn.setCellValueFactory(new PropertyValueFactory<>("courseName"));
-        instructorColumn.setCellValueFactory(new PropertyValueFactory<>("instructor"));
+
+        // Custom CellValueFactory to map instructor ID to name
+        instructorColumn.setCellValueFactory(cellData -> {
+            Course course = cellData.getValue();
+            String instructor = course.getInstructor(); // This might be an ID (e.g., "F0001") or a name
+            // Check if the instructor field looks like an ID (e.g., starts with "F" followed by numbers)
+            if (instructor != null && instructor.matches("F\\d+")) {
+                // Look up the faculty by username (assuming the ID is the username)
+                Faculty faculty = facultyDAO.getFacultyByUsername(instructor);
+                if (faculty != null) {
+                    return new SimpleStringProperty(faculty.getName());
+                }
+                return new SimpleStringProperty("Unknown Instructor");
+            }
+            // If it's already a name, display it as is
+            return new SimpleStringProperty(instructor != null ? instructor : "Unknown Instructor");
+        });
+
         capacityColumn.setCellValueFactory(new PropertyValueFactory<>("capacity"));
         enrollmentColumn.setCellValueFactory(new PropertyValueFactory<>("currentEnrollment"));
 

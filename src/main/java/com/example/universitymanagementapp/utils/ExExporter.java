@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ExExporter {
     private static final String FILE_PATH = "src/main/resources/UMS_Data1.xlsx";
@@ -38,7 +39,6 @@ public class ExExporter {
 
     public void exportData() {
         try (Workbook workbook = new XSSFWorkbook()) {
-
             // Create sheets
             writeCourses(workbook.createSheet("Courses"));
             writeStudents(workbook.createSheet("Students"));
@@ -169,7 +169,8 @@ public class ExExporter {
             row.createCell(4).setCellValue(student.getEmail());
             row.createCell(5).setCellValue(student.getAcademicLevel());
             row.createCell(6).setCellValue(student.getCurrentSemester());
-            row.createCell(7).setCellValue(student.getProfilePicture() != null ? "custom" : "default");
+            // Write the actual profile picture path instead of "custom" or "default"
+            row.createCell(7).setCellValue(student.getProfilePicturePath() != null ? student.getProfilePicturePath() : "default");
             row.createCell(8).setCellValue(String.join(", ", student.getRegisteredSubjects()));
             row.createCell(9).setCellValue(student.getThesisTitle());
             row.createCell(10).setCellValue(student.getProgress() / 100.0); // Convert back to decimal
@@ -193,6 +194,7 @@ public class ExExporter {
             row.createCell(5).setCellValue(f.getOfficeLocation());
             row.createCell(6).setCellValue(String.join(", ", f.getCoursesOffered()));
             row.createCell(7).setCellValue(f.getPlaintextPassword());
+            row.createCell(8).setCellValue(f.getProfilePicturePath() != null ? f.getProfilePicturePath() : "default");
         }
         recordChanges();
     }
@@ -225,8 +227,29 @@ public class ExExporter {
             row.createCell(4).setCellValue(event.getEventDateTime() != null ? sdf.format(event.getEventDateTime()) : "");
             row.createCell(5).setCellValue(event.getEventCapacity());
             row.createCell(6).setCellValue(event.getEventCost());
-            row.createCell(7).setCellValue(event.getEventHeaderImage() != null ? "custom" : "default");
-            row.createCell(8).setCellValue(String.join(", ", event.getRegisteredStudents()));
+            // Write the actual header image path instead of "custom" or "default"
+            row.createCell(7).setCellValue(event.getHeaderImagePath() != null ? event.getHeaderImagePath() : "default");
+
+            // Map student IDs to names for the "Registered Students" column
+            List<String> registeredStudents = event.getRegisteredStudents();
+            List<String> studentNames = new ArrayList<>();
+            if (registeredStudents != null && !registeredStudents.isEmpty()) {
+                for (String studentId : registeredStudents) {
+                    if (studentId == null || studentId.trim().isEmpty()) {
+                        continue; // Skip invalid student IDs
+                    }
+                    Student student = studentDAO.getStudentById(studentId);
+                    if (student != null && student.getName() != null && !student.getName().trim().isEmpty()) {
+                        studentNames.add(student.getName());
+                    } else {
+                        System.out.println("Warning: No student found with ID: " + studentId + " for event: " + event.getEventCode());
+                        studentNames.add(studentId); // Fallback to ID if name not found
+                    }
+                }
+            }
+            // Join the student names into a comma-separated string
+            String studentNamesString = String.join(", ", studentNames);
+            row.createCell(8).setCellValue(studentNamesString);
         }
         recordChanges();
     }

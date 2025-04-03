@@ -61,8 +61,11 @@ public class LoginSelectionController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/universitymanagementapp/user-login.fxml"));
             Parent root = loader.load();
             Stage stage = (Stage) userLoginButton.getScene().getWindow();
+            Scene scene = new Scene(root, 601, 498);
             stage.setTitle("User Login");
-            stage.setScene(new Scene(root));
+            stage.setScene(scene);
+            stage.setWidth(601); // Ensure the stage size remains consistent
+            stage.setHeight(498);
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();

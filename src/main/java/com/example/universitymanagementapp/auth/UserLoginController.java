@@ -7,6 +7,7 @@ import com.example.universitymanagementapp.auth.authenticator.UserAuthentication
 import com.example.universitymanagementapp.controller.FacultyController.FacultyDashboard;
 import com.example.universitymanagementapp.controller.StudentController.StudentDashboard;
 import com.example.universitymanagementapp.model.User;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -41,8 +42,12 @@ public class UserLoginController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/universitymanagementapp/login-page.fxml"));
             Parent loginPage = loader.load();
             Stage stage = (Stage) userLoginBackButton.getScene().getWindow();
-            stage.getScene().setRoot(loginPage);
+            Scene scene = new Scene(loginPage, 601, 498); // Set the scene size explicitly
             stage.setTitle("Login Page");
+            stage.setScene(scene);
+            stage.setWidth(601); // Ensure the stage size remains consistent
+            stage.setHeight(498);
+            stage.centerOnScreen();
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
@@ -86,9 +91,20 @@ public class UserLoginController {
                         dashboardController.setFacultyUsername(username); // Optionally pass faculty ID for other uses
 
                         Stage stage = (Stage) usernameField.getScene().getWindow();
+                        Scene scene = new Scene(root, 601, 498);
                         stage.setTitle("Faculty Dashboard");
-                        stage.setScene(new Scene(root));
+                        stage.setScene(scene);
+                        stage.setWidth(601); // Ensure the stage size remains consistent
+                        stage.setHeight(498);
+                        stage.setMaximized(false);
+                        stage.centerOnScreen();
                         stage.show();
+                        // force layout update
+                        Platform.runLater(() -> {
+                            stage.sizeToScene();
+                            stage.getScene().getRoot().requestLayout();
+                            stage.centerOnScreen(); // Re-center after layout update
+                        });
                     } else if (redirectToStudentDash(user)) {
                         loadDashboard("/com/example/universitymanagementapp/student-dashboard.fxml", "Student Dashboard");
                     }
@@ -114,9 +130,20 @@ public class UserLoginController {
             controller.setStudentId(studentId);
         }
         Stage stage = (Stage) usernameField.getScene().getWindow();
+        Scene scene = new Scene(root, 601, 498); // Set the scene size explicitly
         stage.setTitle(title);
-        stage.setScene(new Scene(root));
+        stage.setScene(scene);
+        stage.setWidth(601); // Ensure the stage size remains consistent
+        stage.setHeight(498);
+        stage.setMaximized(false);
+        stage.centerOnScreen();
         stage.show();
+        // force layout update
+        Platform.runLater(() -> {
+            stage.sizeToScene();
+            stage.getScene().getRoot().requestLayout();
+            stage.centerOnScreen(); // Re-center after layout update
+        });
     }
 
     private boolean redirectToAdminDash(User user) {

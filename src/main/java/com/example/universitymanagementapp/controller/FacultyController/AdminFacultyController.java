@@ -14,6 +14,8 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
@@ -174,6 +176,17 @@ public class AdminFacultyController {
         VBox vbox = new VBox(10);
         vbox.setPadding(new Insets(10));
 
+        // Profile Picture
+        ImageView profilePictureView = new ImageView();
+        profilePictureView.setFitHeight(100);
+        profilePictureView.setFitWidth(100);
+        profilePictureView.setPreserveRatio(true);
+        if (faculty.getProfilePicture() != null) {
+            profilePictureView.setImage(faculty.getProfilePicture());
+        } else {
+            profilePictureView.setImage(new Image(getClass().getResourceAsStream("/images/default.jpg")));
+        }
+
         // Basic Info
         Label nameLabel = new Label("Name: " + faculty.getName());
         Label idLabel = new Label("Faculty ID: " + faculty.getUsername());
@@ -197,11 +210,12 @@ public class AdminFacultyController {
         coursesListView.setItems(courseDetails);
 
         vbox.getChildren().addAll(
+                profilePictureView, // Add the profile picture at the top
                 nameLabel, idLabel, emailLabel, degreeLabel, researchInterestLabel, officeLocationLabel, passwordLabel,
                 coursesLabel, coursesListView
         );
 
-        Scene scene = new Scene(vbox, 400, 450);
+        Scene scene = new Scene(vbox, 400, 550); // Increased height to accommodate the image
         detailsStage.setScene(scene);
         detailsStage.show();
     }
@@ -425,6 +439,19 @@ public class AdminFacultyController {
             }
         }
 
+        // Set default profile picture for new faculty or retain existing one for edits
+        Image profilePicture;
+        String profilePicturePath;
+        if (selectedFaculty != null) {
+            // Retain the existing profile picture for edited faculty
+            profilePicture = selectedFaculty.getProfilePicture();
+            profilePicturePath = selectedFaculty.getProfilePicturePath();
+        } else {
+            // Use default profile picture for new faculty
+            profilePicturePath = "default";
+            profilePicture = new Image(getClass().getResourceAsStream("/images/default.jpg"));
+        }
+
         Faculty faculty = new Faculty(
                 facultyId,
                 password.isEmpty() ? "defaultPassword" : password,
@@ -433,7 +460,9 @@ public class AdminFacultyController {
                 degree,
                 researchInterest,
                 selectedFaculty != null ? selectedFaculty.getCoursesOffered() : new ArrayList<>(), // Retain existing courses
-                officeLocation
+                officeLocation,
+                profilePicture, // Add profile picture
+                profilePicturePath // Add profile picture path
         );
 
         if (selectedFaculty == null) {

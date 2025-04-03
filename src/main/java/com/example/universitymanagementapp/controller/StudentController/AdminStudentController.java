@@ -638,6 +638,7 @@ public class AdminStudentController {
         Stage detailsStage = new Stage();
         detailsStage.setTitle("Student Details: " + student.getName());
 
+        // Create the main VBox to hold all content
         VBox vbox = new VBox(10);
         vbox.setPadding(new Insets(10));
 
@@ -672,11 +673,13 @@ public class AdminStudentController {
         coursesListView.getItems().addAll(student.getRegisteredCourses().stream()
                 .map(course -> course.getCourseName() + " (" + course.getCourseCode() + ")")
                 .collect(Collectors.toList()));
+        coursesListView.setPrefHeight(100); // Set a reasonable height for the ListView
 
         // Registered Subjects
         Label subjectsLabel = new Label("Registered Subjects:");
         ListView<String> subjectsListView = new ListView<>();
         subjectsListView.getItems().addAll(student.getRegisteredSubjects());
+        subjectsListView.setPrefHeight(100); // Set a reasonable height for the ListView
 
         // Academic Records (Grades)
         Label gradesLabel = new Label("Academic Records:");
@@ -692,11 +695,13 @@ public class AdminStudentController {
                         ", Lab: " + grade.getLabGrade());
             }
         }
+        gradesListView.setPrefHeight(200); // Increase the height to make the academic records section larger
 
         // Progress and Tuition
         Label progressLabel = new Label("Progress: " + student.getProgress() + "%");
         Label tuitionLabel = new Label("Tuition: $" + student.getTuition());
 
+        // Add all elements to the VBox
         vbox.getChildren().addAll(
                 profilePicture, nameLabel, idLabel, emailLabel, phoneLabel, addressLabel,
                 semesterLabel, academicLevelLabel, thesisLabel,
@@ -704,7 +709,16 @@ public class AdminStudentController {
                 gradesLabel, gradesListView, progressLabel, tuitionLabel
         );
 
-        Scene scene = new Scene(vbox, 400, 600);
+        // Wrap the VBox in a ScrollPane to make the content scrollable
+        ScrollPane scrollPane = new ScrollPane();
+        scrollPane.setContent(vbox);
+        scrollPane.setFitToWidth(true); // Ensure the content width fits the ScrollPane
+        scrollPane.setPannable(true); // Allow panning with the mouse
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER); // Disable horizontal scrollbar
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED); // Show vertical scrollbar as needed
+
+        // Create the scene with the ScrollPane
+        Scene scene = new Scene(scrollPane, 400, 600); // Keep the window size the same
         detailsStage.setScene(scene);
         detailsStage.show();
     }

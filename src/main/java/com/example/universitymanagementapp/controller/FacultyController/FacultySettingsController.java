@@ -5,10 +5,16 @@ import com.example.universitymanagementapp.model.Faculty;
 import com.example.universitymanagementapp.utils.ExExporter;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.stage.FileChooser;
+
+import java.io.File;
 
 public class FacultySettingsController {
 
     // === Profile Tab ===
+    @FXML private TabPane tabPane;
     @FXML private TextField nameField;
     @FXML private TextField usernameField;
     @FXML private PasswordField maskedPasswordField;
@@ -18,6 +24,7 @@ public class FacultySettingsController {
     @FXML private TextField profileDegreeField;
     @FXML private Button saveProfileButton;
     @FXML private Button clearProfileButton;
+    @FXML private ImageView profilePictureView;
 
     // === Change Password Tab ===
     @FXML private PasswordField currentPasswordField;
@@ -33,8 +40,17 @@ public class FacultySettingsController {
     @FXML private Button changeLocationButton;
     @FXML private Button clearLocationButton;
 
+    @FXML private ImageView currentProfilePictureView;
+    @FXML private TextField newProfilePicturePathField;
+    @FXML private Button browsePictureButton;
+    @FXML private Button changeProfilePictureButton;
+    @FXML private Button clearProfilePictureButton;
+
     private FacultyDashboard parentController;
     private Faculty loggedInFaculty;
+    private File selectedImageFile;
+
+    ExExporter exporter = new ExExporter(UniversityManagementApp.courseDAO, UniversityManagementApp.studentDAO, UniversityManagementApp.facultyDAO, UniversityManagementApp.subjectDAO, UniversityManagementApp.eventDAO);
 
     public void setParentController(FacultyDashboard controller) {
         this.parentController = controller;
@@ -54,7 +70,15 @@ public class FacultySettingsController {
         profileEmailField.setText(loggedInFaculty.getEmail());
         profileDegreeField.setText(loggedInFaculty.getDegree());
 
-
+        // Load profile picture
+        if (loggedInFaculty.getProfilePicture() != null) {
+            profilePictureView.setImage(loggedInFaculty.getProfilePicture());
+            currentProfilePictureView.setImage(loggedInFaculty.getProfilePicture());
+        } else {
+            Image defaultImage = new Image(getClass().getResourceAsStream("/images/default.jpg"));
+            profilePictureView.setImage(defaultImage);
+            currentProfilePictureView.setImage(defaultImage);
+        }
     }
 
     // === Profile Tab ===
@@ -87,8 +111,10 @@ public class FacultySettingsController {
         loggedInFaculty.setPassword(newPass);
         UniversityManagementApp.facultyDAO.updateFaculty(loggedInFaculty.getUsername(), loggedInFaculty);
         exportAndAlert("Password updated successfully!");
+        exporter.exportData();
 
         clearPasswordFields();
+        tabPane.getSelectionModel().select(0);
     }
 
     @FXML
@@ -119,6 +145,57 @@ public class FacultySettingsController {
 
         clearLocationFields();
         loadFacultyData(); // refresh profile tab
+        exporter.exportData();
+    }
+
+    // === Change Profile Picture ===
+    @FXML
+    private void handleBrowsePicture() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Select Profile Picture");
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg")
+        );
+        selectedImageFile = fileChooser.showOpenDialog(null);
+        if (selectedImageFile != null) {
+            newProfilePicturePathField.setText(selectedImageFile.getAbsolutePath());
+        }
+    }
+
+    @FXML
+    private void handleChangeProfilePicture() {
+        if (selectedImageFile == null) {
+            showError("Please select a new profile picture.");
+            return;
+        }
+
+        try {
+            String imagePath = selectedImageFile.toURI().toString();
+            Image newImage = new Image(imagePath);
+            loggedInFaculty.setProfilePicture(newImage);
+            loggedInFaculty.setProfilePicturePath(selectedImageFile.getAbsolutePath());
+            UniversityManagementApp.facultyDAO.updateFaculty(loggedInFaculty.getUsername(), loggedInFaculty);
+            exportAndAlert("Profile picture updated successfully!");
+
+
+            // Refresh the profile tab and current tab
+            loadFacultyData();
+            clearProfilePictureFields();
+            exporter.exportData();
+            tabPane.getSelectionModel().select(0);
+        } catch (Exception e) {
+            showError("Failed to update profile picture: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    private void handleClearProfilePicture() {
+        clearProfilePictureFields();
+    }
+
+    private void clearProfilePictureFields() {
+        newProfilePicturePathField.clear();
+        selectedImageFile = null;
     }
 
     @FXML

@@ -14,7 +14,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane fx:id="rootPane" style="-fx-background-size: contain; -fx-border-color: black; -fx-border-width: 15;" stylesheets="@admin-students-management.css" xmlns="http://javafx.com/javafx/" xmlns:fx="http://javafx.com/fxml/" fx:controller="com.example.universitymanagementapp.controller.AdminController.AdminDashboard">
+<AnchorPane fx:id="rootPane" prefHeight="498.0" prefWidth="601.0" style="-fx-background-size: contain; -fx-border-color: black; -fx-border-width: 15;" stylesheets="@admin-students-management.css" xmlns="http://javafx.com/javafx/" xmlns:fx="http://javafx.com/fxml/" fx:controller="com.example.universitymanagementapp.controller.AdminController.AdminDashboard">
     <children>
         <!-- Navigation Menu -->
         <MenuButton fx:id="toggleMenuButton" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" prefHeight="40.666666" prefWidth="72.0" style="-fx-background-color: rgb(173,0,41);" text="☰">
@@ -35,7 +35,7 @@
             <children>
                 <ScrollPane fitToWidth="true" AnchorPane.topAnchor="10.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0">
                     <content>
-                        <VBox spacing="20" styleClass="vbox">
+                        <VBox spacing="20" styleClass="vbox" prefWidth="580">
                             <!-- Quick Action Buttons -->
                             <HBox spacing="10" alignment="CENTER">
                                 <Button fx:id="addStudentButton" onAction="#handleAddStudent" text="Add Student" styleClass="button" />
@@ -67,9 +67,9 @@
                                 <Label text="Recent Activities" styleClass="label" />
                                 <TableView fx:id="recentActivitiesTable" prefHeight="150.0" styleClass="table-view">
                                     <columns>
-                                        <TableColumn fx:id="activityTypeColumn" prefWidth="150" text="Activity Type" />
-                                        <TableColumn fx:id="activityDescriptionColumn" prefWidth="500" text="Description" />
-                                        <TableColumn fx:id="activityDateColumn" prefWidth="150" text="Date" />
+                                        <TableColumn fx:id="activityTypeColumn" text="Activity Type" />
+                                        <TableColumn fx:id="activityDescriptionColumn" text="Description" />
+                                        <TableColumn fx:id="activityDateColumn" text="Date" />
                                     </columns>
                                 </TableView>
                             </VBox>
@@ -79,10 +79,10 @@
                                 <Label text="Recent Course Registrations" styleClass="label" />
                                 <TableView fx:id="recentRegistrationsTable" prefHeight="150.0" styleClass="table-view">
                                     <columns>
-                                        <TableColumn fx:id="registrationStudentColumn" prefWidth="150" text="Student ID" />
-                                        <TableColumn fx:id="registrationCourseColumn" prefWidth="150" text="Course Code" />
-                                        <TableColumn fx:id="registrationCourseNameColumn" prefWidth="150" text="Course Name"/>
-                                        <TableColumn fx:id="registrationDateColumn" prefWidth="150" text="Date" />
+                                        <TableColumn fx:id="registrationStudentColumn" text="Student ID" />
+                                        <TableColumn fx:id="registrationCourseColumn" text="Course Code" />
+                                        <TableColumn fx:id="registrationCourseNameColumn" text="Course Name"/>
+                                        <TableColumn fx:id="registrationDateColumn" text="Date" />
                                     </columns>
                                 </TableView>
                             </VBox>
@@ -92,10 +92,10 @@
                                 <Label text="Upcoming Events" styleClass="label" />
                                 <TableView fx:id="upcomingEventsTable" prefHeight="150.0" styleClass="table-view">
                                     <columns>
-                                        <TableColumn fx:id="eventCodeColumn" prefWidth="100" text="Event Code" />
-                                        <TableColumn fx:id="eventNameColumn" prefWidth="150" text="Event Name" />
-                                        <TableColumn fx:id="eventDateColumn" prefWidth="150" text="Date &amp; Time" />
-                                        <TableColumn fx:id="eventLocationColumn" prefWidth="150" text="Location" />
+                                        <TableColumn fx:id="eventCodeColumn" text="Event Code" />
+                                        <TableColumn fx:id="eventNameColumn" text="Event Name" />
+                                        <TableColumn fx:id="eventDateColumn" text="Date &amp; Time" />
+                                        <TableColumn fx:id="eventLocationColumn" text="Location" />
                                     </columns>
                                 </TableView>
                             </VBox>
@@ -105,9 +105,9 @@
                                 <Label text="Notifications &amp; Alerts" styleClass="label" />
                                 <TableView fx:id="notificationsTable" prefHeight="450.0" styleClass="table-view">
                                     <columns>
-                                        <TableColumn fx:id="notificationTypeColumn" prefWidth="150" text="Type" />
-                                        <TableColumn fx:id="notificationMessageColumn" prefWidth="600" text="Message" />
-                                        <TableColumn fx:id="notificationDateColumn" prefWidth="150" text="Date" />
+                                        <TableColumn fx:id="notificationTypeColumn" text="Type" />
+                                        <TableColumn fx:id="notificationMessageColumn" text="Message" />
+                                        <TableColumn fx:id="notificationDateColumn" text="Date" />
                                     </columns>
                                 </TableView>
                             </VBox>
