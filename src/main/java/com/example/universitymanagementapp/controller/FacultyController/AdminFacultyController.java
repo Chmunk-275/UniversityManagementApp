@@ -358,7 +358,6 @@ public class AdminFacultyController {
                     if (course != null) {
                         course.setInstructor("Unassigned");
                         courseDAO.updateCourse(course);
-                        exporter.exportData();
                     }
                 }
             }

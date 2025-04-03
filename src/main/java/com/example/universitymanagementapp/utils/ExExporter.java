@@ -149,7 +149,19 @@ public class ExExporter {
             row.createCell(5).setCellValue(course.getMeetingDaysTime());
             row.createCell(6).setCellValue(course.getFinalExamDateTime());
             row.createCell(7).setCellValue(course.getMeetingLocation());
-            row.createCell(8).setCellValue(course.getInstructor());
+
+            // Look up the faculty name based on the instructor (faculty ID)
+            String instructorId = course.getInstructor();
+            String instructorName = course.getInstructor();
+            if (instructorId != null && !instructorId.equals("Unassigned")) {
+                Faculty faculty = facultyDAO.getFacultyById(instructorId);
+                if (faculty != null && faculty.getName() != null) {
+                    instructorName = faculty.getName();
+                } else {
+                    System.out.println("Warning: No faculty found with ID: " + instructorId + " for course: " + course.getCourseCode());
+                }
+            }
+            row.createCell(8).setCellValue(instructorName);
         }
         recordChanges();
     }
@@ -173,8 +185,8 @@ public class ExExporter {
             row.createCell(7).setCellValue(student.getProfilePicturePath() != null ? student.getProfilePicturePath() : "default");
             row.createCell(8).setCellValue(String.join(", ", student.getRegisteredSubjects()));
             row.createCell(9).setCellValue(student.getThesisTitle());
-            row.createCell(10).setCellValue(student.getProgress() / 100.0); // Convert back to decimal
-            row.createCell(11).setCellValue(student.getPlaintextPassword());
+            row.createCell(10).setCellValue(student.getProgress()); // Convert back to decimal
+            row.createCell(11).setCellValue(student.getPlaintextPassword() + "%");
         }
         recordChanges();
     }
@@ -253,6 +265,8 @@ public class ExExporter {
         }
         recordChanges();
     }
+
+
 
     private void createHeader(Sheet sheet, String[] headers) {
         Row headerRow = sheet.createRow(0);
