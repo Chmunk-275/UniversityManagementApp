@@ -361,14 +361,24 @@ public class EventFacultyController {
             return;
         }
 
-        registeredFaculty.remove(facultyUsername);
+        registeredFaculty.remove(facultyUsername); // Remove the faculty member
         selectedEvent.setRegisteredStudents(registeredFaculty);
+
+        // Update the event in the DAO (database)
         eventDAO.updateEvent(selectedEvent.getEventCode(), selectedEvent);
-        loadRegisteredEvents();
+
+        // Export updated data
         ExExporter.recordActivity("Event", "Faculty " + facultyName + " unregistered from event " + selectedEvent.getEventName() + " (" + selectedEvent.getEventCode() + ")");
         exporter.exportData();
+
+        // Provide success feedback
         showAlert(Alert.AlertType.INFORMATION, "Success", "You have been unregistered from " + selectedEvent.getEventName());
-        tabPane.getSelectionModel().select(2);
+
+        // Now refresh the registered events list
+        loadRegisteredEvents();  // Reload the events for the faculty
+
+        // Switch to the tab showing registered events
+        tabPane.getSelectionModel().select(2);  // Select the "Your Events" tab
     }
 
     private void handleDoubleClick(MouseEvent event) {
