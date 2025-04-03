@@ -117,7 +117,7 @@ public class ExImporter {
             if (isRowEmpty(row)) continue;
 
             System.out.println("Processing row " + row.getRowNum() + ":");
-            for (int i = 0; i <= 11; i++) {
+            for (int i = 0; i <= 12; i++) { // Updated to include cell index 12
                 System.out.println("Column " + i + ": " + getStringValue(row.getCell(i)));
             }
 
@@ -146,6 +146,41 @@ public class ExImporter {
                 registeredSubjects = Arrays.asList(subjectsString.split("\\s*,\\s*"));
             }
 
+            // Read the "Registered Courses" column (cell index 12)
+            String coursesString = getStringValue(row.getCell(12));
+            if (coursesString != null && !coursesString.trim().isEmpty()) {
+                List<String> courseNames = Arrays.asList(coursesString.split("\\s*,\\s*"));
+                boolean allCoursesValid = true;
+
+                // Check if all course names exist in the system
+                for (String courseName : courseNames) {
+                    if (courseName == null || courseName.trim().isEmpty()) {
+                        continue; // Skip empty course names
+                    }
+                    Course course = findCourseByName(courseName.trim());
+                    if (course == null) {
+                        System.out.println("Course not found in system: " + courseName + " for student: " + getStringValue(row.getCell(0)));
+                        allCoursesValid = false;
+                        break;
+                    }
+                }
+
+                // If all courses are valid, add them to the student's registeredCourses
+                if (allCoursesValid) {
+                    for (String courseName : courseNames) {
+                        if (courseName == null || courseName.trim().isEmpty()) {
+                            continue;
+                        }
+                        Course course = findCourseByName(courseName.trim());
+                        if (course != null) {
+                            registeredCourses.add(course);
+                            // Also update the course's enrolled students list
+                            course.enrollStudent(getStringValue(row.getCell(0))); // Enroll the student in the course
+                        }
+                    }
+                }
+            }
+
             Student student = new Student(
                     getStringValue(row.getCell(0)),  // Username
                     getStringValue(row.getCell(11)), // Password
@@ -169,7 +204,8 @@ public class ExImporter {
             System.out.println("Imported student: " + student.getStudentId() + " " + student.getName() +
                     ", Email: " + student.getEmail() + ", Phone: " + student.getPhoneNumber() +
                     ", Address: " + student.getAddress() + ", Academic Level: " + student.getAcademicLevel() +
-                    ", Current Semester: " + student.getCurrentSemester() + ", Progress: " + student.getProgress());
+                    ", Current Semester: " + student.getCurrentSemester() + ", Progress: " + student.getProgress() +
+                    ", Registered Courses: " + student.getRegisteredCourses());
         }
     }
 
@@ -318,6 +354,20 @@ public class ExImporter {
         for (Student student : allStudents) {
             if (student.getName() != null && student.getName().trim().equalsIgnoreCase(name.trim())) {
                 return student;
+            }
+        }
+        return null;
+    }
+
+    // Helper method to find a course by name
+    private Course findCourseByName(String name) {
+        if (name == null || name.trim().isEmpty()) {
+            return null;
+        }
+        List<Course> allCourses = courseService.getAllCourses();
+        for (Course course : allCourses) {
+            if (course.getCourseName() != null && course.getCourseName().trim().equalsIgnoreCase(name.trim())) {
+                return course;
             }
         }
         return null;

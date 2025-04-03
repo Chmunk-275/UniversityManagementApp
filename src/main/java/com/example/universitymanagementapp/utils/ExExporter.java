@@ -170,7 +170,7 @@ public class ExExporter {
         List<Student> students = studentDAO.getAllStudents();
         createHeader(sheet, new String[]{"Student ID", "Name", "Address", "Phone", "Email",
                 "Academic Level", "Current Semester", "Profile Picture",
-                "Registered Subjects", "Thesis Title", "Progress", "Password"});
+                "Registered Subjects", "Thesis Title", "Progress", "Password", "Registered Courses"});
         int rowNum = 1;
         for (Student student : students) {
             Row row = sheet.createRow(rowNum++);
@@ -181,12 +181,24 @@ public class ExExporter {
             row.createCell(4).setCellValue(student.getEmail());
             row.createCell(5).setCellValue(student.getAcademicLevel());
             row.createCell(6).setCellValue(student.getCurrentSemester());
-            // Write the actual profile picture path instead of "custom" or "default"
+            // Write the actual profile picture path
             row.createCell(7).setCellValue(student.getProfilePicturePath() != null ? student.getProfilePicturePath() : "default");
             row.createCell(8).setCellValue(String.join(", ", student.getRegisteredSubjects()));
             row.createCell(9).setCellValue(student.getThesisTitle());
-            row.createCell(10).setCellValue(student.getProgress()); // Convert back to decimal
-            row.createCell(11).setCellValue(student.getPlaintextPassword() + "%");
+            row.createCell(10).setCellValue(student.getProgress() + "%"); // Convert back to decimal
+            row.createCell(11).setCellValue(student.getPlaintextPassword());
+            // Write the registered courses as a comma-separated string
+            List<Course> registeredCourses = student.getRegisteredCourses();
+            List<String> courseNames = new ArrayList<>();
+            if (registeredCourses != null && !registeredCourses.isEmpty()) {
+                for (Course course : registeredCourses) {
+                    if (course != null && course.getCourseName() != null && !course.getCourseName().trim().isEmpty()) {
+                        courseNames.add(course.getCourseName());
+                    }
+                }
+            }
+            String courseNamesString = String.join(", ", courseNames);
+            row.createCell(12).setCellValue(courseNamesString);
         }
         recordChanges();
     }
@@ -229,29 +241,28 @@ public class ExExporter {
                 "Date and Time", "Capacity", "Cost", "Header Picture",
                 "Registered Students"});
         int rowNum = 1;
-        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm");
+
+        // Create a cell style for dates
+        CellStyle dateCellStyle = sheet.getWorkbook().createCellStyle();
+        CreationHelper creationHelper = sheet.getWorkbook().getCreationHelper();
+        dateCellStyle.setDataFormat(creationHelper.createDataFormat().getFormat("mm/dd/yyyy hh:mm"));
+
         for (Event event : events) {
             Row row = sheet.createRow(rowNum++);
             row.createCell(0).setCellValue(event.getEventCode());
             row.createCell(1).setCellValue(event.getEventName());
             row.createCell(2).setCellValue(event.getEventDescription());
             row.createCell(3).setCellValue(event.getEventLocation());
-//            row.createCell(4).setCellValue(event.getEventDateTime() != null ? sdf.format(event.getEventDateTime()) :  "");
 
+            // Write the date as a NUMERIC value with a date format
+            Cell dateCell = row.createCell(4);
             if (event.getEventDateTime() != null) {
-                // Create a cell and set the actual date value
-                Cell cell = row.createCell(4);
-                cell.setCellValue(event.getEventDateTime()); // Set the Date directly
-
-                // Apply the same format as in the importer
-                CellStyle dateCellStyle = row.getSheet().getWorkbook().createCellStyle();
-                short dateFormat = row.getSheet().getWorkbook().createDataFormat().getFormat("MM/dd/yyyy HH:mm");
-                dateCellStyle.setDataFormat(dateFormat); // Set the cell style to the date format
-
-                cell.setCellStyle(dateCellStyle); // Apply the cell style
+                dateCell.setCellValue(event.getEventDateTime());
+                dateCell.setCellStyle(dateCellStyle);
             } else {
-                row.createCell(4).setCellValue((Date) null); // If null, set as empty date
+                dateCell.setCellValue("");
             }
+
             row.createCell(5).setCellValue(event.getEventCapacity());
             row.createCell(6).setCellValue(event.getEventCost());
             // Write the actual header image path instead of "custom" or "default"
