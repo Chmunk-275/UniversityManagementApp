@@ -8,6 +8,7 @@ import com.example.universitymanagementapp.model.Course;
 import com.example.universitymanagementapp.model.Student;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -33,26 +34,8 @@ public class CourseStudentController implements Initializable {
     private TableColumn<Course, Integer> capacityColumn;
     @FXML
     private TableColumn<Course, Integer> enrollmentColumn;
-
-    // FXML components for "Search Courses" tab
     @FXML
-    private TextField courseSearch;
-    @FXML
-    private TableView<Course> searchResultsTable;
-    @FXML
-    private TableColumn<Course, Integer> searchCourseCodeColumn;
-    @FXML
-    private TableColumn<Course, String> searchCourseNameColumn;
-    @FXML
-    private TableColumn<Course, String> searchSubjectNameColumn;
-    @FXML
-    private TableColumn<Course, String> searchInstructorColumn;
-    @FXML
-    private TableColumn<Course, Integer> searchCapacityColumn;
-    @FXML
-    private TableColumn<Course, Integer> searchEnrollmentColumn;
-    @FXML
-    private Button viewDetailsButton;
+    private TextField enrolledCourseSearch; // TextField for searching enrolled courses
 
     // FXML components for "Course Details" tab
     @FXML
@@ -86,10 +69,11 @@ public class CourseStudentController implements Initializable {
     private CourseDAO courseDAO = UniversityManagementApp.courseDAO;
     private StudentDAO studentDAO = UniversityManagementApp.studentDAO;
 
-    // Observable lists to hold course data
+    // Observable list to hold enrolled course data
     private ObservableList<Course> enrolledCoursesList = FXCollections.observableArrayList();
-    private ObservableList<Course> allCoursesList = FXCollections.observableArrayList();
-    private ObservableList<Course> searchResultsList = FXCollections.observableArrayList();
+
+    // Filtered list for enrolled courses search
+    private FilteredList<Course> filteredEnrolledCourses;
 
     // Current student's ID (to be set by the parent controller)
     private String studentId;
@@ -104,20 +88,8 @@ public class CourseStudentController implements Initializable {
         capacityColumn.setCellValueFactory(new PropertyValueFactory<>("capacity"));
         enrollmentColumn.setCellValueFactory(new PropertyValueFactory<>("currentEnrollment"));
 
-        // Configure columns for "Search Courses" table
-        searchCourseCodeColumn.setCellValueFactory(new PropertyValueFactory<>("courseCode"));
-        searchCourseNameColumn.setCellValueFactory(new PropertyValueFactory<>("courseName"));
-        searchSubjectNameColumn.setCellValueFactory(new PropertyValueFactory<>("subjectCode"));
-        searchInstructorColumn.setCellValueFactory(new PropertyValueFactory<>("instructor"));
-        searchCapacityColumn.setCellValueFactory(new PropertyValueFactory<>("capacity"));
-        searchEnrollmentColumn.setCellValueFactory(new PropertyValueFactory<>("currentEnrollment"));
-
-        // Set table resize policies
+        // Set table resize policy
         enrolledCoursesTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        searchResultsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-
-        // Load all courses (for search functionality)
-        loadAllCourses();
 
         // Load enrolled courses (requires studentId to be set)
         if (studentId != null) {
@@ -126,16 +98,13 @@ public class CourseStudentController implements Initializable {
             System.out.println("Student ID not set. Cannot load enrolled courses.");
         }
 
-        // Add listener to search TextField for real-time search
-        courseSearch.textProperty().addListener((observable, oldValue, newValue) -> {
-            filterCourses(newValue);
-        });
+        // Initialize the filtered list for enrolled courses
+        filteredEnrolledCourses = new FilteredList<>(enrolledCoursesList, p -> true);
+        enrolledCoursesTable.setItems(filteredEnrolledCourses);
 
-        // Add double-click event handler to open course details tab from "Search Courses" tab
-        searchResultsTable.setOnMouseClicked(event -> {
-            if (event.getClickCount() == 2 && searchResultsTable.getSelectionModel().getSelectedItem() != null) {
-                handleViewDetails(searchResultsTable.getSelectionModel().getSelectedItem());
-            }
+        // Add listener to the enrolled courses search TextField for real-time filtering
+        enrolledCourseSearch.textProperty().addListener((observable, oldValue, newValue) -> {
+            filterEnrolledCourses(newValue);
         });
 
         // Add double-click event handler to open course details tab from "Enrolled Courses" tab
@@ -161,13 +130,6 @@ public class CourseStudentController implements Initializable {
         loadEnrolledCourses();
     }
 
-    // Load all courses into the allCoursesList (for search functionality)
-    private void loadAllCourses() {
-        allCoursesList.clear();
-        allCoursesList.addAll(courseDAO.getAllCourses());
-        System.out.println("Loaded all courses: " + allCoursesList);
-    }
-
     // Load the student's enrolled courses into the enrolledCoursesTable
     private void loadEnrolledCourses() {
         if (studentId == null) {
@@ -182,37 +144,22 @@ public class CourseStudentController implements Initializable {
         } else {
             System.out.println("Student " + studentId + " not found or has no registered courses.");
         }
-        enrolledCoursesTable.setItems(enrolledCoursesList);
         System.out.println("Loaded enrolled courses for student " + studentId + ": " + enrolledCoursesList);
     }
 
-    // Filter courses based on search input and display in the searchResultsTable
-    private void filterCourses(String searchText) {
-        searchResultsList.clear();
-        if (searchText == null || searchText.trim().isEmpty()) {
-            searchResultsTable.setItems(searchResultsList);
-            return;
-        }
-
-        String lowerCaseSearch = searchText.trim().toLowerCase();
-        for (Course course : allCoursesList) {
-            if (String.valueOf(course.getCourseCode()).toLowerCase().contains(lowerCaseSearch) ||
-                    course.getCourseName().toLowerCase().contains(lowerCaseSearch) ||
-                    course.getSubjectCode().toLowerCase().contains(lowerCaseSearch)) {
-                searchResultsList.add(course);
+    // Filter enrolled courses based on search input and update the table
+    private void filterEnrolledCourses(String searchText) {
+        filteredEnrolledCourses.setPredicate(course -> {
+            if (searchText == null || searchText.trim().isEmpty()) {
+                return true; // Show all courses if search text is empty
             }
-        }
-        searchResultsTable.setItems(searchResultsList);
-        System.out.println("Search results for '" + searchText + "': " + searchResultsList);
-    }
 
-    // Handle the "View Details" button or double-click to display the selected course's details
-    @FXML
-    private void handleViewDetails() {
-        Course selectedCourse = searchResultsTable.getSelectionModel().getSelectedItem();
-        if (selectedCourse != null) {
-            handleViewDetails(selectedCourse);
-        }
+            String lowerCaseSearch = searchText.trim().toLowerCase();
+            return String.valueOf(course.getCourseCode()).toLowerCase().contains(lowerCaseSearch) ||
+                    course.getCourseName().toLowerCase().contains(lowerCaseSearch) ||
+                    course.getSubjectCode().toLowerCase().contains(lowerCaseSearch);
+        });
+        System.out.println("Filtered enrolled courses for '" + searchText + "': " + filteredEnrolledCourses);
     }
 
     // Helper method to populate the "Course Details" tab with the selected course's information
@@ -229,7 +176,7 @@ public class CourseStudentController implements Initializable {
             finalExamDateLabel.setText(selectedCourse.getFinalExamDateTime() != null ? selectedCourse.getFinalExamDateTime() : "Not set");
 
             // Switch to the "Course Details" tab
-            tabPane.getSelectionModel().select(2); // Index 2 corresponds to the "Course Details" tab
+            tabPane.getSelectionModel().select(1); // Index 1 corresponds to the "Course Details" tab
         }
     }
 }

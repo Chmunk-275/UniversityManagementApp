@@ -18,7 +18,10 @@
                     <content>
                         <AnchorPane>
                             <children>
-                                <TableView fx:id="enrolledCoursesTable" styleClass="table-view" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                <!-- Add a TextField for searching enrolled courses -->
+                                <TextField fx:id="enrolledCourseSearch" prefWidth="200.0" promptText="Search by name, code, or subject" styleClass="text-field" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
+                                <!-- Adjust the TableView to start below the search bar -->
+                                <TableView fx:id="enrolledCoursesTable" styleClass="table-view" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
                                     <columns>
                                         <TableColumn fx:id="courseCodeColumn" prefWidth="100" text="Course Code" />
                                         <TableColumn fx:id="courseNameColumn" prefWidth="150" text="Course Name" />
@@ -28,26 +31,6 @@
                                         <TableColumn fx:id="enrollmentColumn" prefWidth="80" text="Enrolled" />
                                     </columns>
                                 </TableView>
-                            </children>
-                        </AnchorPane>
-                    </content>
-                </Tab>
-                <Tab closable="false" text="Search Courses">
-                    <content>
-                        <AnchorPane>
-                            <children>
-                                <TextField fx:id="courseSearch" prefWidth="200.0" promptText="Search by name, code, or subject" styleClass="text-field" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
-                                <TableView fx:id="searchResultsTable" styleClass="table-view" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
-                                    <columns>
-                                        <TableColumn fx:id="searchCourseCodeColumn" prefWidth="100" text="Course Code" />
-                                        <TableColumn fx:id="searchCourseNameColumn" prefWidth="150" text="Course Name" />
-                                        <TableColumn fx:id="searchSubjectNameColumn" prefWidth="150" text="Subject" />
-                                        <TableColumn fx:id="searchInstructorColumn" prefWidth="100" text="Instructor" />
-                                        <TableColumn fx:id="searchCapacityColumn" prefWidth="80" text="Capacity" />
-                                        <TableColumn fx:id="searchEnrollmentColumn" prefWidth="80" text="Enrolled" />
-                                    </columns>
-                                </TableView>
-                                <Button fx:id="viewDetailsButton" onAction="#handleViewDetails" text="View Details" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
                             </children>
                         </AnchorPane>
                     </content>

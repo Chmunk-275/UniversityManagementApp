@@ -25,7 +25,7 @@
                     <content>
                         <AnchorPane prefHeight="182.0" prefWidth="580.0">
                             <children>
-                                <Text styleClass="text" text="Admin Information" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
+                                <Text styleClass="text" text="Profile Information" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
                                 <!-- Profile Picture -->
                                 <ImageView fx:id="profilePictureView" fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="40.0" />
                                 <!-- Shift other fields to the right -->

@@ -2,6 +2,7 @@ package com.example.universitymanagementapp.controller.StudentController;
 
 import com.example.universitymanagementapp.UniversityManagementApp;
 import com.example.universitymanagementapp.controller.EventController.EventStudentController;
+import com.example.universitymanagementapp.controller.FacultyController.StudentFacultyController;
 import com.example.universitymanagementapp.model.*;
 import com.example.universitymanagementapp.utils.ExExporter;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -301,6 +302,10 @@ public class StudentDashboard {
                 StudentSettingsController controller = loader.getController();
                 controller.setParentController(this);
                 controller.setStudentId(studentId);
+            } else if (fxmlFile.equals("student-faculty-selection.fxml")) {
+                StudentFacultyController controller = loader.getController();
+                controller.setParentController(this);
+                controller.setStudentId(studentId);
             }
 
             contentPane.getChildren().clear();
@@ -346,6 +351,10 @@ public class StudentDashboard {
     @FXML
     public void handleSettingsSelection(ActionEvent actionEvent) {
         loadPage("student-settings-selection.fxml");
+    }
+
+    public void handleFacultySelection(ActionEvent actionEvent) {
+        loadPage("student-faculty-selection.fxml");
     }
 
     public void refreshProfileTab() {

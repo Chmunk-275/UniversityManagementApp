@@ -21,6 +21,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -267,7 +268,21 @@ public class AdminFacultyController {
         ComboBox<Course> courseComboBox = new ComboBox<>();
         courseComboBox.setItems(availableCourses);
         courseComboBox.setPromptText("Select Course");
+        // Set a smaller number of visible rows (e.g., 5 instead of the default 10)
         courseComboBox.setVisibleRowCount(5);
+
+        // Optional: Add a converter to display course names in the ComboBox
+        courseComboBox.setConverter(new StringConverter<Course>() {
+            @Override
+            public String toString(Course course) {
+                return course != null ? course.getCourseName() + " (" + course.getCourseCode() + ")" : "";
+            }
+
+            @Override
+            public Course fromString(String string) {
+                return null; // Not needed for this use case
+            }
+        });
 
         // TableView for assigned courses
         Label assignedLabel = new Label("Assigned Courses:");
@@ -278,6 +293,9 @@ public class AdminFacultyController {
         courseNameColumn.setCellValueFactory(new PropertyValueFactory<>("courseName"));
         assignedCoursesTable.getColumns().addAll(courseCodeColumn, courseNameColumn);
         assignedCoursesTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+        // Set a fixed height for the TableView to make it more compact
+        assignedCoursesTable.setPrefHeight(150); // Adjust this value as needed
 
         // Load currently assigned courses
         ObservableList<Course> assignedCoursesList = FXCollections.observableArrayList();
@@ -340,6 +358,7 @@ public class AdminFacultyController {
                     if (course != null) {
                         course.setInstructor("Unassigned");
                         courseDAO.updateCourse(course);
+                        exporter.exportData();
                     }
                 }
             }

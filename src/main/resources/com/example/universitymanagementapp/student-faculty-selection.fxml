@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.universitymanagementapp.controller.FacultyController.StudentFacultyController"
+            prefHeight="400.0" prefWidth="600.0"
+            stylesheets="@admin-students-management.css">
+    <children>
+        <TabPane fx:id="tabPane" styleClass="tab-pane" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+            <tabs>
+                <!-- Faculty List Tab -->
+                <Tab closable="false" text="Faculty List">
+                    <content>
+                        <AnchorPane>
+                            <children>
+                                <!-- Search bar for filtering faculty -->
+                                <TextField fx:id="facultySearch" prefWidth="200.0" promptText="Search by name or email" styleClass="text-field" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
+                                <!-- Table to display faculty members -->
+                                <TableView fx:id="facultyTable" styleClass="table-view" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
+                                    <columns>
+                                        <TableColumn fx:id="nameColumn" prefWidth="200" text="Name" />
+                                        <TableColumn fx:id="emailColumn" prefWidth="200" text="Email" />
+                                        <TableColumn fx:id="degreeColumn" prefWidth="150" text="Degree" />
+                                        <TableColumn fx:id="courseColumn" prefWidth="150" text="Course Taught" />
+                                    </columns>
+                                </TableView>
+                            </children>
+                        </AnchorPane>
+                    </content>
+                </Tab>
+                <!-- Faculty Details Tab -->
+                <Tab closable="false" text="Faculty Details">
+                    <content>
+                        <AnchorPane>
+                            <children>
+                                <Label text="Name:" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
+                                <Label fx:id="nameLabel" text="N/A" AnchorPane.leftAnchor="100.0" AnchorPane.topAnchor="10.0" />
+                                <Label text="Email:" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="40.0" />
+                                <Label fx:id="emailLabel" text="N/A" AnchorPane.leftAnchor="100.0" AnchorPane.topAnchor="40.0" />
+                                <Label text="Degree:" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="70.0" />
+                                <Label fx:id="degreeLabel" text="N/A" AnchorPane.leftAnchor="100.0" AnchorPane.topAnchor="70.0" />
+                                <Label text="Research Interest:" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="100.0" />
+                                <Label fx:id="researchInterestLabel" text="N/A" AnchorPane.leftAnchor="150.0" AnchorPane.topAnchor="100.0" />
+                                <Label text="Courses Offered:" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="130.0" />
+                                <Label fx:id="coursesOfferedLabel" text="N/A" AnchorPane.leftAnchor="150.0" AnchorPane.topAnchor="130.0" />
+                                <Label text="Office Location:" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="160.0" />
+                                <Label fx:id="officeLocationLabel" text="N/A" AnchorPane.leftAnchor="150.0" AnchorPane.topAnchor="160.0" />
+                            </children>
+                        </AnchorPane>
+                    </content>
+                </Tab>
+            </tabs>
+        </TabPane>
+    </children>
+</AnchorPane>

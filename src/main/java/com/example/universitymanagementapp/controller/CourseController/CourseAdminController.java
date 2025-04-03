@@ -4,8 +4,10 @@ import com.example.universitymanagementapp.dao.CourseDAO;
 import com.example.universitymanagementapp.dao.StudentDAO;
 import com.example.universitymanagementapp.UniversityManagementApp;
 import com.example.universitymanagementapp.model.Course;
+import com.example.universitymanagementapp.model.Faculty;
 import com.example.universitymanagementapp.model.Student;
 import com.example.universitymanagementapp.utils.ExExporter;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -70,7 +72,20 @@ public class CourseAdminController {
         courseCodeColumn.setCellValueFactory(new PropertyValueFactory<>("courseCode"));
         courseNameColumn.setCellValueFactory(new PropertyValueFactory<>("courseName"));
         subjectNameColumn.setCellValueFactory(new PropertyValueFactory<>("subjectCode"));
-        instructorColumn.setCellValueFactory(new PropertyValueFactory<>("instructor"));
+        // Customize instructor column to display faculty name instead of ID
+        instructorColumn.setCellValueFactory(cellData -> {
+            String instructorId = cellData.getValue().getInstructor();
+            if (instructorId == null || instructorId.isEmpty() || instructorId.equals("Unassigned")) {
+                return new SimpleStringProperty(instructorId);
+            }
+            // Try to find the faculty by ID (username)
+            Faculty faculty = UniversityManagementApp.facultyDAO.getFacultyById(instructorId);
+            if (faculty != null) {
+                return new SimpleStringProperty(faculty.getName());
+            }
+            // If not found by ID, it might already be a name (from imported data)
+            return new SimpleStringProperty(instructorId);
+        });
         capacityColumn.setCellValueFactory(new PropertyValueFactory<>("capacity"));
         enrollmentColumn.setCellValueFactory(new PropertyValueFactory<>("currentEnrollment"));
 
@@ -131,11 +146,20 @@ public class CourseAdminController {
         VBox content = new VBox(10);
         content.setStyle("-fx-padding: 10;");
 
+        // Resolve instructor name for display
+        String instructorDisplay = course.getInstructor();
+        if (instructorDisplay != null && !instructorDisplay.isEmpty() && !instructorDisplay.equals("Unassigned")) {
+            Faculty faculty = UniversityManagementApp.facultyDAO.getFacultyById(instructorDisplay);
+            if (faculty != null) {
+                instructorDisplay = faculty.getName();
+            }
+        }
+
         // Add course details
         content.getChildren().add(new Text("Course Code: " + course.getCourseCode()));
         content.getChildren().add(new Text("Course Name: " + course.getCourseName()));
         content.getChildren().add(new Text("Subject: " + course.getSubjectCode()));
-        content.getChildren().add(new Text("Instructor: " + course.getInstructor()));
+        content.getChildren().add(new Text("Instructor: " + instructorDisplay));
         content.getChildren().add(new Text("Capacity: " + course.getCapacity()));
         content.getChildren().add(new Text("Enrolled: " + course.getCurrentEnrollment()));
         content.getChildren().add(new Text("Section ID: " + (course.getSectionID() != null ? course.getSectionID() : "Not set")));
@@ -254,28 +278,43 @@ public class CourseAdminController {
             int courseCode = Integer.parseInt(courseCodeField.getText().trim());
             String courseName = courseNameField.getText().trim();
             String subjectCode = subjectNameField.getText().trim();
-            String instructor = instructorField.getText().trim();
+            String instructorInput = instructorField.getText().trim();
             int capacity = Integer.parseInt(capacityField.getText().trim());
 
-            if (courseName.isEmpty() || subjectCode.isEmpty() || instructor.isEmpty()) {
+            if (courseName.isEmpty() || subjectCode.isEmpty() || instructorInput.isEmpty()) {
                 showAlert(Alert.AlertType.ERROR, "Error", "All fields are required.");
                 return;
             }
 
-            Course course = selectedCourse != null ? selectedCourse : new Course(subjectCode, courseName, courseCode, instructor, capacity, 0, "", "", "", "");
+            // Resolve instructor: if it's a name, find the corresponding faculty ID
+            String instructorId = instructorInput;
+            if (!instructorInput.equals("Unassigned")) {
+                Faculty faculty = UniversityManagementApp.facultyDAO.getFacultyByName(instructorInput);
+                if (faculty != null) {
+                    instructorId = faculty.getUsername();
+                } else {
+                    // If not found by name, try by ID (in case the input is already an ID)
+                    faculty = UniversityManagementApp.facultyDAO.getFacultyById(instructorInput);
+                    if (faculty == null) {
+                        showAlert(Alert.AlertType.ERROR, "Error", "Instructor not found: " + instructorInput);
+                        return;
+                    }
+                    instructorId = faculty.getUsername();
+                }
+            }
+
+            Course course = selectedCourse != null ? selectedCourse : new Course(subjectCode, courseName, courseCode, instructorId, capacity, 0, "", "", "", "");
             course.setCourseCode(courseCode);
             course.setCourseName(courseName);
             course.setSubjectCode(subjectCode);
-            course.setInstructor(instructor);
+            course.setInstructor(instructorId);
             course.setCapacity(capacity);
-            // Preserve existing enrolled students and update currentEnrollment
             if (selectedCourse != null) {
                 course.setEnrolledStudents(selectedCourse.getEnrolledStudents());
                 course.setCurrentEnrollment(selectedCourse.getEnrolledStudents() != null ? selectedCourse.getEnrolledStudents().size() : 0);
                 course.setMeetingDaysTime(selectedCourse.getMeetingDaysTime());
                 course.setFinalExamDateTime(selectedCourse.getFinalExamDateTime());
             } else {
-                // New course, initialize enrolledStudents
                 course.setEnrolledStudents(new ArrayList<>());
                 course.setCurrentEnrollment(0);
             }
@@ -289,12 +328,12 @@ public class CourseAdminController {
             }
 
             loadAllCourses();
-            filterCourses(courseSearch.getText()); // Refresh the filtered list
+            filterCourses(courseSearch.getText());
             clearForm();
             selectedCourse = null;
             enrolledStudentsList.clear();
-            exporter.exportData(); // Export after adding or updating a course
-            tabPane.getSelectionModel().select(0); // Return to all courses pane
+            exporter.exportData();
+            tabPane.getSelectionModel().select(0);
         } catch (NumberFormatException e) {
             showAlert(Alert.AlertType.ERROR, "Error", "Course code and capacity must be numbers.");
         }
