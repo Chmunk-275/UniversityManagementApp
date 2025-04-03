@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ExExporter {
-    private static final String FILE_PATH = "src/main/resources/UMS_Data1.xlsx";
+    private static final String FILE_PATH = "src/main/resources/UMS_Data.xlsx";
     private CourseDAO courseDAO;
     private StudentDAO studentDAO;
     private FacultyDAO facultyDAO;
@@ -236,7 +236,22 @@ public class ExExporter {
             row.createCell(1).setCellValue(event.getEventName());
             row.createCell(2).setCellValue(event.getEventDescription());
             row.createCell(3).setCellValue(event.getEventLocation());
-            row.createCell(4).setCellValue(event.getEventDateTime() != null ? sdf.format(event.getEventDateTime()) : "");
+//            row.createCell(4).setCellValue(event.getEventDateTime() != null ? sdf.format(event.getEventDateTime()) :  "");
+
+            if (event.getEventDateTime() != null) {
+                // Create a cell and set the actual date value
+                Cell cell = row.createCell(4);
+                cell.setCellValue(event.getEventDateTime()); // Set the Date directly
+
+                // Apply the same format as in the importer
+                CellStyle dateCellStyle = row.getSheet().getWorkbook().createCellStyle();
+                short dateFormat = row.getSheet().getWorkbook().createDataFormat().getFormat("MM/dd/yyyy HH:mm");
+                dateCellStyle.setDataFormat(dateFormat); // Set the cell style to the date format
+
+                cell.setCellStyle(dateCellStyle); // Apply the cell style
+            } else {
+                row.createCell(4).setCellValue((Date) null); // If null, set as empty date
+            }
             row.createCell(5).setCellValue(event.getEventCapacity());
             row.createCell(6).setCellValue(event.getEventCost());
             // Write the actual header image path instead of "custom" or "default"

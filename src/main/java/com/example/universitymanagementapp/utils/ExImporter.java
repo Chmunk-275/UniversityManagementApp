@@ -12,6 +12,7 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.*;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -241,17 +242,18 @@ public class ExImporter {
         while (rowIterator.hasNext()) {
             Row row = rowIterator.next();
             if (isRowEmpty(row)) break;
+            Cell cell = row.getCell(7);
+            String headerPicturePath = (cell != null && cell.getCellType() == CellType.STRING) ? cell.getStringCellValue() : "default";
 
-            String headerPicturePath = row.getCell(7).getStringCellValue();
             Image headerPicture;
-            if (headerPicturePath == null || headerPicturePath.trim().isEmpty() || "default".equalsIgnoreCase(headerPicturePath)) {
+            if (headerPicturePath.trim().isEmpty() || "default".equalsIgnoreCase(headerPicturePath)) {
                 headerPicturePath = "default";
                 headerPicture = new Image(getClass().getResourceAsStream("/images/eventsdefault.jpg"));
             } else {
                 try {
                     headerPicture = new Image(headerPicturePath);
                 } catch (Exception e) {
-                    System.out.println("Invalid header picture path for event " + row.getCell(0).getStringCellValue() + ": " + headerPicturePath + ". Using default image.");
+                    System.out.println("Invalid header picture path for event " + (row.getCell(0) != null ? row.getCell(0).getStringCellValue() : "Unknown") + ": " + headerPicturePath + ". Using default image.");
                     headerPicturePath = "default";
                     headerPicture = new Image(getClass().getResourceAsStream("/images/eventsdefault.jpg"));
                 }
@@ -333,11 +335,28 @@ public class ExImporter {
 
     private String getStringValue(Cell cell) {
         if (cell == null) return "";
+
+        // If the cell is numeric and formatted as a date
         if (cell.getCellType() == CellType.NUMERIC && DateUtil.isCellDateFormatted(cell)) {
             Date date = cell.getDateCellValue();
             SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm");
             return sdf.format(date);
         }
+
+        // If the cell contains a string, check if it represents a date
+        if (cell.getCellType() == CellType.STRING) {
+            String cellValue = cell.getStringCellValue().trim();
+            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm");
+            sdf.setLenient(false); // Ensure strict date parsing
+
+            try {
+                Date parsedDate = sdf.parse(cellValue);
+                return sdf.format(parsedDate); // Convert to standard format
+            } catch (ParseException e) {
+                return cellValue; // If not a valid date, return as a normal string
+            }
+        }
+
         return switch (cell.getCellType()) {
             case STRING -> cell.getStringCellValue();
             case NUMERIC -> String.valueOf((int) cell.getNumericCellValue());
