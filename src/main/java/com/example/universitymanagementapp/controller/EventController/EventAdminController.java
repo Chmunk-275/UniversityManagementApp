@@ -540,10 +540,10 @@ public class EventAdminController {
             confirm.showAndWait().ifPresent(response -> {
                 if (response == ButtonType.OK) {
                     eventDAO.deleteEvent(selectedEvent.getEventCode());
-                    loadAllEvents();
-                    populateCalendar();
                     ExExporter.recordActivity("Event", "Event " + selectedEvent.getEventCode() + " (" + selectedEvent.getEventName() + ") deleted.");
                     exporter.exportData();
+                    loadAllEvents();
+                    populateCalendar();
                 }
             });
         } else {
