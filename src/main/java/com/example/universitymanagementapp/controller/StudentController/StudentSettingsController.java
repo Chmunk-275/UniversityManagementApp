@@ -9,12 +9,14 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
-
 import java.io.File;
 
 public class StudentSettingsController {
 
+    // === UI Elements ===
     @FXML private TabPane tabPane;
+
+    // Profile fields
     @FXML private TextField nameField;
     @FXML private TextField usernameField;
     @FXML private PasswordField maskedPasswordField;
@@ -23,45 +25,56 @@ public class StudentSettingsController {
     @FXML private TextField addressField;
     @FXML private TextField semesterField;
 
+    // Password change fields
     @FXML private PasswordField currentPasswordField;
     @FXML private PasswordField newPasswordField;
     @FXML private PasswordField confirmPasswordField;
     @FXML private Button changePasswordButton;
     @FXML private Button clearPasswordButton;
-    @FXML private Label passwordStatusLabel;
 
-    // Change Profile Picture tab
+    // Profile picture section
     @FXML private ImageView currentProfilePictureView;
     @FXML private Button selectImageButton;
     @FXML private Button saveImageButton;
     @FXML private Button resetImageButton;
     @FXML private Label imageStatusLabel;
 
+    // Logged-in student reference and other helpers
     private Student loggedInStudent;
     private StudentDashboard parentController;
     private String studentId;
-    private String selectedImagePath; // Temporary storage for the selected image path
+    private String selectedImagePath;
 
-    ExExporter exporter = new ExExporter(UniversityManagementApp.courseDAO, UniversityManagementApp.studentDAO, UniversityManagementApp.facultyDAO, UniversityManagementApp.subjectDAO, UniversityManagementApp.eventDAO);
+    // Exporter to save any updates made
+    ExExporter exporter = new ExExporter(
+            UniversityManagementApp.courseDAO,
+            UniversityManagementApp.studentDAO,
+            UniversityManagementApp.facultyDAO,
+            UniversityManagementApp.subjectDAO,
+            UniversityManagementApp.eventDAO
+    );
 
+    // Sets the dashboard controller reference
     public void setParentController(StudentDashboard controller) {
         this.parentController = controller;
     }
 
+    // Set student ID and load their data
     public void setStudentId(String studentId) {
         this.studentId = studentId;
         this.loggedInStudent = UniversityManagementApp.studentDAO.getStudentById(studentId);
         loadStudentData();
     }
 
+    // Initial load (profile picture)
     @FXML
     public void initialize() {
-        // Load the current profile picture when the controller is initialized
         if (loggedInStudent != null) {
             loadProfilePicture();
         }
     }
 
+    // Load student data into fields
     private void loadStudentData() {
         if (loggedInStudent == null) return;
 
@@ -76,6 +89,7 @@ public class StudentSettingsController {
         loadProfilePicture();
     }
 
+    // Display student profile picture or default if none
     private void loadProfilePicture() {
         if (loggedInStudent.getProfilePicture() != null) {
             currentProfilePictureView.setImage(loggedInStudent.getProfilePicture());
@@ -89,37 +103,38 @@ public class StudentSettingsController {
         }
     }
 
+    // === Handle Password Change ===
     @FXML
     private void handleChangePassword() {
         String current = currentPasswordField.getText();
         String newPass = newPasswordField.getText();
         String confirmPass = confirmPasswordField.getText();
 
+        // Check if current password is correct
         if (!PasswordHasher.hashPassword(current).equals(loggedInStudent.getPassword())) {
-            passwordStatusLabel.setText("Incorrect current password.");
-            passwordStatusLabel.setStyle("-fx-text-fill: red;");
+            showAlert(Alert.AlertType.ERROR, "Incorrect current password.");
             return;
         }
 
+        // Check if new password matches confirmation
         if (!newPass.equals(confirmPass)) {
-            passwordStatusLabel.setText("Passwords do not match.");
-            passwordStatusLabel.setStyle("-fx-text-fill: red;");
+            showAlert(Alert.AlertType.WARNING, "New passwords do not match.");
             return;
         }
 
+        // Update password and export
         loggedInStudent.setPassword(newPass);
         UniversityManagementApp.studentDAO.updateStudent(loggedInStudent);
-        passwordStatusLabel.setText("Password updated successfully!");
-        passwordStatusLabel.setStyle("-fx-text-fill: green;");
+        showAlert(Alert.AlertType.INFORMATION, "Password updated successfully!");
         clearPasswordFields();
         exporter.exportData();
-        tabPane.getSelectionModel().select(0);
+        tabPane.getSelectionModel().select(0); // Go back to Profile tab
     }
 
+    // Clear all password fields
     @FXML
     private void handleClearPassword() {
         clearPasswordFields();
-        passwordStatusLabel.setText("");
     }
 
     private void clearPasswordFields() {
@@ -128,6 +143,9 @@ public class StudentSettingsController {
         confirmPasswordField.clear();
     }
 
+    // === Profile Picture Handling ===
+
+    // Select new image
     @FXML
     private void handleSelectImage() {
         FileChooser fileChooser = new FileChooser();
@@ -138,7 +156,6 @@ public class StudentSettingsController {
         File selectedFile = fileChooser.showOpenDialog(tabPane.getScene().getWindow());
         if (selectedFile != null) {
             try {
-                // Ensure the path is stored as a file URI
                 selectedImagePath = selectedFile.toURI().toString();
                 Image newImage = new Image(selectedImagePath);
                 currentProfilePictureView.setImage(newImage);
@@ -151,6 +168,7 @@ public class StudentSettingsController {
         }
     }
 
+    // Save selected image as profile picture
     @FXML
     private void handleSaveImage() {
         if (selectedImagePath == null || selectedImagePath.isEmpty()) {
@@ -167,12 +185,12 @@ public class StudentSettingsController {
             imageStatusLabel.setText("Profile picture updated successfully!");
             imageStatusLabel.setStyle("-fx-text-fill: green;");
 
-            // Notify parent controller to refresh the profile view
             if (parentController != null) {
                 parentController.refreshProfileTab();
             }
+
             exporter.exportData();
-            selectedImagePath = null; // Clear the temporary path
+            selectedImagePath = null;
             tabPane.getSelectionModel().select(0); // Return to Profile tab
         } catch (Exception e) {
             imageStatusLabel.setText("Error saving image: " + e.getMessage());
@@ -180,6 +198,7 @@ public class StudentSettingsController {
         }
     }
 
+    // Reset to default profile picture
     @FXML
     private void handleResetImage() {
         try {
@@ -191,20 +210,20 @@ public class StudentSettingsController {
             imageStatusLabel.setText("Profile picture reset to default.");
             imageStatusLabel.setStyle("-fx-text-fill: green;");
 
-            // Notify parent controller to refresh the profile view
             if (parentController != null) {
                 parentController.refreshProfileTab();
             }
 
             exporter.exportData();
-            selectedImagePath = null; // Clear the temporary path
-            tabPane.getSelectionModel().select(0); // Return to Profile tab
+            selectedImagePath = null;
+            tabPane.getSelectionModel().select(0);
         } catch (Exception e) {
             imageStatusLabel.setText("Error resetting image: " + e.getMessage());
             imageStatusLabel.setStyle("-fx-text-fill: red;");
         }
     }
 
+    // Reusable popup alert
     private void showAlert(Alert.AlertType type, String message) {
         Alert alert = new Alert(type);
         alert.setTitle("Password Update");

@@ -13,8 +13,10 @@ import java.io.File;
 
 public class FacultySettingsController {
 
-    // === Profile Tab ===
+    // UI elements for different tabs
     @FXML private TabPane tabPane;
+
+    // Profile fields
     @FXML private TextField nameField;
     @FXML private TextField usernameField;
     @FXML private PasswordField maskedPasswordField;
@@ -26,38 +28,49 @@ public class FacultySettingsController {
     @FXML private Button clearProfileButton;
     @FXML private ImageView profilePictureView;
 
-    // === Change Password Tab ===
+    // Password change fields
     @FXML private PasswordField currentPasswordField;
     @FXML private PasswordField newPasswordField;
     @FXML private PasswordField confirmPasswordField;
     @FXML private Button changePasswordButton;
     @FXML private Button clearPasswordButton;
 
-    // === Change Location Tab ===
+    // Location change fields
     @FXML private TextField currentLocationField;
     @FXML private TextField newLocationField;
     @FXML private TextField confirmLocationField;
     @FXML private Button changeLocationButton;
     @FXML private Button clearLocationButton;
 
+    // Profile picture update fields
     @FXML private ImageView currentProfilePictureView;
     @FXML private TextField newProfilePicturePathField;
     @FXML private Button browsePictureButton;
     @FXML private Button changeProfilePictureButton;
     @FXML private Button clearProfilePictureButton;
 
+    // Faculty and utilities
     private FacultyDashboard parentController;
     private Faculty loggedInFaculty;
     private File selectedImageFile;
 
-    ExExporter exporter = new ExExporter(UniversityManagementApp.courseDAO, UniversityManagementApp.studentDAO, UniversityManagementApp.facultyDAO, UniversityManagementApp.subjectDAO, UniversityManagementApp.eventDAO);
+    // Exporter to save updated data
+    ExExporter exporter = new ExExporter(
+            UniversityManagementApp.courseDAO,
+            UniversityManagementApp.studentDAO,
+            UniversityManagementApp.facultyDAO,
+            UniversityManagementApp.subjectDAO,
+            UniversityManagementApp.eventDAO
+    );
 
+    // Set the parent controller and load faculty data
     public void setParentController(FacultyDashboard controller) {
         this.parentController = controller;
         this.loggedInFaculty = UniversityManagementApp.facultyDAO.getFacultyByUsername(controller.getFacultyUsername());
         loadFacultyData();
     }
 
+    // Load faculty info into the fields
     private void loadFacultyData() {
         if (loggedInFaculty == null) return;
 
@@ -70,7 +83,7 @@ public class FacultySettingsController {
         profileEmailField.setText(loggedInFaculty.getEmail());
         profileDegreeField.setText(loggedInFaculty.getDegree());
 
-        // Load profile picture
+        // Load profile picture or set default
         if (loggedInFaculty.getProfilePicture() != null) {
             profilePictureView.setImage(loggedInFaculty.getProfilePicture());
             currentProfilePictureView.setImage(loggedInFaculty.getProfilePicture());
@@ -81,42 +94,48 @@ public class FacultySettingsController {
         }
     }
 
-    // === Profile Tab ===
+    // Handles clicking "Save" on profile tab
     @FXML
     private void handleSaveProfile() {
-        showInfo("This section is view-only for now. Location changes belong in the third tab.");
+        showAlert(Alert.AlertType.INFORMATION, "This section is view-only. Use the Change Location tab to update.");
     }
 
+    // Resets profile tab fields
     @FXML
     private void handleClearProfile() {
         loadFacultyData();
     }
 
-    // === Change Password ===
+    // Handle password update
     @FXML
     private void handleChangePassword() {
         String current = currentPasswordField.getText().trim();
         String newPass = newPasswordField.getText().trim();
         String confirm = confirmPasswordField.getText().trim();
 
+        // Check if current password matches
         if (!current.equals(loggedInFaculty.getPlaintextPassword())) {
-            showError("Current password is incorrect.");
-            return;
-        }
-        if (newPass.isEmpty() || !newPass.equals(confirm)) {
-            showError("New passwords do not match or are empty.");
+            showAlert(Alert.AlertType.ERROR, "Incorrect current password.");
             return;
         }
 
+        // Check if new passwords match
+        if (newPass.isEmpty() || !newPass.equals(confirm)) {
+            showAlert(Alert.AlertType.WARNING, "New passwords do not match.");
+            return;
+        }
+
+        // Save updated password
         loggedInFaculty.setPassword(newPass);
         UniversityManagementApp.facultyDAO.updateFaculty(loggedInFaculty.getUsername(), loggedInFaculty);
-        exportAndAlert("Password updated successfully!");
         exporter.exportData();
 
         clearPasswordFields();
+        showAlert(Alert.AlertType.INFORMATION, "Password updated successfully!");
         tabPane.getSelectionModel().select(0);
     }
 
+    // Clears all password fields
     @FXML
     private void handleClearPassword() {
         clearPasswordFields();
@@ -128,27 +147,41 @@ public class FacultySettingsController {
         confirmPasswordField.clear();
     }
 
-    // === Change Location ===
+    // Handle location update
     @FXML
     private void handleChangeLocation() {
         String newLoc = newLocationField.getText().trim();
         String confirmLoc = confirmLocationField.getText().trim();
 
+        // Check if new location is valid
         if (newLoc.isEmpty() || !newLoc.equals(confirmLoc)) {
-            showError("New location is empty or does not match confirmation.");
+            showAlert(Alert.AlertType.WARNING, "New location is empty or does not match confirmation.");
             return;
         }
 
+        // Save new location
         loggedInFaculty.setOfficeLocation(newLoc);
         UniversityManagementApp.facultyDAO.updateFaculty(loggedInFaculty.getUsername(), loggedInFaculty);
-        exportAndAlert("Office location updated successfully!");
+        exporter.exportData();
 
         clearLocationFields();
-        loadFacultyData(); // refresh profile tab
-        exporter.exportData();
+        loadFacultyData(); // Refresh profile info
+        showAlert(Alert.AlertType.INFORMATION, "Office location updated successfully!");
+        tabPane.getSelectionModel().select(0);
     }
 
-    // === Change Profile Picture ===
+    // Clears location update fields
+    @FXML
+    private void handleClearLocation() {
+        clearLocationFields();
+    }
+
+    private void clearLocationFields() {
+        newLocationField.clear();
+        confirmLocationField.clear();
+    }
+
+    // Browse for a new profile picture
     @FXML
     private void handleBrowsePicture() {
         FileChooser fileChooser = new FileChooser();
@@ -162,10 +195,11 @@ public class FacultySettingsController {
         }
     }
 
+    // Save selected profile picture
     @FXML
     private void handleChangeProfilePicture() {
         if (selectedImageFile == null) {
-            showError("Please select a new profile picture.");
+            showAlert(Alert.AlertType.ERROR, "Please select a new profile picture.");
             return;
         }
 
@@ -175,19 +209,18 @@ public class FacultySettingsController {
             loggedInFaculty.setProfilePicture(newImage);
             loggedInFaculty.setProfilePicturePath(selectedImageFile.getAbsolutePath());
             UniversityManagementApp.facultyDAO.updateFaculty(loggedInFaculty.getUsername(), loggedInFaculty);
-            exportAndAlert("Profile picture updated successfully!");
-
-
-            // Refresh the profile tab and current tab
-            loadFacultyData();
-            clearProfilePictureFields();
             exporter.exportData();
+
+            clearProfilePictureFields();
+            loadFacultyData();
+            showAlert(Alert.AlertType.INFORMATION, "Profile picture updated successfully!");
             tabPane.getSelectionModel().select(0);
         } catch (Exception e) {
-            showError("Failed to update profile picture: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Failed to update picture: " + e.getMessage());
         }
     }
 
+    // Clear profile picture selection
     @FXML
     private void handleClearProfilePicture() {
         clearProfilePictureFields();
@@ -198,40 +231,12 @@ public class FacultySettingsController {
         selectedImageFile = null;
     }
 
-    @FXML
-    private void handleClearLocation() {
-        clearLocationFields();
-    }
-
-    private void clearLocationFields() {
-        newLocationField.clear();
-        confirmLocationField.clear();
-    }
-
-    // === Utility Methods ===
-    private void exportAndAlert(String msg) {
-        ExExporter exporter = new ExExporter(
-                UniversityManagementApp.courseDAO,
-                UniversityManagementApp.studentDAO,
-                UniversityManagementApp.facultyDAO,
-                UniversityManagementApp.subjectDAO,
-                UniversityManagementApp.eventDAO
-        );
-        exporter.exportData();
-        showInfo(msg);
-    }
-
-    private void showError(String msg) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
-        alert.setContentText(msg);
-        alert.showAndWait();
-    }
-
-    private void showInfo(String msg) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Info");
-        alert.setContentText(msg);
+    // Reusable alert method for info, warning, or error messages
+    private void showAlert(Alert.AlertType type, String message) {
+        Alert alert = new Alert(type);
+        alert.setTitle("Faculty Settings");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
         alert.showAndWait();
     }
 }

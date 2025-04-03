@@ -18,7 +18,6 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
-
 import java.io.IOException;
 
 public class UserLoginController {
@@ -87,7 +86,12 @@ public class UserLoginController {
 
                         Stage stage = (Stage) usernameField.getScene().getWindow();
                         stage.setTitle("Faculty Dashboard");
-                        stage.setScene(new Scene(root));
+                        // Set the scene with explicit dimensions to match admin dashboard
+                        Scene scene = new Scene(root, 601, 498);
+                        stage.setScene(scene);
+                        stage.setWidth(601); // Ensure the stage size remains consistent
+                        stage.setHeight(498);
+                        stage.setMaximized(false); // Prevent maximization
                         stage.show();
                     } else if (redirectToStudentDash(user)) {
                         loadDashboard("/com/example/universitymanagementapp/student-dashboard.fxml", "Student Dashboard");
@@ -115,7 +119,12 @@ public class UserLoginController {
         }
         Stage stage = (Stage) usernameField.getScene().getWindow();
         stage.setTitle(title);
-        stage.setScene(new Scene(root));
+        // Set the scene with explicit dimensions to match admin dashboard
+        Scene scene = new Scene(root, 601, 498);
+        stage.setScene(scene);
+        stage.setWidth(601); // Ensure the stage size remains consistent
+        stage.setHeight(498);
+        stage.setMaximized(false); // Prevent maximization
         stage.show();
     }
 

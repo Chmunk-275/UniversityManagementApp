@@ -137,6 +137,10 @@ public class FacultyDashboard {
         );
         recentActivitiesTable.setItems(recentActivities);
 
+        activityTypeColumn.prefWidthProperty().bind(recentActivitiesTable.widthProperty().multiply(0.2)); // 20%
+        activityDescriptionColumn.prefWidthProperty().bind(recentActivitiesTable.widthProperty().multiply(0.6)); // 60%
+        activityDateColumn.prefWidthProperty().bind(recentActivitiesTable.widthProperty().multiply(0.2)); // 20%
+
         // Configure table columns for Recent Registrations
         registrationStudentColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getStudentId()));
         registrationCourseColumn.setCellValueFactory(cellData ->
@@ -147,6 +151,11 @@ public class FacultyDashboard {
                 new SimpleStringProperty(cellData.getValue().getDate().format(DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm")))
         );
         recentRegistrationsTable.setItems(recentRegistrations);
+        // Bind column widths to table width
+        registrationStudentColumn.prefWidthProperty().bind(recentRegistrationsTable.widthProperty().multiply(0.25)); // 25%
+        registrationCourseColumn.prefWidthProperty().bind(recentRegistrationsTable.widthProperty().multiply(0.25)); // 25%
+        registrationCourseNameColumn.prefWidthProperty().bind(recentRegistrationsTable.widthProperty().multiply(0.25)); // 25%
+        registrationDateColumn.prefWidthProperty().bind(recentRegistrationsTable.widthProperty().multiply(0.25)); // 25%
 
         // Configure table columns for Upcoming Events
         eventCodeColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getEventCode()));
@@ -162,6 +171,11 @@ public class FacultyDashboard {
         eventLocationColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getEventLocation()));
         upcomingEventsTable.setItems(upcomingEvents);
 
+        eventCodeColumn.prefWidthProperty().bind(upcomingEventsTable.widthProperty().multiply(0.25)); // 25%
+        eventNameColumn.prefWidthProperty().bind(upcomingEventsTable.widthProperty().multiply(0.25)); // 25%
+        eventDateColumn.prefWidthProperty().bind(upcomingEventsTable.widthProperty().multiply(0.25)); // 25%
+        eventLocationColumn.prefWidthProperty().bind(upcomingEventsTable.widthProperty().multiply(0.25)); // 25%
+
         // Configure table columns for Notifications
         notificationTypeColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getType()));
         notificationMessageColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getMessage()));
@@ -169,6 +183,10 @@ public class FacultyDashboard {
                 new SimpleStringProperty(cellData.getValue().getDate().format(DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm")))
         );
         notificationsTable.setItems(notifications);
+        // Bind column widths to table width
+        notificationTypeColumn.prefWidthProperty().bind(notificationsTable.widthProperty().multiply(0.2)); // 20%
+        notificationMessageColumn.prefWidthProperty().bind(notificationsTable.widthProperty().multiply(0.6)); // 60%
+        notificationDateColumn.prefWidthProperty().bind(notificationsTable.widthProperty().multiply(0.2));
 
         // Load data
         loadSummaryData();

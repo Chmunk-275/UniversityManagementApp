@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane fx:id="rootPane" style="-fx-background-size: contain; -fx-border-color: black; -fx-border-width: 15;" stylesheets="@admin-students-management.css" xmlns="http://javafx.com/javafx/" xmlns:fx="http://javafx.com/fxml/" fx:controller="com.example.universitymanagementapp.controller.FacultyController.FacultyDashboard">
+<AnchorPane fx:id="rootPane" prefWidth="601.0" prefHeight="498.0" style="-fx-background-size: contain; -fx-border-color: black; -fx-border-width: 15;" stylesheets="@admin-students-management.css" xmlns="http://javafx.com/javafx/" xmlns:fx="http://javafx.com/fxml/" fx:controller="com.example.universitymanagementapp.controller.FacultyController.FacultyDashboard">
     <children>
         <!-- Navigation Menu -->
         <MenuButton fx:id="toggleMenuButton" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" prefHeight="40.666666" prefWidth="72.0" style="-fx-background-color: rgb(173,0,41);" text="☰">
