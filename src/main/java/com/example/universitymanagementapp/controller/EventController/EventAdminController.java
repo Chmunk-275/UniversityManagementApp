@@ -21,8 +21,10 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -33,95 +35,42 @@ public class EventAdminController {
 
     // registering and unregistering a student from events gets sent as notification
 
-    @FXML
-    private AnchorPane rootPane;
+    @FXML private AnchorPane rootPane;
+    @FXML private TabPane tabPane;
+    @FXML private GridPane calendarGrid;
+    @FXML private Button prevMonthButton;
+    @FXML private Label monthLabel;
+    @FXML private Button nextMonthButton;
+    @FXML private TableView<Event> allEventsTable;
+    @FXML private TableColumn<Event, String> codeColumn;
+    @FXML private TableColumn<Event, String> nameColumn;
+    @FXML private TableColumn<Event, String> dateColumn;
+    @FXML private TableColumn<Event, String> locationColumn;
+    @FXML private TableColumn<Event, Integer> capacityColumn;
+    @FXML private TableColumn<Event, String> costColumn;
+    @FXML private TextField eventSearch;
+    @FXML private AnchorPane manageEventsPane;
+    @FXML private TextField codeField;
+    @FXML private TextField nameField;
+    @FXML private TextArea descriptionField;
+    @FXML private TextField locationField;
+    @FXML private DatePicker datePicker;
+    @FXML private TextField timeField;
+    @FXML private TextField capacityField;
+    @FXML private TextField costField;
+    @FXML private Button addButton;
+    @FXML private Button editButton;
+    @FXML private Button registerStudentButton;
+    @FXML private Button deleteButton;
+    @FXML private Button saveButton;
+    @FXML private Button clearButton;
+    @FXML private Button unregisterStudentButton;
 
-    @FXML
-    private TabPane tabPane;
-
-    @FXML
-    private GridPane calendarGrid;
-
-    @FXML
-    private Button prevMonthButton;
-
-    @FXML
-    private Label monthLabel;
-
-    @FXML
-    private Button nextMonthButton;
-
-    @FXML
-    private TableView<Event> allEventsTable;
-
-    @FXML
-    private TableColumn<Event, String> codeColumn;
-
-    @FXML
-    private TableColumn<Event, String> nameColumn;
-
-    @FXML
-    private TableColumn<Event, String> dateColumn;
-
-    @FXML
-    private TableColumn<Event, String> locationColumn;
-
-    @FXML
-    private TableColumn<Event, Integer> capacityColumn;
-
-    @FXML
-    private TableColumn<Event, String> costColumn;
-
-    @FXML
-    private TextField eventSearch;
-
-    @FXML
-    private AnchorPane manageEventsPane;
-
-    @FXML
-    private TextField codeField;
-
-    @FXML
-    private TextField nameField;
-
-    @FXML
-    private TextArea descriptionField;
-
-    @FXML
-    private TextField locationField;
-
-    @FXML
-    private DatePicker datePicker;
-
-    @FXML
-    private TextField timeField;
-
-    @FXML
-    private TextField capacityField;
-
-    @FXML
-    private TextField costField;
-
-    @FXML
-    private Button addButton;
-
-    @FXML
-    private Button editButton;
-
-    @FXML
-    private Button registerStudentButton;
-
-    @FXML
-    private Button deleteButton;
-
-    @FXML
-    private Button saveButton;
-
-    @FXML
-    private Button clearButton;
-
-    @FXML
-    private Button unregisterStudentButton;
+    // New FXML elements for image handling
+    @FXML private ImageView currentHeaderImageView;
+    @FXML private Button selectImageButton;
+    @FXML private Button resetImageButton;
+    @FXML private Label imageStatusLabel;
 
     // DAO and Exporter
     private StudentDAO studentDAO = UniversityManagementApp.studentDAO;
@@ -136,6 +85,11 @@ public class EventAdminController {
 
     private int currentYear = LocalDate.now().getYear();
     private int currentMonth = LocalDate.now().getMonthValue();
+
+    // Variables for image handling
+    private Image defaultHeaderImage;
+    private Image currentHeaderImage;
+    private String currentHeaderImagePath;
 
     @FXML
     public void initialize() {
@@ -182,6 +136,17 @@ public class EventAdminController {
                 }
             }
         });
+
+        // Initialize the default header image
+        try {
+            defaultHeaderImage = new Image(getClass().getResourceAsStream("/images/eventsdefault.jpg"));
+            currentHeaderImage = defaultHeaderImage;
+            currentHeaderImagePath = "default";
+            currentHeaderImageView.setImage(defaultHeaderImage);
+        } catch (Exception e) {
+            System.out.println("Error loading default event header image: " + e.getMessage());
+            imageStatusLabel.setText("Error loading default image");
+        }
     }
 
     private void loadAllEvents() {
@@ -373,6 +338,11 @@ public class EventAdminController {
         handleClearForm();
         selectedEvent = null;
         tabPane.getSelectionModel().select(2);
+        // Reset image to default when adding a new event
+        currentHeaderImage = defaultHeaderImage;
+        currentHeaderImagePath = "default";
+        currentHeaderImageView.setImage(defaultHeaderImage);
+        imageStatusLabel.setText("");
     }
 
     @FXML
@@ -391,10 +361,49 @@ public class EventAdminController {
             capacityField.setText(String.valueOf(selectedEvent.getEventCapacity()));
             costField.setText(selectedEvent.getEventCost());
 
+            // Load the event's header image and path
+            currentHeaderImage = selectedEvent.getEventHeaderImage() != null ? selectedEvent.getEventHeaderImage() : defaultHeaderImage;
+            currentHeaderImagePath = selectedEvent.getHeaderImagePath() != null ? selectedEvent.getHeaderImagePath() : "default";
+            currentHeaderImageView.setImage(currentHeaderImage);
+            imageStatusLabel.setText("Current image: " + (currentHeaderImagePath.equals("default") ? "Default" : "Custom"));
+
             tabPane.getSelectionModel().select(2);
         } else {
             showAlert(Alert.AlertType.WARNING, "No Selection", "Please select an event to edit.");
         }
+    }
+
+    @FXML
+    private void handleSelectImage() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Select Event Header Image");
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg")
+        );
+        File selectedFile = fileChooser.showOpenDialog(rootPane.getScene().getWindow());
+        if (selectedFile != null) {
+            try {
+                String imagePath = selectedFile.toURI().toString();
+                Image newImage = new Image(imagePath);
+                if (newImage.isError()) {
+                    throw new Exception("Invalid image file");
+                }
+                currentHeaderImage = newImage;
+                currentHeaderImagePath = imagePath;
+                currentHeaderImageView.setImage(currentHeaderImage);
+                imageStatusLabel.setText("Image selected: " + selectedFile.getName());
+            } catch (Exception e) {
+                imageStatusLabel.setText("Error loading image: " + e.getMessage());
+            }
+        }
+    }
+
+    @FXML
+    private void handleResetImage() {
+        currentHeaderImage = defaultHeaderImage;
+        currentHeaderImagePath = "default";
+        currentHeaderImageView.setImage(defaultHeaderImage);
+        imageStatusLabel.setText("Image reset to default");
     }
 
     @FXML
@@ -444,7 +453,7 @@ public class EventAdminController {
             // Update the event's registered students list
             selectedEvent.setRegisteredStudents(registeredStudents);
             eventDAO.updateEvent(selectedEvent.getEventCode(), selectedEvent);
-            ExExporter.recordNotification("Event","Student " + studentId + " registered for event " + selectedEvent.getEventCode() + " (" + selectedEvent.getEventName() + ").");
+            ExExporter.recordNotification("Event", "Student " + studentId + " registered for event " + selectedEvent.getEventCode() + " (" + selectedEvent.getEventName() + ").");
             exporter.exportData();
             showAlert(Alert.AlertType.INFORMATION, "Success", "Student " + studentId + " registered successfully.");
             dialogStage.close();
@@ -508,7 +517,7 @@ public class EventAdminController {
             // Update the event's registered students list
             selectedEvent.setRegisteredStudents(registeredStudents);
             eventDAO.updateEvent(selectedEvent.getEventCode(), selectedEvent);
-            ExExporter.recordNotification("Event","Student " + studentId + " unregistered from event " + selectedEvent.getEventCode() + " (" + selectedEvent.getEventName() + ").");
+            ExExporter.recordNotification("Event", "Student " + studentId + " unregistered from event " + selectedEvent.getEventCode() + " (" + selectedEvent.getEventName() + ").");
             exporter.exportData();
             showAlert(Alert.AlertType.INFORMATION, "Success", "Student " + studentId + " unregistered successfully.");
             dialogStage.close();
@@ -533,7 +542,7 @@ public class EventAdminController {
                     eventDAO.deleteEvent(selectedEvent.getEventCode());
                     loadAllEvents();
                     populateCalendar();
-                    ExExporter.recordActivity("Event","Event " + selectedEvent.getEventCode() + " (" + selectedEvent.getEventName() + ") deleted.");
+                    ExExporter.recordActivity("Event", "Event " + selectedEvent.getEventCode() + " (" + selectedEvent.getEventName() + ") deleted.");
                     exporter.exportData();
                 }
             });
@@ -601,7 +610,8 @@ public class EventAdminController {
                 nameField.getText().trim(),
                 codeField.getText().trim(),
                 descriptionField.getText().trim(),
-                selectedEvent != null ? selectedEvent.getEventHeaderImage() : new Image(getClass().getResourceAsStream("/images/eventsdefault.jpg")),
+                currentHeaderImage, // Use the current header image
+                currentHeaderImagePath, // Use the current header image path
                 locationField.getText().trim(),
                 dateTime,
                 Integer.parseInt(capacityField.getText().trim()),
@@ -611,10 +621,10 @@ public class EventAdminController {
 
         if (selectedEvent == null) {
             eventDAO.addEvent(event);
-            ExExporter.recordActivity("Event","Event " + event.getEventCode() + " (" + event.getEventName() + ") created.");
+            ExExporter.recordActivity("Event", "Event " + event.getEventCode() + " (" + event.getEventName() + ") created.");
         } else {
             eventDAO.updateEvent(selectedEvent.getEventCode(), event);
-            ExExporter.recordActivity("Event","Event " + event.getEventCode() + " (" + event.getEventName() + ") updated.");
+            ExExporter.recordActivity("Event", "Event " + event.getEventCode() + " (" + event.getEventName() + ") updated.");
             selectedEvent = null;
         }
 
@@ -634,19 +644,16 @@ public class EventAdminController {
         timeField.clear();
         capacityField.clear();
         costField.clear();
+        currentHeaderImage = defaultHeaderImage;
+        currentHeaderImagePath = "default";
+        currentHeaderImageView.setImage(defaultHeaderImage);
+        imageStatusLabel.setText("");
+        selectedEvent = null;
     }
 
     @FXML
     private void handleClearForm() {
-        codeField.clear();
-        nameField.clear();
-        descriptionField.clear();
-        locationField.clear();
-        datePicker.setValue(null);
-        timeField.clear();
-        capacityField.clear();
-        costField.clear();
-        selectedEvent = null;
+        clearForm();
     }
 
     private void showAlert(Alert.AlertType type, String title, String message) {

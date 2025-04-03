@@ -244,10 +244,17 @@ public class ExImporter {
 
             String headerPicturePath = row.getCell(7).getStringCellValue();
             Image headerPicture;
-            if ("default".equalsIgnoreCase(headerPicturePath)) {
+            if (headerPicturePath == null || headerPicturePath.trim().isEmpty() || "default".equalsIgnoreCase(headerPicturePath)) {
+                headerPicturePath = "default";
                 headerPicture = new Image(getClass().getResourceAsStream("/images/eventsdefault.jpg"));
             } else {
-                headerPicture = new Image(headerPicturePath);
+                try {
+                    headerPicture = new Image(headerPicturePath);
+                } catch (Exception e) {
+                    System.out.println("Invalid header picture path for event " + row.getCell(0).getStringCellValue() + ": " + headerPicturePath + ". Using default image.");
+                    headerPicturePath = "default";
+                    headerPicture = new Image(getClass().getResourceAsStream("/images/eventsdefault.jpg"));
+                }
             }
 
             // Get the list of student names from the Excel file
@@ -288,6 +295,7 @@ public class ExImporter {
                     row.getCell(0).getStringCellValue(), // code
                     row.getCell(2).getStringCellValue(), // description
                     headerPicture,
+                    headerPicturePath, // Set the header image path
                     row.getCell(3).getStringCellValue(), // location
                     row.getCell(4).getDateCellValue(),   // date and time
                     (int) row.getCell(5).getNumericCellValue(), // capacity

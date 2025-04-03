@@ -227,7 +227,8 @@ public class ExExporter {
             row.createCell(4).setCellValue(event.getEventDateTime() != null ? sdf.format(event.getEventDateTime()) : "");
             row.createCell(5).setCellValue(event.getEventCapacity());
             row.createCell(6).setCellValue(event.getEventCost());
-            row.createCell(7).setCellValue(event.getEventHeaderImage() != null ? "custom" : "default");
+            // Write the actual header image path instead of "custom" or "default"
+            row.createCell(7).setCellValue(event.getHeaderImagePath() != null ? event.getHeaderImagePath() : "default");
 
             // Map student IDs to names for the "Registered Students" column
             List<String> registeredStudents = event.getRegisteredStudents();

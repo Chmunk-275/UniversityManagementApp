@@ -489,23 +489,6 @@ public class EventStudentController {
         alert.showAndWait();
     }
 
-    @FXML
-    public void handleBackAction(ActionEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/universitymanagementapplication/student-dashboard.fxml"));
-            Parent root = loader.load();
-            StudentDashboard dashboardController = loader.getController();
-            dashboardController.setStudentName(studentName);
-            dashboardController.setStudentId(studentUsername);
-            Stage stage = (Stage) backButton.getScene().getWindow();
-            stage.setTitle("Student Dashboard");
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.err.println("Error navigating back to StudentDashboard: " + e.getMessage());
-        }
-    }
 
     public void setStudentUsername(String username) {
         this.studentUsername = username;

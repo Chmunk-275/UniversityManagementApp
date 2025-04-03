@@ -5,6 +5,7 @@ import com.example.universitymanagementapp.dao.CourseDAO;
 import com.example.universitymanagementapp.dao.FacultyDAO;
 import com.example.universitymanagementapp.model.Course;
 import com.example.universitymanagementapp.UniversityManagementApp;
+import com.example.universitymanagementapp.model.Faculty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -91,7 +92,7 @@ public class CourseFacultyController {
             // Check if the instructor field looks like an ID (e.g., starts with "F" followed by numbers)
             if (instructor != null && instructor.matches("F\\d+")) {
                 // Look up the faculty by username (assuming the ID is the username)
-                com.example.universitymanagementapp.model.Faculty faculty = facultyDAO.getFacultyByUsername(instructor);
+                Faculty faculty = facultyDAO.getFacultyByUsername(instructor);
                 if (faculty != null) {
                     return new SimpleStringProperty(faculty.getName());
                 }
