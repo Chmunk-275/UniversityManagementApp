@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ExExporter {
-    private static final String FILE_PATH = "src/main/resources/UMS_Data.xlsx";
+    private static final String FILE_PATH = "src/main/resources/UMS_Data1.xlsx";
     private CourseDAO courseDAO;
     private StudentDAO studentDAO;
     private FacultyDAO facultyDAO;
