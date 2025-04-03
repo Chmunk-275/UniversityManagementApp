@@ -114,10 +114,17 @@ public class StudentDashboard {
         courseCodeColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getCourseCode()).asObject());
         courseNameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getCourseName()));
         instructorColumn.setCellValueFactory(cellData -> {
-            String instructorName = cellData.getValue().getInstructor();
-            // Look up the faculty member by name to ensure the name is valid
-            Faculty faculty = UniversityManagementApp.facultyDAO.getFacultyByName(instructorName);
-            return new SimpleStringProperty(instructorName != null && faculty != null ? instructorName : "N/A");
+            String instructor = cellData.getValue().getInstructor();
+            if (instructor == null || instructor.isEmpty() || instructor.equals("Unassigned")) {
+                return new SimpleStringProperty("N/A");
+            }
+            // Try to find the faculty by ID (username)
+            Faculty faculty = UniversityManagementApp.facultyDAO.getFacultyById(instructor);
+            if (faculty != null) {
+                return new SimpleStringProperty(faculty.getName());
+            }
+            // If not found by ID, it might already be a name (from imported data)
+            return new SimpleStringProperty(instructor);
         });
         myCoursesTable.setItems(myCourses);
 
